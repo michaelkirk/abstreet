@@ -74,24 +74,43 @@ impl Ring {
         hits
     }
 
-    pub fn get_shorter_slice_btwn(&self, pt1: Pt2D, pt2: Pt2D) -> PolyLine {
+    pub fn get_shorter_slice_btwn(&self, pt1: Pt2D, pt2: Pt2D) -> Option<PolyLine> {
         assert!(pt1 != pt2);
         let pl = PolyLine::unchecked_new(self.pts.clone());
 
-        let mut dist1 = pl.dist_along_of_point(pt1).unwrap().0;
-        let mut dist2 = pl.dist_along_of_point(pt2).unwrap().0;
+        let mut dist1 = pl.dist_along_of_point(pt1)?.0;
+        let mut dist2 = pl.dist_along_of_point(pt2)?.0;
         if dist1 > dist2 {
             std::mem::swap(&mut dist1, &mut dist2);
         }
 
-        let candidate1 = pl.exact_slice(dist1, dist2);
-        let candidate2 = pl
-            .exact_slice(dist2, pl.length())
-            .must_extend(pl.exact_slice(Distance::ZERO, dist1));
-        if candidate1.length() < candidate2.length() {
-            candidate1
+        let candidate1 = if dist2.approx_eq(pl.length()) || dist1.approx_eq(Distance::ZERO) {
+            None
         } else {
-            candidate2
+            Some(
+                pl.exact_slice(dist2, pl.length())
+                    .must_extend(pl.exact_slice(Distance::ZERO, dist1)),
+            )
+        };
+        let candidate2 = if dist1.approx_eq(dist2) {
+            None
+        } else {
+            Some(pl.exact_slice(dist1, dist2))
+        };
+        match (candidate1, candidate2) {
+            (Some(c1), Some(c2)) => {
+                if c1.length() < c2.length() {
+                    Some(c1)
+                } else {
+                    Some(c2)
+                }
+            }
+            (Some(c1), None) => Some(c1),
+            (None, Some(c2)) => Some(c2),
+            (None, None) => panic!(
+                "get_shorter_slice_btwn({}, {}) failed for {}",
+                dist1, dist2, self
+            ),
         }
     }
 

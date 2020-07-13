@@ -373,7 +373,11 @@ fn make_walking_turns(
         if let Some(l1) = get_sidewalk(lanes, roads[idx1].incoming_lanes(i.id)) {
             // Make the crosswalk to the other side
             if let Some(l2) = get_sidewalk(lanes, roads[idx1].outgoing_lanes(i.id)) {
-                result.extend(make_crosswalks(i.id, l1, l2).into_iter().flatten());
+                result.extend(
+                    make_crosswalks(driving_side, i, l1, l2, timer)
+                        .into_iter()
+                        .flatten(),
+                );
             }
 
             // Find the shared corner
@@ -402,7 +406,11 @@ fn make_walking_turns(
             ) {
                 // Adjacent road is missing a sidewalk on the near side, but has one on the far
                 // side
-                result.extend(make_crosswalks(i.id, l1, l2).into_iter().flatten());
+                result.extend(
+                    make_crosswalks(driving_side, i, l1, l2, timer)
+                        .into_iter()
+                        .flatten(),
+                );
             } else {
                 // We may need to add a crosswalk over this intermediate road that has no
                 // sidewalks at all. There might be a few in the way -- think highway onramps.
@@ -412,20 +420,32 @@ fn make_walking_turns(
                     abstutil::wraparound_get(&roads, (idx1 as isize) + 2 * idx_offset)
                         .outgoing_lanes(i.id),
                 ) {
-                    result.extend(make_crosswalks(i.id, l1, l2).into_iter().flatten());
+                    result.extend(
+                        make_crosswalks(driving_side, i, l1, l2, timer)
+                            .into_iter()
+                            .flatten(),
+                    );
                 } else if let Some(l2) = get_sidewalk(
                     lanes,
                     abstutil::wraparound_get(&roads, (idx1 as isize) + 2 * idx_offset)
                         .incoming_lanes(i.id),
                 ) {
-                    result.extend(make_crosswalks(i.id, l1, l2).into_iter().flatten());
+                    result.extend(
+                        make_crosswalks(driving_side, i, l1, l2, timer)
+                            .into_iter()
+                            .flatten(),
+                    );
                 } else if roads.len() > 3 {
                     if let Some(l2) = get_sidewalk(
                         lanes,
                         abstutil::wraparound_get(&roads, (idx1 as isize) + 3 * idx_offset)
                             .outgoing_lanes(i.id),
                     ) {
-                        result.extend(make_crosswalks(i.id, l1, l2).into_iter().flatten());
+                        result.extend(
+                            make_crosswalks(driving_side, i, l1, l2, timer)
+                                .into_iter()
+                                .flatten(),
+                        );
                     }
                 }
             }
@@ -435,31 +455,35 @@ fn make_walking_turns(
     result
 }
 
-fn make_crosswalks(i: IntersectionID, l1: &Lane, l2: &Lane) -> Option<Vec<Turn>> {
-    let l1_pt = l1.endpoint(i);
-    let l2_pt = l2.endpoint(i);
-    // TODO Not sure this is always right.
-    let direction = if (l1.dst_i == i) == (l2.dst_i == i) {
-        -1.0
-    } else {
-        1.0
-    };
-    // Jut out a bit into the intersection, cross over, then jut back in. Assumes sidewalks are the
-    // same width.
-    let line = Line::new(l1_pt, l2_pt)?.shift_either_direction(direction * l1.width / 2.0);
-    let geom_fwds = PolyLine::deduping_new(vec![l1_pt, line.pt1(), line.pt2(), l2_pt]).ok()?;
+fn make_crosswalks(
+    driving_side: DrivingSide,
+    i: &Intersection,
+    l1: &Lane,
+    l2: &Lane,
+    timer: &mut Timer,
+) -> Option<Vec<Turn>> {
+    // Find all of the points on the intersection polygon between the two sidewalks. Assumes
+    // sidewalks are the same length.
+    let corner1 = driving_side
+        .right_shift_line(l1.last_line(), l1.width / 2.0)
+        .pt2();
+    let corner2 = driving_side
+        .right_shift_line(l2.first_line(), l2.width / 2.0)
+        .pt1();
+    let geom_fwds =
+        Ring::must_new(i.polygon.points().clone()).get_shorter_slice_btwn(corner1, corner2)?;
 
     Some(vec![
         Turn {
-            id: turn_id(i, l1.id, l2.id),
+            id: turn_id(i.id, l1.id, l2.id),
             turn_type: TurnType::Crosswalk,
-            other_crosswalk_ids: vec![turn_id(i, l2.id, l1.id)].into_iter().collect(),
+            other_crosswalk_ids: vec![turn_id(i.id, l2.id, l1.id)].into_iter().collect(),
             geom: geom_fwds.clone(),
         },
         Turn {
-            id: turn_id(i, l2.id, l1.id),
+            id: turn_id(i.id, l2.id, l1.id),
             turn_type: TurnType::Crosswalk,
-            other_crosswalk_ids: vec![turn_id(i, l1.id, l2.id)].into_iter().collect(),
+            other_crosswalk_ids: vec![turn_id(i.id, l1.id, l2.id)].into_iter().collect(),
             geom: geom_fwds.reversed(),
         },
     ])
@@ -549,7 +573,9 @@ fn make_shared_sidewalk_corner(
 
     // TODO Something like this will be MUCH simpler and avoid going around the long way sometimes.
     if false {
-        return Ring::must_new(i.polygon.points().clone()).get_shorter_slice_btwn(corner1, corner2);
+        return Ring::must_new(i.polygon.points().clone())
+            .get_shorter_slice_btwn(corner1, corner2)
+            .unwrap();
     }
 
     // The order of the points here seems backwards, but it's because we scan from corner2

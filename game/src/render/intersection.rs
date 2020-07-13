@@ -301,14 +301,14 @@ pub fn make_crosswalk(batch: &mut GeomBatch, turn: &Turn, map: &Map, cs: &ColorS
     let line = {
         // The middle line in the crosswalk geometry is the main crossing line.
         let pts = turn.geom.points();
-        if pts.len() < 3 {
+        /*if pts.len() < 3 {
             println!(
                 "Not rendering crosswalk for {}; its geometry was squished earlier",
                 turn.id
             );
             return;
-        }
-        match Line::new(pts[1], pts[2]) {
+        }*/
+        match Line::new(pts[0], pts[1]) {
             Some(l) => l,
             None => {
                 return;

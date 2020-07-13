@@ -1,4 +1,4 @@
-use crate::{trim_f64, Duration, Speed};
+use crate::{trim_f64, Duration, Speed, EPSILON_DIST};
 use serde::{Deserialize, Serialize};
 use std::{cmp, f64, fmt, ops};
 
@@ -68,6 +68,10 @@ impl Distance {
         } else {
             format!("{} ft", feet.round())
         }
+    }
+
+    pub fn approx_eq(self, other: Distance) -> bool {
+        (self - other).abs() <= EPSILON_DIST
     }
 }
 
