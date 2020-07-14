@@ -348,22 +348,19 @@ fn is_road(tags: &mut BTreeMap<String, String>) -> bool {
     if !tags.contains_key(osm::HIGHWAY) {
         return false;
     }
+    if tags.get("area") == Some(&"yes".to_string()) {
+        return false;
+    }
 
     // https://github.com/Project-OSRM/osrm-backend/blob/master/profiles/car.lua is another
     // potential reference
     for value in &[
         // List of non-car types from https://wiki.openstreetmap.org/wiki/Key:highway
-        // TODO Footways are very useful, but they need more work to associate with main roads
-        "footway",
-        "living_street",
-        "pedestrian",
         "track",
         "bus_guideway",
         "escape",
         "raceway",
         "bridleway",
-        "steps",
-        "path",
         "cycleway",
         "proposed",
         // This one's debatable. Includes alleys.
@@ -375,10 +372,18 @@ fn is_road(tags: &mut BTreeMap<String, String>) -> bool {
         "razed",
         "corridor",
         "junction",
+        "bus_stop",
+        // TODO This one is often bike+pedestrians. Not ready to handle this yet.
+        "path",
     ] {
         if tags.get(osm::HIGHWAY) == Some(&value.to_string()) {
             return false;
         }
+    }
+
+    // Separate sidewalks not handled yet.
+    if tags.get("footway") == Some(&"sidewalk".to_string()) {
+        return false;
     }
 
     // If there's no parking data in OSM already, then assume no parking and mark that it's

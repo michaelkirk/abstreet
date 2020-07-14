@@ -355,11 +355,13 @@ impl Road {
 
                 "residential" => 5,
 
-                "footway" => 1,
-
                 "unclassified" => 0,
                 "road" => 0,
                 "crossing" => 0,
+                "pedestrian" => 0,
+                "footway" => 0,
+                "living_street" => 0,
+                "steps" => 0,
                 // If you hit this error and the highway type doesn't represent a driveable road,
                 // you may want to instead filter out the OSM way entirely in
                 // convert_osm/src/osm_reader.rs's is_road().
@@ -398,6 +400,12 @@ impl Road {
 
     pub fn is_light_rail(&self) -> bool {
         !self.children_forwards.is_empty() && self.children_forwards[0].1 == LaneType::LightRail
+    }
+
+    pub fn is_footway(&self) -> bool {
+        self.children_forwards.len() == 1
+            && self.children_forwards[0].1 == LaneType::Sidewalk
+            && self.children_backwards.is_empty()
     }
 
     pub fn common_endpt(&self, other: &Road) -> IntersectionID {

@@ -89,17 +89,18 @@ pub fn make_all_buildings(
                 if driving_pos.dist_along() > driveway_buffer
                     && map.get_l(driving_lane).length() - driving_pos.dist_along() > driveway_buffer
                 {
-                    let driveway_line = PolyLine::must_new(vec![
+                    if let Ok(driveway_line) = PolyLine::deduping_new(vec![
                         sidewalk_line.pt1(),
                         sidewalk_line.pt2(),
                         driving_pos.pt(map),
-                    ]);
-                    bldg.parking = Some(OffstreetParking {
-                        public_garage_name: b.public_garage_name.clone(),
-                        num_spots: b.num_parking_spots,
-                        driveway_line,
-                        driving_pos,
-                    });
+                    ]) {
+                        bldg.parking = Some(OffstreetParking {
+                            public_garage_name: b.public_garage_name.clone(),
+                            num_spots: b.num_parking_spots,
+                            driveway_line,
+                            driving_pos,
+                        });
+                    }
                 }
             }
             if bldg.parking.is_none() {

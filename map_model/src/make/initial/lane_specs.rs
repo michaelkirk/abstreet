@@ -20,7 +20,10 @@ pub fn get_lane_types(osm_tags: &BTreeMap<String, String>) -> (Vec<LaneType>, Ve
     if tags.is("railway", "light_rail") {
         return (vec![LaneType::LightRail], Vec::new());
     }
-    if tags.is(osm::HIGHWAY, "footway") {
+    if tags.is_any(
+        osm::HIGHWAY,
+        vec!["footway", "living_street", "pedestrian", "steps"],
+    ) {
         return (vec![LaneType::Sidewalk], Vec::new());
     }
 
@@ -216,6 +219,14 @@ struct Tags<'a>(&'a BTreeMap<String, String>);
 impl<'a> Tags<'a> {
     fn is(&self, k: &str, v: &str) -> bool {
         self.0.get(k) == Some(&v.to_string())
+    }
+
+    fn is_any(&self, k: &str, values: Vec<&str>) -> bool {
+        if let Some(v) = self.0.get(k) {
+            values.contains(&v.as_ref())
+        } else {
+            false
+        }
     }
 }
 

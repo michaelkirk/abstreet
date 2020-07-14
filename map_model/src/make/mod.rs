@@ -132,7 +132,8 @@ impl Map {
                 dst_i: i2,
                 speed_limit: Speed::ZERO,
                 zorder: if let Some(layer) = raw.roads[&r.id].osm_tags.get("layer") {
-                    layer.parse::<isize>().unwrap()
+                    // TODO Handle fractional layers
+                    layer.parse::<f64>().unwrap() as isize
                 } else {
                     0
                 },
@@ -233,6 +234,7 @@ impl Map {
                 for r in &i.roads {
                     if map.roads[r.0].osm_tags.get(osm::HIGHWAY)
                         != Some(&"construction".to_string())
+                        && map.roads[r.0].osm_tags.get(osm::HIGHWAY) != Some(&"footway".to_string())
                     {
                         ok = true;
                         break;

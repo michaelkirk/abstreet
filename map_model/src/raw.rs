@@ -317,6 +317,14 @@ impl RawRoad {
     pub fn is_light_rail(&self) -> bool {
         self.osm_tags.get("railway") == Some(&"light_rail".to_string())
     }
+
+    pub fn is_footway(&self) -> bool {
+        if let Some(v) = self.osm_tags.get(osm::HIGHWAY) {
+            vec!["footway", "living_street", "pedestrian", "steps", "path"].contains(&v.as_ref())
+        } else {
+            false
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
