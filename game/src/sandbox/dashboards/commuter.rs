@@ -324,7 +324,6 @@ impl State for CommuterPatterns {
                     for (other, cnt) in others {
                         total_trips += cnt;
                         let pct = (cnt as f64) / (max_cnt as f64);
-                        // TODO Use app.cs.good_to_bad_red or some other color gradient
                         batch.push(
                             app.cs.good_to_bad_red.eval(pct).alpha(0.8),
                             other.shape.clone(),
@@ -507,7 +506,7 @@ fn group_bldgs(
             id,
             bldgs: HashSet::new(),
             borders: hashset! { i.id },
-            shape: i.polygon.clone(),
+            shape: map_border_shape(i.polygon.center()),
         });
     }
     for i in app.primary.map.all_outgoing_borders() {
@@ -520,7 +519,7 @@ fn group_bldgs(
             id,
             bldgs: HashSet::new(),
             borders: hashset! { i.id },
-            shape: i.polygon.clone(),
+            shape: map_border_shape(i.polygon.center()),
         });
     }
 
@@ -646,6 +645,11 @@ fn partition_sidewalk_loops(app: &App) -> Vec<Loop> {
     }
 
     groups
+}
+
+fn map_border_shape(center: geom::Pt2D) -> Polygon {
+    let size = Distance::meters(60.0);
+    geom::Polygon::rectangle_centered(center, size, size)
 }
 
 fn make_panel(ctx: &mut EventCtx, app: &App) -> Composite {
