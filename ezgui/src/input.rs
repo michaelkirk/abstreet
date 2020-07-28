@@ -130,7 +130,7 @@ impl UserInput {
 
     pub fn is_window_resized(&self) -> bool {
         match self.event {
-            Event::WindowResized(_, _) => true,
+            Event::WindowResized(_) => true,
             _ => false,
         }
     }

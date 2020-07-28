@@ -9,6 +9,7 @@ pub struct ScreenPt {
 }
 
 impl ScreenPt {
+    //#[deprecated]
     pub fn new(x: f64, y: f64) -> ScreenPt {
         ScreenPt { x, y }
     }
@@ -17,6 +18,12 @@ impl ScreenPt {
     // screen-space.
     pub fn to_pt(self) -> Pt2D {
         Pt2D::new(self.x, self.y)
+    }
+}
+
+impl From<winit::dpi::LogicalPosition<f64>> for ScreenPt {
+    fn from(lp: winit::dpi::LogicalPosition<f64>) -> ScreenPt {
+        ScreenPt { x: lp.x, y: lp.y }
     }
 }
 
@@ -95,7 +102,15 @@ pub struct ScreenDims {
 }
 
 impl ScreenDims {
+    //#[deprecated]
     pub fn new(width: f64, height: f64) -> ScreenDims {
+        ScreenDims {
+            width: trim_f64(width),
+            height: trim_f64(height),
+        }
+    }
+
+    pub fn logical(width: f64, height: f64) -> ScreenDims {
         ScreenDims {
             width: trim_f64(width),
             height: trim_f64(height),
@@ -122,6 +137,15 @@ impl ScreenDims {
                 // corner.y is the bottom corner
                 ScreenPt::new(corner.x - self.width, corner.y - self.height)
             }
+        }
+    }
+}
+
+impl From<winit::dpi::LogicalSize<f64>> for ScreenDims {
+    fn from(lp: winit::dpi::LogicalSize<f64>) -> ScreenDims {
+        ScreenDims {
+            width: lp.width,
+            height: lp.height,
         }
     }
 }

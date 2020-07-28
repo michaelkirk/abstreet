@@ -36,6 +36,11 @@ impl Button {
         // dims are based on the hitbox, not the two drawables!
         let bounds = hitbox.get_bounds();
         let dims = ScreenDims::new(bounds.width(), bounds.height());
+        println!(
+            "new button. hitbox.dims: {:?}, shape.dims: {:?}",
+            dims,
+            normal.get_dims()
+        );
         assert!(!tooltip.is_empty());
         Widget::new(Box::new(Button {
             action: tooltip.to_string(),

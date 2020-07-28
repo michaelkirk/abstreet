@@ -11,6 +11,7 @@ pub struct Assets {
     pub default_line_height: RefCell<f64>,
     pub default_font_size: RefCell<usize>,
     pub scale_factor: RefCell<f64>,
+    pub real_scale_factor: RefCell<f64>,
     text_cache: RefCell<LruCache<String, GeomBatch>>,
     line_height_cache: RefCell<HashMap<(Font, usize), f64>>,
     // Keyed by filename, then scale factor mangled into a hashable form. Tuple doesn't work
@@ -25,7 +26,10 @@ impl Assets {
         let mut a = Assets {
             default_line_height: RefCell::new(0.0),
             default_font_size: RefCell::new(default_font_size),
-            scale_factor: RefCell::new(scale_factor),
+            scale_factor: RefCell::new(1.0), /* DPI CLEANUP: stubbed while transitioning to
+                                              * logical
+                                              * pixels */
+            real_scale_factor: RefCell::new(scale_factor),
             text_cache: RefCell::new(LruCache::new(500)),
             line_height_cache: RefCell::new(HashMap::new()),
             svg_cache: RefCell::new(HashMap::new()),
@@ -123,7 +127,7 @@ impl Assets {
     }
 
     pub fn set_scale_factor(&self, scale_factor: f64) {
-        *self.scale_factor.borrow_mut() = scale_factor;
+        *self.real_scale_factor.borrow_mut() = scale_factor;
         self.text_cache.borrow_mut().clear();
         self.line_height_cache.borrow_mut().clear();
         *self.default_line_height.borrow_mut() =

@@ -230,7 +230,7 @@ impl Widget {
     // TODO These are literally just convenient APIs to avoid importing JustDraw. Do we want this
     // or not?
     pub fn draw_batch(ctx: &EventCtx, batch: GeomBatch) -> Widget {
-        JustDraw::wrap(ctx, batch.scale(ctx.get_scale_factor()))
+        JustDraw::wrap(ctx, batch)
     }
     pub fn draw_svg<I: Into<String>>(ctx: &EventCtx, filename: I) -> Widget {
         JustDraw::svg(ctx, filename.into())

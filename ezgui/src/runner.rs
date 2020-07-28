@@ -59,22 +59,16 @@ impl<G: GUI> State<G> {
 
         // Update some ezgui state that's stashed in Canvas for sad reasons.
         {
-            if let Event::WindowResized(width, height) = input.event {
+            if let Event::WindowResized(new_size) = input.event {
                 let inner_size = prerender.inner.get_inner_size();
                 println!(
-                    "winit event says the window was resized from {}, {} to {}, {}. But inner \
-                     size is {}, {}, so using that",
-                    self.canvas.window_width,
-                    self.canvas.window_height,
-                    width,
-                    height,
-                    inner_size.0,
-                    inner_size.1
+                    "winit event says the window was resized from {}, {} to {:?}. But inner size \
+                     is {:?}, so using that",
+                    self.canvas.window_width, self.canvas.window_height, new_size, inner_size
                 );
-                let (width, height) = inner_size;
-                prerender.inner.window_resized(width, height);
-                self.canvas.window_width = width;
-                self.canvas.window_height = height;
+                prerender.inner.window_resized(new_size);
+                self.canvas.window_width = inner_size.width;
+                self.canvas.window_height = inner_size.height;
             }
 
             if input.event == Event::KeyPress(Key::LeftControl) {
@@ -206,8 +200,8 @@ pub fn run<G: 'static + GUI, F: FnOnce(&mut EventCtx) -> G>(settings: Settings, 
     let (prerender_innards, event_loop, window_size) =
         crate::backend::setup(&settings.window_title);
 
-    let mut canvas = Canvas::new(window_size.width, window_size.height);
-    prerender_innards.window_resized(canvas.window_width, canvas.window_height);
+    let mut canvas = Canvas::new(window_size);
+    prerender_innards.window_resized(window_size);
     if let Some(ref path) = settings.window_icon {
         let image = image::open(path).unwrap();
         let (width, height) = image.dimensions();
@@ -218,13 +212,15 @@ pub fn run<G: 'static + GUI, F: FnOnce(&mut EventCtx) -> G>(settings: Settings, 
         let icon = Icon::from_rgba(rgba, width, height).unwrap();
         prerender_innards.set_window_icon(icon);
     }
+
     let prerender = Prerender {
         assets: Assets::new(
             settings.default_font_size,
             abstutil::path("system/fonts"),
-            settings
+            settings // DPI TODO: reads like settings DPI isn't currently respected if it changes after
+                // launch
                 .scale_factor
-                .unwrap_or_else(|| prerender_innards.monitor_scale_factor()),
+                .unwrap_or_else(|| prerender_innards.get_real_scale_factor()),
         ),
         num_uploads: Cell::new(0),
         inner: prerender_innards,
@@ -270,7 +266,8 @@ pub fn run<G: 'static + GUI, F: FnOnce(&mut EventCtx) -> G>(settings: Settings, 
                 std::process::exit(0);
             }
             winit::event::Event::WindowEvent { event, .. } => {
-                if let Some(ev) = Event::from_winit_event(event) {
+                let scale_factor: f64 = *prerender.assets.real_scale_factor.borrow();
+                if let Some(ev) = Event::from_winit_event(event, scale_factor) {
                     ev
                 } else {
                     // Don't touch control_flow if we got an irrelevant event

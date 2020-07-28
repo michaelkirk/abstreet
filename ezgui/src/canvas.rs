@@ -49,7 +49,7 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    pub(crate) fn new(initial_width: f64, initial_height: f64) -> Canvas {
+    pub(crate) fn new(initial_dims: ScreenDims) -> Canvas {
         Canvas {
             cam_x: 0.0,
             cam_y: 0.0,
@@ -62,8 +62,8 @@ impl Canvas {
             drag_canvas_from: None,
             drag_just_ended: false,
 
-            window_width: initial_width,
-            window_height: initial_height,
+            window_width: initial_dims.width,
+            window_height: initial_dims.height,
 
             map_dims: (0.0, 0.0),
             invert_scroll: false,
@@ -263,6 +263,10 @@ impl Canvas {
             .to_pt(),
         );
         b
+    }
+
+    pub fn get_window_dims(&self) -> ScreenDims {
+        ScreenDims::new(self.window_width, self.window_height)
     }
 
     fn get_map_bounds(&self) -> Bounds {

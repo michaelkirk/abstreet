@@ -106,6 +106,7 @@ pub fn setup(
     )
     .unwrap();
 
+    let scale_factor = display.gl_window().window().scale_factor();
     let inner_window = display.gl_window().window().inner_size();
     let monitor = event_loop.primary_monitor().size();
     let initial_size = if cfg!(target_os = "linux") {
@@ -115,9 +116,7 @@ pub fn setup(
     };
     println!(
         "Inner window size is {:?}, monitor is {:?}, scale factor is {}",
-        inner_window,
-        monitor,
-        display.gl_window().window().scale_factor()
+        inner_window, monitor, scale_factor
     );
     (
         PrerenderInnards {
@@ -126,7 +125,7 @@ pub fn setup(
             total_bytes_uploaded: Cell::new(0),
         },
         event_loop,
-        ScreenDims::new(initial_size.width.into(), initial_size.height.into()),
+        initial_size.to_logical(scale_factor).into(),
     )
 }
 
@@ -301,11 +300,17 @@ impl PrerenderInnards {
         }
     }
 
-    pub fn window_resized(&self, _: f64, _: f64) {}
+    pub fn window_resized(&self, _new_size: ScreenDims) {}
 
-    pub fn get_inner_size(&self) -> (f64, f64) {
-        let size = self.display.gl_window().window().inner_size();
-        (size.width.into(), size.height.into())
+    pub fn get_inner_size(&self) -> ScreenDims {
+        // NOTE DPI: I think this is one of the places we need the real scale factor
+        let scale_factor = self.display.gl_window().window().scale_factor();
+        self.display
+            .gl_window()
+            .window()
+            .inner_size()
+            .to_logical(scale_factor)
+            .into()
     }
 
     pub fn set_window_icon(&self, icon: winit::window::Icon) {
@@ -316,6 +321,13 @@ impl PrerenderInnards {
     }
 
     pub fn monitor_scale_factor(&self) -> f64 {
+        // CLEANUP DPI: We can remove this method since it's a no-op
+        // self.display.gl_window().window().scale_factor()
+        1.0
+    }
+
+    // DPI TODO: rename once only valid callers remain
+    pub fn get_real_scale_factor(&self) -> f64 {
         self.display.gl_window().window().scale_factor()
     }
 }
