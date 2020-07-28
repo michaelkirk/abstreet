@@ -400,12 +400,12 @@ impl JumpToTime {
                     .centered_horiz(),
                 Checkbox::text(
                     ctx,
-                    "don't draw (for faster simulations)",
+                    "draw while warping (takes longer)",
                     None,
-                    app.opts.dont_draw_time_warp,
+                    app.opts.draw_during_time_warp,
                 )
                 .margin_above(30)
-                .named("don't draw"),
+                .named("draw"),
             ]))
             .build(ctx),
         }
@@ -447,7 +447,7 @@ impl State for JumpToTime {
             },
             None => {}
         }
-        app.opts.dont_draw_time_warp = self.composite.is_checked("don't draw");
+        app.opts.draw_during_time_warp = self.composite.is_checked("draw");
         let target = app
             .primary
             .sim
@@ -628,9 +628,7 @@ impl State for TimeWarpScreen {
     }
 
     fn draw(&self, g: &mut GfxCtx, app: &App) {
-        if app.opts.dont_draw_time_warp {
-            g.clear(app.cs.section_bg);
-        } else {
+        if app.opts.draw_during_time_warp {
             app.draw(
                 g,
                 DrawOptions::new(),
@@ -638,6 +636,8 @@ impl State for TimeWarpScreen {
                 &ShowEverything::new(),
             );
             State::grey_out_map(g, app);
+        } else {
+            g.clear(app.cs.section_bg);
         }
 
         self.composite.draw(g);
