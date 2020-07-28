@@ -138,6 +138,16 @@ impl GUI for App {
                 "generate new faces" => {
                     self.scrollable_canvas = setup_scrollable_canvas(ctx);
                 }
+                "submit options" => {
+                    let new_options = format!(
+                        "submitted: {}, {}",
+                        self.controls.is_checked("Option 1"),
+                        self.controls.is_checked("Option 2")
+                    )
+                    .draw_text(ctx)
+                    .named("submitted options");
+                    self.controls.replace(ctx, "submitted options", new_options);
+                }
                 _ => unreachable!(),
             },
             None => {}
@@ -259,10 +269,18 @@ fn make_controls(ctx: &mut EventCtx) -> Composite {
             .named("paused"),
             Btn::text_fg("Reset timer").build(ctx, "reset the stopwatch", None),
             Btn::text_fg("New faces").build(ctx, "generate new faces", hotkey(Key::F)),
-            Checkbox::switch(ctx, "Draw scrollable canvas", None, true),
-            Checkbox::switch(ctx, "Show timeseries", lctrl(Key::T), false),
         ])
         .evenly_spaced(),
+        Widget::row(vec![
+            Checkbox::switch(ctx, "Draw scrollable canvas", None, true),
+            Checkbox::switch(ctx, "Show timeseries", lctrl(Key::T), false),
+        ]),
+        Widget::row(vec![
+            Checkbox::checkbox(ctx, "Option 1", None, true),
+            Checkbox::checkbox(ctx, "Option 2", None, false),
+            Btn::text_bg1("Submit Options").build(ctx, "submit options", None),
+            "".draw_text(ctx).named("submitted options"),
+        ]),
         "Stopwatch: ...".draw_text(ctx).named("stopwatch"),
     ]))
     .aligned(HorizontalAlignment::Center, VerticalAlignment::Top)
