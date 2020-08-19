@@ -16,4 +16,5 @@ void main() {
     //f_color = vec4(1.0 - pass_style.r, 1.0 - pass_style.g, 1.0 - pass_style.b, pass_style.a);
 
     f_color = pass_style;
+    f_color = vec4(0.0, 1.0, 1.0, 0.8);
 }

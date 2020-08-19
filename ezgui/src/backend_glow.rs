@@ -244,7 +244,31 @@ impl PrerenderInnards {
                 glow::FLOAT,
                 false,
                 stride,
-                2 * std::mem::size_of::<f32>() as i32,
+                // WTF: this offset seems correct, but on macos (OpenGL 4.1)
+                // a blank screen is rendered. 
+                //
+                // To debug, I've hardcoded a color assignment in the fragment shader.
+                //
+                // What's fascinating is that, even if we don't use this second "style"
+                // input for anything, the mere act of passing it in with the expected
+                // offset causes all the geometries to not be visible.
+                //
+                // That is:
+                // - with a hardcoded color in the fragment shader
+                // - set offset `0` here (which is surely wrong?)
+                // - I can see the correct shapes with my hardcoded color
+                //
+                // - with a hardcoded color in the fragment shader
+                // - set offset `2*size_of(f32)` here (which should be right)
+                // - I'd expect to see the correct shapes with my hardcoded color
+                // - But instead I can no longer see any shapes on the screen
+                //
+                // So it seems like something about setting the offset on this second attribute
+                // configuration is corrupting our vertex data, even if we never read from that
+                // attribute data.
+                //
+                // 2 * std::mem::size_of::<f32>() as i32,
+                0
             );
 
             // Safety?
