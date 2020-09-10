@@ -50,7 +50,10 @@ impl Event {
             WindowEvent::CursorMoved { position, .. } => Some(Event::MouseMovedTo(
                 position.to_logical(scale_factor).into(),
             )),
-            WindowEvent::MouseWheel { delta, .. } => match delta {
+            WindowEvent::MouseWheel { delta, .. } => {
+                log::debug!("mousewheel delta: {:?}", delta);
+                match delta {
+
                 // "In the beginning" a spinnable mouse wheel was the only input hardware for
                 // scrolling. Each "increment" of the mouse wheel indicated that the application
                 // should scroll one line of text.
@@ -91,6 +94,7 @@ impl Event {
                         scale_factor * pos.x,
                         scale_factor * pos.y,
                     ))
+                }
                 }
             },
             WindowEvent::Resized(size) => {
