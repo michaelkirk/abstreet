@@ -142,7 +142,7 @@ impl State for ZoneEditor {
                     }
                 }
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 let mut new_allow_through_traffic = BTreeSet::new();
                 for m in TripMode::all() {
                     if self.panel.is_checked(m.ongoing_verb()) {

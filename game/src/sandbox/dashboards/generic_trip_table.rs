@@ -79,7 +79,7 @@ impl<T: 'static, F: 'static, P: 'static + Fn(&mut EventCtx, &App, &Table<T, F>) 
                     unreachable!()
                 }
             }
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 if let Some(t) = self.tab.transition(ctx, app, &self.panel) {
                     return t;
                 }

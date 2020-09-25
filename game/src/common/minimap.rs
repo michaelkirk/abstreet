@@ -199,7 +199,7 @@ impl Minimap {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 app.unzoomed_agents.cars = self.panel.is_checked("Car");
                 app.unzoomed_agents.bikes = self.panel.is_checked("Bike");
                 app.unzoomed_agents.buses_and_trains = self.panel.is_checked("Bus");

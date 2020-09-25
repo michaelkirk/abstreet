@@ -195,7 +195,7 @@ impl State for ViewKML {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 let mut query: String = self.panel.dropdown_value("query");
                 let filter = self.panel.text_box("filter");
                 if query == "None" && !filter.is_empty() {

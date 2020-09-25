@@ -31,7 +31,7 @@ impl Layer for TransitNetwork {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 *self = TransitNetwork::new(
                     ctx,
                     app,

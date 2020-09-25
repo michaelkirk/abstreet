@@ -205,7 +205,7 @@ impl WidgetImpl for Checkbox {
     fn event(&mut self, ctx: &mut EventCtx, output: &mut WidgetOutput) {
         self.btn.event(ctx, output);
         if let Outcome::Clicked(_) = output.outcome {
-            output.outcome = Outcome::Changed;
+            output.outcome = Outcome::Changed(todo!());
             std::mem::swap(&mut self.btn, &mut self.other_btn);
             self.btn.set_pos(self.other_btn.top_left);
             self.enabled = !self.enabled;

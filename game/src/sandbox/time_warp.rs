@@ -104,7 +104,7 @@ impl State for JumpToTime {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 app.opts.dont_draw_time_warp = self.panel.is_checked("don't draw");
             }
             _ => {}
@@ -205,7 +205,7 @@ impl State for JumpToDelay {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 app.opts.dont_draw_time_warp = self.panel.is_checked("don't draw");
                 self.panel.replace(
                     ctx,

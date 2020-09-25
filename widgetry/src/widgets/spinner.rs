@@ -76,7 +76,7 @@ impl WidgetImpl for Spinner {
     fn event(&mut self, ctx: &mut EventCtx, output: &mut WidgetOutput) {
         self.up.event(ctx, output);
         if let Outcome::Clicked(_) = output.outcome {
-            output.outcome = Outcome::Changed;
+            output.outcome = Outcome::Changed(todo!());
             if self.current != self.high {
                 self.current += 1;
             }
@@ -86,7 +86,7 @@ impl WidgetImpl for Spinner {
 
         self.down.event(ctx, output);
         if let Outcome::Clicked(_) = output.outcome {
-            output.outcome = Outcome::Changed;
+            output.outcome = Outcome::Changed(todo!());
             if self.current != self.low {
                 self.current -= 1;
             }
@@ -99,11 +99,11 @@ impl WidgetImpl for Spinner {
                 if let Some((_, dy)) = ctx.input.get_mouse_scroll() {
                     if dy > 0.0 && self.current != self.high {
                         self.current += 1;
-                        output.outcome = Outcome::Changed;
+                        output.outcome = Outcome::Changed(todo!());
                     }
                     if dy < 0.0 && self.current != self.low {
                         self.current -= 1;
-                        output.outcome = Outcome::Changed;
+                        output.outcome = Outcome::Changed(todo!());
                     }
                 }
             }

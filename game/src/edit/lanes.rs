@@ -194,7 +194,7 @@ impl State for LaneEditor {
                     }
                 }
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 let mut edits = app.primary.map.get_edits().clone();
                 edits.commands.push(app.primary.map.edit_road_cmd(
                     app.primary.map.get_l(self.l).parent,

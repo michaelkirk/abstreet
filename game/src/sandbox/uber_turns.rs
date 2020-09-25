@@ -246,7 +246,7 @@ impl State for UberTurnViewer {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 return Transition::Replace(UberTurnViewer::new(
                     ctx,
                     app,

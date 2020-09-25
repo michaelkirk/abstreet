@@ -132,7 +132,7 @@ impl Layer for Throughput {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 *self = Throughput::new(
                     ctx,
                     app,
@@ -314,7 +314,7 @@ impl Layer for Delay {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 *self = Delay::new(
                     ctx,
                     app,

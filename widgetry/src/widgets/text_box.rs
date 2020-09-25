@@ -94,14 +94,14 @@ impl WidgetImpl for TextBox {
                 }
                 Key::Backspace => {
                     if self.cursor_x > 0 {
-                        output.outcome = Outcome::Changed;
+                        output.outcome = Outcome::Changed(todo!());
                         self.line.remove(self.cursor_x - 1);
                         self.cursor_x -= 1;
                     }
                 }
                 _ => {
                     if let Some(c) = key.to_char(ctx.canvas.lshift_held) {
-                        output.outcome = Outcome::Changed;
+                        output.outcome = Outcome::Changed(todo!());
                         self.line.insert(self.cursor_x, c);
                         self.cursor_x += 1;
                     } else {

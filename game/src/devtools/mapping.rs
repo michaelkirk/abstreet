@@ -366,7 +366,7 @@ impl State for ParkingMapper {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed => {
+            Outcome::Changed(_) => {
                 return Transition::Replace(ParkingMapper::make(
                     ctx,
                     app,
