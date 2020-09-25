@@ -1,7 +1,7 @@
 use crate::app::{App, ShowEverything};
 use crate::common::{CityPicker, CommonState};
 use crate::edit::EditMode;
-use crate::game::{ChooseSomething, PopupMsg, PromptInput, State, Transition};
+use crate::game::{PopupMsg, PromptInput, State, Transition};
 use crate::helpers::{nice_map_name, ID};
 use crate::sandbox::gameplay::{GameplayMode, GameplayState};
 use crate::sandbox::{Actions, SandboxControls, SandboxMode};
@@ -16,7 +16,7 @@ use sim::{
 };
 use widgetry::{
     lctrl, Btn, Choice, Color, EventCtx, GfxCtx, HorizontalAlignment, Key, Line, Outcome, Panel,
-    ScreenRectangle, Spinner, Text, TextExt, VerticalAlignment, Widget,
+    Spinner, Text, TextExt, VerticalAlignment, Widget,
 };
 
 // TODO Maybe remember what things were spawned, offer to replay this later
@@ -60,12 +60,6 @@ impl GameplayState for Freeform {
                         }),
                     )))
                 }
-                "change traffic" => Some(Transition::Push(make_change_traffic(
-                    ctx,
-                    app,
-                    self.top_center.rect_of("change traffic").clone(),
-                    "none".to_string(),
-                ))),
                 "edit map" => Some(Transition::Push(EditMode::new(
                     ctx,
                     app,
@@ -121,7 +115,12 @@ fn make_top_center(ctx: &mut EventCtx, app: &App) -> Panel {
                 lctrl(Key::L),
             ),
             "Traffic:".draw_text(ctx),
-            Btn::pop_up(ctx, Some("none")).build(ctx, "change traffic", Key::S),
+            Widget::dropdown(
+                ctx,
+                "change traffic",
+                "none".to_string(),
+                traffic_choices(app),
+            ),
             Btn::svg_def("system/assets/tools/edit_map.svg").build(ctx, "edit map", lctrl(Key::E)),
         ])
         .centered(),
@@ -143,12 +142,7 @@ fn make_top_center(ctx: &mut EventCtx, app: &App) -> Panel {
         .build(ctx)
 }
 
-pub fn make_change_traffic(
-    ctx: &mut EventCtx,
-    app: &App,
-    btn: ScreenRectangle,
-    current: String,
-) -> Box<dyn State> {
+pub fn traffic_choices(app: &App) -> Vec<Choice<String>> {
     let mut choices = Vec::new();
     for name in abstutil::list_all_objects(abstutil::path_all_scenarios(app.primary.map.get_name()))
     {
@@ -177,37 +171,20 @@ pub fn make_change_traffic(
         "none, except for buses -- you manually spawn traffic",
         "none".to_string(),
     ));
-    let choices = choices
-        .into_iter()
-        .map(|c| {
-            if c.data == current {
-                c.active(false)
-            } else {
-                c
-            }
-        })
-        .collect();
+    choices
+}
 
-    ChooseSomething::new_below(
+pub fn replace_traffic(scenario_name: String, ctx: &mut EventCtx, app: &mut App) -> Transition {
+    let map_path = abstutil::path_map(app.primary.map.get_name());
+    Transition::Replace(SandboxMode::new(
         ctx,
-        &btn,
-        choices,
-        Box::new(|scenario_name, ctx, app| {
-            let map_path = abstutil::path_map(app.primary.map.get_name());
-            Transition::Multi(vec![
-                Transition::Pop,
-                Transition::Replace(SandboxMode::new(
-                    ctx,
-                    app,
-                    if scenario_name == "none" {
-                        GameplayMode::Freeform(map_path)
-                    } else {
-                        GameplayMode::PlayScenario(map_path, scenario_name, Vec::new())
-                    },
-                )),
-            ])
-        }),
-    )
+        app,
+        if scenario_name == "none" {
+            GameplayMode::Freeform(map_path)
+        } else {
+            GameplayMode::PlayScenario(map_path, scenario_name, Vec::new())
+        },
+    ))
 }
 
 struct AgentSpawner {
@@ -311,42 +288,49 @@ impl State for AgentSpawner {
                 }
                 _ => unreachable!(),
             },
-            Outcome::Changed(_) => {
-                // We need to recalculate the path to see if this is sane. Otherwise we could trick
-                // a pedestrian into wandering on/off a highway border.
-                if self.goal.is_some() {
-                    let to = self.goal.as_ref().unwrap().0.clone();
-                    if let Some(path) = TripEndpoint::path_req(
-                        self.source.clone().unwrap(),
-                        to.clone(),
-                        self.panel.dropdown_value("mode"),
-                        &app.primary.map,
-                    )
-                    .and_then(|req| app.primary.map.pathfind(req))
-                    {
-                        self.goal = Some((
-                            to,
-                            path.trace(&app.primary.map, Distance::ZERO, None)
-                                .map(|pl| pl.make_polygons(NORMAL_LANE_THICKNESS)),
-                        ));
-                    } else {
-                        self.goal = None;
-                        self.confirmed = false;
-                        self.panel.replace(
-                            ctx,
-                            "instructions",
-                            "Click a building or border to specify end"
-                                .draw_text(ctx)
-                                .named("instructions"),
-                        );
-                        self.panel.replace(
-                            ctx,
-                            "Confirm",
-                            Btn::text_fg("Confirm").inactive(ctx).named("Confirm"),
-                        );
+            Outcome::Changed(x) => match x.as_ref() {
+                "change traffic" => {
+                    let scenario_name = self.panel.dropdown_value("change traffic");
+                    return replace_traffic(scenario_name, ctx, app)
+                }
+                _ => {
+                    // We need to recalculate the path to see if this is sane. Otherwise we could
+                    // trick a pedestrian into wandering on/off a highway
+                    // border.
+                    if self.goal.is_some() {
+                        let to = self.goal.as_ref().unwrap().0.clone();
+                        if let Some(path) = TripEndpoint::path_req(
+                            self.source.clone().unwrap(),
+                            to.clone(),
+                            self.panel.dropdown_value("mode"),
+                            &app.primary.map,
+                        )
+                        .and_then(|req| app.primary.map.pathfind(req))
+                        {
+                            self.goal = Some((
+                                to,
+                                path.trace(&app.primary.map, Distance::ZERO, None)
+                                    .map(|pl| pl.make_polygons(NORMAL_LANE_THICKNESS)),
+                            ));
+                        } else {
+                            self.goal = None;
+                            self.confirmed = false;
+                            self.panel.replace(
+                                ctx,
+                                "instructions",
+                                "Click a building or border to specify end"
+                                    .draw_text(ctx)
+                                    .named("instructions"),
+                            );
+                            self.panel.replace(
+                                ctx,
+                                "Confirm",
+                                Btn::text_fg("Confirm").inactive(ctx).named("Confirm"),
+                            );
+                        }
                     }
                 }
-            }
+            },
             _ => {}
         }
 

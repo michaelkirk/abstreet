@@ -3,7 +3,7 @@ use crate::common::CityPicker;
 use crate::edit::EditMode;
 use crate::game::{ChooseSomething, PopupMsg, State, Transition};
 use crate::helpers::{checkbox_per_mode, nice_map_name};
-use crate::sandbox::gameplay::freeform::make_change_traffic;
+use crate::sandbox::gameplay::freeform::{replace_traffic, traffic_choices};
 use crate::sandbox::gameplay::{GameplayMode, GameplayState};
 use crate::sandbox::{Actions, SandboxControls, SandboxMode};
 use maplit::btreeset;
@@ -73,12 +73,6 @@ impl GameplayState for PlayScenario {
                         }),
                     )))
                 }
-                "change traffic" => Some(Transition::Push(make_change_traffic(
-                    ctx,
-                    app,
-                    self.top_center.rect_of("change traffic").clone(),
-                    self.scenario_name.clone(),
-                ))),
                 "edit map" => Some(Transition::Push(EditMode::new(
                     ctx,
                     app,
@@ -94,6 +88,13 @@ impl GameplayState for PlayScenario {
                     self.modifiers.clone(),
                 ))),
                 _ => unreachable!(),
+            },
+            Outcome::Changed(x) => match x.as_ref() {
+                "change traffic" => {
+                    let scenario_name = self.top_center.dropdown_value("change traffic");
+                    Some(replace_traffic(scenario_name, ctx, app))
+                }
+                _ => None,
             },
             _ => None,
         }
@@ -125,7 +126,12 @@ fn make_top_center(
                 lctrl(Key::L),
             ),
             "Traffic:".draw_text(ctx),
-            Btn::pop_up(ctx, Some(scenario_name)).build(ctx, "change traffic", Key::S),
+            Widget::dropdown(
+                ctx,
+                "change traffic",
+                scenario_name.to_string(),
+                traffic_choices(app),
+            ),
             Btn::svg_def("system/assets/tools/edit_map.svg").build(ctx, "edit map", lctrl(Key::E)),
         ])
         .centered(),
