@@ -1,7 +1,7 @@
 use abstutil::{prettyprint_usize, MapName, Timer};
 use geom::{Duration, Time};
 use map_model::Map;
-use sim::{AlertHandler, Scenario, Sim, SimFlags, SimOptions};
+use sim::{AlertHandler, Scenario, ScenarioGenerator, Sim, SimFlags, SimOptions};
 
 use crate::sandbox::TutorialState;
 
@@ -9,6 +9,7 @@ use crate::sandbox::TutorialState;
 /// results," to later compare simulation metrics against the baseline without map edits.
 pub fn prebake_all() {
     let mut timer = Timer::new("prebake all challenge results");
+    let mut rng = SimFlags::for_test("prebaked").make_rng();
 
     {
         let map = map_model::Map::new(MapName::seattle("montlake").path(), &mut timer);
@@ -35,6 +36,23 @@ pub fn prebake_all() {
             &mut timer,
         );
         prebake(&map, scenario, None, &mut timer);
+    }
+
+    // These scenarios deadlock, but let's measure what we can and make sure it doesn't get worse.
+    // The time limit is set to get approx 5 min of run time
+    for name in vec![MapName::seattle("south_seattle")] {
+        let map = map_model::Map::new(name.path(), &mut timer);
+        let scenario: Scenario = abstutil::read_binary(
+            abstutil::path_scenario(map.get_name(), "weekday"),
+            &mut timer,
+        );
+        prebake(&map, scenario, Some(Duration::hours(8)), &mut timer);
+    }
+
+    for name in vec![MapName::new("krakow", "center")] {
+        let map = map_model::Map::new(name.path(), &mut timer);
+        let scenario = ScenarioGenerator::proletariat_robot(&map, &mut rng, &mut timer);
+        prebake(&map, scenario, Some(Duration::hours(9)), &mut timer);
     }
 }
 
@@ -75,7 +93,7 @@ fn prebake(map: &Map, scenario: Scenario, time_limit: Option<Duration>, timer: &
     ));
 
     if agents_left > 500 {
-        panic!(
+        error!(
             "{} agents left by end of day on {}; gridlock may be likely",
             prettyprint_usize(agents_left),
             scenario.map_name.describe()
