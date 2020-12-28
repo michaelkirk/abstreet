@@ -35,8 +35,7 @@ impl CensusArea {
         timer.start("opening FGB reader");
         // See the import handbook for how to prepare this file.
         let mut fgb =
-            HttpFgbReader::open("https://s3.amazonaws.com/mjk_asdf/abs/population_areas.fgb")
-                .await?;
+            HttpFgbReader::open("https://abstreet.s3.amazonaws.com/population_areas.fgb").await?;
         timer.stop("opening FGB reader");
 
         timer.start("selecting bounding box");
