@@ -1579,7 +1579,7 @@ dependencies = [
  "http",
  "indexmap",
  "slab",
- "tokio",
+ "tokio 0.2.24",
  "tokio-util",
  "tracing",
  "tracing-futures",
@@ -1619,7 +1619,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sim",
- "tokio",
+ "tokio 0.2.24",
  "url 2.2.0",
 ]
 
@@ -1713,7 +1713,7 @@ dependencies = [
  "itoa",
  "pin-project 1.0.2",
  "socket2",
- "tokio",
+ "tokio 0.2.24",
  "tower-service",
  "tracing",
  "want",
@@ -1730,7 +1730,7 @@ dependencies = [
  "hyper",
  "log",
  "rustls 0.18.1",
- "tokio",
+ "tokio 0.2.24",
  "tokio-rustls",
  "webpki",
 ]
@@ -1744,7 +1744,7 @@ dependencies = [
  "bytes",
  "hyper",
  "native-tls",
- "tokio",
+ "tokio 0.2.24",
  "tokio-tls",
 ]
 
@@ -2912,7 +2912,7 @@ dependencies = [
  "rand_xorshift",
  "serde_json",
  "sim",
- "tokio",
+ "tokio 1.0.1",
 ]
 
 [[package]]
@@ -3133,7 +3133,7 @@ dependencies = [
  "rustls 0.18.1",
  "serde",
  "serde_urlencoded",
- "tokio",
+ "tokio 0.2.24",
  "tokio-rustls",
  "tokio-tls",
  "url 2.2.0",
@@ -3809,6 +3809,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d258221f566b6c803c7b4714abadc080172b272090cdc5e244a6d4dd13c3a6bd"
+dependencies = [
+ "autocfg",
+ "num_cpus",
+ "pin-project-lite 0.2.0",
+]
+
+[[package]]
 name = "tokio-macros"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3827,7 +3838,7 @@ checksum = "e12831b255bcfa39dc0436b01e19fea231a37db570686c06ee72c423479f889a"
 dependencies = [
  "futures-core",
  "rustls 0.18.1",
- "tokio",
+ "tokio 0.2.24",
  "webpki",
 ]
 
@@ -3838,7 +3849,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a70f4fcd7b3b24fb194f837560168208f669ca8cb70d0c4b862944452396343"
 dependencies = [
  "native-tls",
- "tokio",
+ "tokio 0.2.24",
 ]
 
 [[package]]
@@ -3852,7 +3863,7 @@ dependencies = [
  "futures-sink",
  "log",
  "pin-project-lite 0.1.11",
- "tokio",
+ "tokio 0.2.24",
 ]
 
 [[package]]
@@ -4036,7 +4047,7 @@ dependencies = [
  "geom",
  "md5",
  "reqwest",
- "tokio",
+ "tokio 0.2.24",
  "walkdir",
 ]
 
