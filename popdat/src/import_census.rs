@@ -9,7 +9,7 @@ impl CensusArea {
     pub fn fetch_all_for_map(map: &Map, timer: &mut Timer) -> anyhow::Result<Vec<CensusArea>> {
         timer.start("processing population areas fgb");
         let areas =
-            tokio::runtime::Runtime::new()?.block_on(Self::fetch_all_for_map_async(map, timer))?;
+            tokio::runtime::Builder::new_current_thread().build()?.block_on(Self::fetch_all_for_map_async(map, timer))?;
         timer.stop("processing population areas fgb");
         Ok(areas)
     }

@@ -2879,7 +2879,7 @@ dependencies = [
  "rand_xorshift",
  "serde_json",
  "sim",
- "tokio 0.2.24",
+ "tokio 0.3.6",
 ]
 
 [[package]]
