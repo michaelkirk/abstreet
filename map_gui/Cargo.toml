@@ -6,7 +6,7 @@ edition = "2018"
 
 [features]
 native = ["reqwest"]
-wasm = ["futures", "futures-channel", "js-sys", "wasm-bindgen", "wasm-bindgen-futures", "web-sys"]
+wasm = ["futures-channel", "js-sys", "wasm-bindgen", "wasm-bindgen-futures", "web-sys"]
 # Just a marker to not use localhost URLs
 wasm_s3 = []
 # A marker to use a named release from S3 instead of dev for updating files
@@ -19,7 +19,7 @@ anyhow = "1.0.37"
 colorous = "1.0.3"
 contour = "0.3.0"
 flate2 = "1.0.19"
-futures = { version = "0.3.8", optional = true }
+futures = { version = "0.3.8" }
 futures-channel = { version = "0.3.8", optional = true }
 geojson = "0.21.0"
 geom = { path = "../geom" }

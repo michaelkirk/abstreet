@@ -247,49 +247,56 @@ mod wasm_loader {
 
 use instant::Instant;
 use std::future::Future;
-use widgetry::{Line, Panel, Text};
+use std::pin::Pin;
+use widgetry::{Line, Panel, Text, UpdateType};
 
-pub struct FutureLoader<A, T, F>
+pub struct FutureLoader<A, T>
 where
     A: AppLike,
-    F: Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
 {
-    future: F,
+    future: Pin<Box<Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>>>,
     panel: Panel,
     started: Instant,
-    on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, &mut Timer, Result<T, String>) -> Transition<A>>,
+    on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, Result<T, String>) -> Transition<A>>,
 }
 
-impl<A, T, F> FutureLoader<A, T, F>
+impl<A, T> FutureLoader<A, T>
 where
     A: 'static + AppLike,
     T: 'static,
-    F: 'static + Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
 {
     pub fn new(
         ctx: &mut EventCtx,
-        future: F,
-        on_load: Box<
-            dyn FnOnce(&mut EventCtx, &mut A, &mut Timer, Result<T, String>) -> Transition<A>,
-        >,
+        future: Pin<Box<Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>>>,
+        loading_title: &str,
+        on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, Result<T, String>) -> Transition<A>>,
     ) -> Box<dyn State<A>> {
         Box::new(FutureLoader {
-            future,
+            future: future,
             on_load,
-            panel: ctx.make_loading_screen(Text::from(Line("Loading Population Data..."))),
+            panel: ctx.make_loading_screen(Text::from(Line(loading_title))),
             started: Instant::now(),
         })
     }
 }
-
-impl<A, T, F> State<A> for FutureLoader<A, T, F>
+impl<A, T> State<A> for FutureLoader<A, T>
 where
     A: 'static + AppLike,
     T: 'static,
-    F: 'static + Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
 {
     fn event(&mut self, ctx: &mut EventCtx, app: &mut A) -> Transition<A> {
-        // TODO poll and shit.
+        // let context = todo!();
+        // if let futures::task::Poll::Ready(result) = self.future.poll(context) {
+        //     info!("FutureLoader#event ready! Calling on_load.");
+        //     let result = result.unwrap();
+        //     let scenario = result(app);
+        //     return (self.on_load)(ctx, app, result);
+        // }
+
+        info!("FutureLoader#event not ready yet, spinning the event loop.");
+        // Until the response is received, just ask winit to regularly call event(), so we can
+        // keep polling the channel.
+        ctx.request_update(UpdateType::Game);
         Transition::Keep
     }
 

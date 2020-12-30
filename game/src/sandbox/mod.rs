@@ -679,13 +679,13 @@ impl State<App> for SandboxLoader {
                             continue;
                         }
                         gameplay::LoadScenario::Future(future) => {
-                            use futures_util::TryFutureExt;
                             use map_gui::load::FutureLoader;
-                            // let future: () = future.map_err(Box::new);
-                            return Transition::Push(FutureLoader::<App, Scenario, _>::new(
+                            return Transition::Push(FutureLoader::<App, Scenario>::new(
                                 ctx,
                                 future,
-                                Box::new(|_, _, _, scenario| {
+                                "Loading Scenario",
+                                Box::new(|_, _, scenario| {
+                                    // TODO show error/retry alert?
                                     let scenario =
                                         scenario.expect("failed to load scenario from future");
                                     Transition::Multi(vec![
