@@ -77,10 +77,14 @@ pub trait GameplayState: downcast_rs::Downcast {
 }
 downcast_rs::impl_downcast!(GameplayState);
 
+use map_model::Map;
 pub enum LoadScenario {
     Nothing,
     Path(String),
     Scenario(Scenario),
+    Future(
+        Box<dyn core::future::Future<Output = anyhow::Result<Box<dyn FnOnce(&Map) -> Scenario>>>>,
+    ),
 }
 
 impl GameplayMode {
@@ -94,7 +98,7 @@ impl GameplayMode {
         }
     }
 
-    pub fn scenario(&self, app: &App, mut rng: XorShiftRng, timer: &mut Timer) -> LoadScenario {
+    pub fn scenario(&self, app: &App, mut rng: XorShiftRng, timer: &mut Timer<'_>) -> LoadScenario {
         let map = &app.primary.map;
         let name = match self {
             GameplayMode::Freeform(_) => {
@@ -119,10 +123,15 @@ impl GameplayMode {
             LoadScenario::Scenario(ScenarioGenerator::proletariat_robot(map, &mut rng, timer))
         } else if name == "census" {
             let config = popdat::Config::default();
-            LoadScenario::Scenario(
-                popdat::generate_scenario("typical monday", config, map, &mut rng)
-                    .expect("unable to build census scenario"),
-            )
+            let map_area = map.get_boundary_polygon().clone();
+            let map_bounds = map.get_gps_bounds().clone();
+            LoadScenario::Future(Box::new(popdat::scenario_builder(
+                "typical monday",
+                config,
+                map_area,
+                map_bounds,
+                &mut rng,
+            )))
         } else {
             LoadScenario::Path(abstutil::path_scenario(map.get_name(), &name))
         }

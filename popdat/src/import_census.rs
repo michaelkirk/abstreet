@@ -1,28 +1,19 @@
 use geo::algorithm::intersects::Intersects;
 
 use abstutil::Timer;
-use map_model::Map;
+use geom::{GPSBounds, Polygon};
 
 use crate::CensusArea;
 
 impl CensusArea {
-    pub fn fetch_all_for_map(map: &Map, timer: &mut Timer) -> anyhow::Result<Vec<CensusArea>> {
-        timer.start("processing population areas fgb");
-        let areas =
-            tokio::runtime::Builder::new_current_thread().build()?.block_on(Self::fetch_all_for_map_async(map, timer))?;
-        timer.stop("processing population areas fgb");
-        Ok(areas)
-    }
-
-    async fn fetch_all_for_map_async(
-        map: &Map,
+    pub async fn fetch_all_for_map(
+        map_area: &Polygon,
+        bounds: &GPSBounds,
         timer: &mut Timer<'_>,
     ) -> anyhow::Result<Vec<CensusArea>> {
+        timer.start("processing population areas fgb");
         use flatgeobuf::HttpFgbReader;
         use geozero_core::geo_types::Geo;
-
-        let map_area = map.get_boundary_polygon();
-        let bounds = map.get_gps_bounds();
 
         use geo::algorithm::{bounding_rect::BoundingRect, map_coords::MapCoordsInplace};
         let mut geo_map_area: geo::Polygon<_> = map_area.clone().into();
@@ -106,6 +97,7 @@ impl CensusArea {
         }
         timer.stop("processing features");
 
+        timer.stop("processing population areas fgb");
         Ok(results)
     }
 }
