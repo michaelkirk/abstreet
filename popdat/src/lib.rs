@@ -100,19 +100,18 @@ impl Config {
 
 /// Wires together all the pieces, so you can just hand this any map, and it'll automatically find
 /// appropriate census data, and use it to produce a Scenario.
-pub async fn scenario_builder<'a, 'b>(
+pub async fn scenario_builder(
     scenario_name: &str,
     config: Config,
     map_area: geom::Polygon,
     map_bounds: geom::GPSBounds,
-    rng: &mut XorShiftRng,
+    rng: XorShiftRng,
 ) -> anyhow::Result<Box<dyn FnOnce(&Map) -> Scenario>> {
     let mut timer = Timer::new("generate census scenario");
     timer.start("building population areas for map");
     let areas = CensusArea::fetch_all_for_map(&map_area, &map_bounds, &mut timer).await?;
     timer.stop("building population areas for map");
     let scenario_name = scenario_name.to_string();
-    let rng = sim::fork_rng(rng);
     let builder: Box<dyn FnOnce(&Map) -> Scenario> =
         Box::new(move |map| generate_scenario(scenario_name, areas, config, map, rng, timer));
     Ok(builder)

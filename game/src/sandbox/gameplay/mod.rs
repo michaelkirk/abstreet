@@ -77,14 +77,13 @@ pub trait GameplayState: downcast_rs::Downcast {
 }
 downcast_rs::impl_downcast!(GameplayState);
 
-use map_model::Map;
+use core::future::Future;
+use core::pin::Pin;
 pub enum LoadScenario {
     Nothing,
     Path(String),
     Scenario(Scenario),
-    Future(
-        Box<dyn core::future::Future<Output = anyhow::Result<Box<dyn FnOnce(&Map) -> Scenario>>>>,
-    ),
+    Future(Pin<Box<dyn Future<Output = anyhow::Result<Box<dyn FnOnce(&App) -> Scenario>>>>>),
 }
 
 impl GameplayMode {
@@ -125,13 +124,21 @@ impl GameplayMode {
             let config = popdat::Config::default();
             let map_area = map.get_boundary_polygon().clone();
             let map_bounds = map.get_gps_bounds().clone();
-            LoadScenario::Future(Box::new(popdat::scenario_builder(
+            let scenario_builder = popdat::scenario_builder(
                 "typical monday",
                 config,
                 map_area,
                 map_bounds,
-                &mut rng,
-            )))
+                sim::fork_rng(&mut rng),
+            );
+            use futures_util::FutureExt;
+            use futures_util::TryFutureExt;
+            LoadScenario::Future(Box::pin(async move {
+                let map_builder = scenario_builder.await.expect("todo");
+                let app_builder: Box<dyn FnOnce(&App) -> Scenario> =
+                    Box::new(move |app: &App| map_builder(&app.primary.map));
+                Ok(app_builder)
+            }))
         } else {
             LoadScenario::Path(abstutil::path_scenario(map.get_name(), &name))
         }

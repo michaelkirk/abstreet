@@ -15,6 +15,7 @@ release_s3 = []
 [dependencies]
 aabb-quadtree = "0.1.0"
 abstutil = { path = "../abstutil" }
+anyhow = "1.0.37"
 colorous = "1.0.3"
 contour = "0.3.0"
 flate2 = "1.0.19"

@@ -244,3 +244,52 @@ mod wasm_loader {
         }
     }
 }
+
+use instant::Instant;
+use std::future::Future;
+use widgetry::Panel;
+
+pub struct FutureLoader<A, T, F>
+where
+    A: AppLike,
+    F: Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
+{
+    future: F,
+    panel: Panel,
+    started: Instant,
+    on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, T) -> Transition<A>>,
+}
+
+impl<A, T, F> FutureLoader<A, T, F>
+where
+    A: 'static + AppLike,
+    T: 'static,
+    F: Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
+{
+    pub fn new(
+        ctx: &mut EventCtx,
+        future: F,
+        on_load: Box<
+            dyn FnOnce(&mut EventCtx, &mut A, &mut Timer, Result<T, String>) -> Transition<A>,
+        >,
+    ) -> Box<dyn State<A>> {
+        todo!();
+    }
+}
+
+impl<A, T, F> State<A> for FutureLoader<A, T, F>
+where
+    A: 'static + AppLike,
+    T: 'static,
+    F: 'static + Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
+{
+    fn event(&mut self, ctx: &mut EventCtx, app: &mut A) -> Transition<A> {
+        Transition::Keep
+    }
+
+    fn draw(&self, g: &mut GfxCtx, _: &A) {
+        // TODO Activity or Progress indicator
+        g.clear(Color::BLACK);
+        self.panel.draw(g);
+    }
+}

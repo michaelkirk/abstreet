@@ -1232,6 +1232,7 @@ dependencies = [
  "contour",
  "downcast-rs",
  "enumset",
+ "futures-util",
  "geojson 0.21.0",
  "geom",
  "instant",
@@ -2172,6 +2173,7 @@ version = "0.1.0"
 dependencies = [
  "aabb-quadtree",
  "abstutil",
+ "anyhow",
  "colorous",
  "contour",
  "flate2",
