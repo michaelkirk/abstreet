@@ -247,7 +247,7 @@ mod wasm_loader {
 
 use instant::Instant;
 use std::future::Future;
-use widgetry::Panel;
+use widgetry::{Line, Panel, Text};
 
 pub struct FutureLoader<A, T, F>
 where
@@ -257,14 +257,14 @@ where
     future: F,
     panel: Panel,
     started: Instant,
-    on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, T) -> Transition<A>>,
+    on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, &mut Timer, Result<T, String>) -> Transition<A>>,
 }
 
 impl<A, T, F> FutureLoader<A, T, F>
 where
     A: 'static + AppLike,
     T: 'static,
-    F: Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
+    F: 'static + Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
 {
     pub fn new(
         ctx: &mut EventCtx,
@@ -273,7 +273,12 @@ where
             dyn FnOnce(&mut EventCtx, &mut A, &mut Timer, Result<T, String>) -> Transition<A>,
         >,
     ) -> Box<dyn State<A>> {
-        todo!();
+        Box::new(FutureLoader {
+            future,
+            on_load,
+            panel: ctx.make_loading_screen(Text::from(Line("Loading Population Data..."))),
+            started: Instant::now(),
+        })
     }
 }
 
@@ -284,6 +289,7 @@ where
     F: 'static + Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
 {
     fn event(&mut self, ctx: &mut EventCtx, app: &mut A) -> Transition<A> {
+        // TODO poll and shit.
         Transition::Keep
     }
 

@@ -121,23 +121,19 @@ impl GameplayMode {
         } else if name == "home_to_work" {
             LoadScenario::Scenario(ScenarioGenerator::proletariat_robot(map, &mut rng, timer))
         } else if name == "census" {
-            let config = popdat::Config::default();
-            let map_area = map.get_boundary_polygon().clone();
-            let map_bounds = map.get_gps_bounds().clone();
             let scenario_builder = popdat::scenario_builder(
                 "typical monday",
-                config,
-                map_area,
-                map_bounds,
+                popdat::Config::default(),
+                map.get_boundary_polygon().clone(),
+                map.get_gps_bounds().clone(),
                 sim::fork_rng(&mut rng),
             );
-            use futures_util::FutureExt;
-            use futures_util::TryFutureExt;
+
             LoadScenario::Future(Box::pin(async move {
-                let map_builder = scenario_builder.await.expect("todo");
-                let app_builder: Box<dyn FnOnce(&App) -> Scenario> =
-                    Box::new(move |app: &App| map_builder(&app.primary.map));
-                Ok(app_builder)
+                let scenario_from_map = scenario_builder.await?;
+                let scenario_from_app: Box<dyn FnOnce(&App) -> Scenario> =
+                    Box::new(move |app: &App| scenario_from_map(&app.primary.map));
+                Ok(scenario_from_app)
             }))
         } else {
             LoadScenario::Path(abstutil::path_scenario(map.get_name(), &name))
