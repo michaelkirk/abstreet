@@ -9,9 +9,10 @@ impl CensusArea {
     pub async fn fetch_all_for_map(
         map_area: &Polygon,
         bounds: &GPSBounds,
-        timer: &mut Timer<'_>,
+        // timer: &mut Timer<'_>,
     ) -> anyhow::Result<Vec<CensusArea>> {
-        timer.start("processing population areas fgb");
+        // let mut timer = Timer::new("fetch_all_for_map");
+        // timer.start("processing population areas fgb");
         use flatgeobuf::HttpFgbReader;
         use geozero_core::geo_types::Geo;
 
@@ -22,14 +23,14 @@ impl CensusArea {
             (projected.x(), projected.y())
         });
 
-        timer.start("opening FGB reader");
+        // timer.start("opening FGB reader");
         // See the import handbook for how to prepare this file.
         let mut fgb =
-            HttpFgbReader::open("https://s3.amazonaws.com/mjk_asdf/abs/population_areas.fgb")
-                .await?;
-        timer.stop("opening FGB reader");
+            HttpFgbReader::open("https://abstreet.s3.amazonaws.com/population_areas.fgb").await?;
+        // HttpFgbReader::open("https://s3.amazonaws.com/mjk_asdf/abs/population_areas.fgb").await?;
+        // timer.stop("opening FGB reader");
 
-        timer.start("selecting bounding box");
+        // timer.start("selecting bounding box");
         let bounding_rect = geo_map_area
             .bounding_rect()
             .ok_or(anyhow!("missing bound rect"))?;
@@ -40,9 +41,9 @@ impl CensusArea {
             bounding_rect.max().y,
         )
         .await?;
-        timer.stop("selecting bounding box");
+        // timer.stop("selecting bounding box");
 
-        timer.start("processing features");
+        // timer.start("processing features");
         let mut results = vec![];
         while let Some(feature) = fgb.next().await? {
             // PERF TODO: how to parse into usize directly? And avoid parsing entire props dict?
@@ -96,9 +97,9 @@ impl CensusArea {
                 continue;
             }
         }
-        timer.stop("processing features");
+        // timer.stop("processing features");
 
-        timer.stop("processing population areas fgb");
+        // timer.stop("processing population areas fgb");
         Ok(results)
     }
 }

@@ -83,7 +83,14 @@ pub enum LoadScenario {
     Nothing,
     Path(String),
     Scenario(Scenario),
-    Future(Pin<Box<dyn Future<Output = anyhow::Result<Box<dyn FnOnce(&App) -> Scenario>>>>>),
+    Future(
+        Pin<
+            Box<
+                dyn Send
+                    + Future<Output = anyhow::Result<Box<dyn Send + FnOnce(&App) -> Scenario>>>,
+            >,
+        >,
+    ),
 }
 
 impl GameplayMode {
@@ -131,7 +138,7 @@ impl GameplayMode {
 
             LoadScenario::Future(Box::pin(async move {
                 let scenario_from_map = scenario_builder.await?;
-                let scenario_from_app: Box<dyn FnOnce(&App) -> Scenario> =
+                let scenario_from_app: Box<dyn Send + FnOnce(&App) -> Scenario> =
                     Box::new(move |app: &App| scenario_from_map(&app.primary.map));
                 Ok(scenario_from_app)
             }))

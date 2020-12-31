@@ -255,7 +255,7 @@ pub struct FutureLoader<A, T>
 where
     A: AppLike,
 {
-    receiver: oneshot::Receiver<anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
+    receiver: oneshot::Receiver<anyhow::Result<Box<dyn Send + FnOnce(&A) -> T>>>,
     panel: Panel,
     started: Instant,
     on_load: Option<Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>>,
@@ -268,7 +268,9 @@ where
 {
     pub fn new(
         ctx: &mut EventCtx,
-        future: Pin<Box<dyn Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>>>,
+        future: Pin<
+            Box<dyn Send + Future<Output = anyhow::Result<Box<dyn Send + FnOnce(&A) -> T>>>>,
+        >,
         loading_title: &str,
         on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>,
     ) -> Box<dyn State<A>> {
@@ -295,15 +297,16 @@ where
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn spawn_future<F, T: Sized>(future: F) -> futures_channel::oneshot::Receiver<T>
+fn spawn_future<F, T>(future: F) -> futures_channel::oneshot::Receiver<T>
 where
-    F: Future<Output = T>,
+    F: 'static + Future<Output = T> + Send,
+    T: 'static + Sized + Send,
 {
     use tokio::runtime::Runtime;
 
     let (tx, rx) = oneshot::channel();
     let mut rt = Runtime::new().unwrap();
-    rt.block_on(async move {
+    rt.spawn(async move {
         tx.send(future.await);
     });
     rx
