@@ -83,7 +83,19 @@ pub enum LoadScenario {
     Nothing,
     Path(String),
     Scenario(Scenario),
+    // wasm futures are not `Send`, since they all ultimately run on the browsers single threaded
+    // runloop
+    #[cfg(target_arch = "wasm32")]
     Future(Pin<Box<dyn Future<Output = anyhow::Result<Box<dyn Send + FnOnce(&App) -> Scenario>>>>>),
+    #[cfg(not(target_arch = "wasm32"))]
+    Future(
+        Pin<
+            Box<
+                dyn Send
+                    + Future<Output = anyhow::Result<Box<dyn Send + FnOnce(&App) -> Scenario>>>,
+            >,
+        >,
+    ),
 }
 
 impl GameplayMode {
