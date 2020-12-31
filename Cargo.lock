@@ -1232,7 +1232,6 @@ dependencies = [
  "contour",
  "downcast-rs",
  "enumset",
- "futures-util",
  "geojson 0.21.0",
  "geom",
  "instant",
@@ -2884,7 +2883,6 @@ dependencies = [
  "rand_xorshift",
  "serde_json",
  "sim",
- "tokio 0.3.6",
 ]
 
 [[package]]
