@@ -107,10 +107,8 @@ pub async fn scenario_builder(
     map_bounds: geom::GPSBounds,
     rng: XorShiftRng,
 ) -> anyhow::Result<Box<dyn Send + FnOnce(&Map) -> Scenario>> {
-    // let mut timer = Timer::new("generate census scenario");
-    // timer.start("building population areas for map");
     let areas = CensusArea::fetch_all_for_map(&map_area, &map_bounds).await?;
-    // timer.stop("building population areas for map");
+
     let scenario_name = scenario_name.to_string();
     let builder: Box<dyn Send + FnOnce(&Map) -> Scenario> =
         Box::new(move |map| generate_scenario(scenario_name, areas, config, map, rng));
@@ -123,9 +121,9 @@ pub fn generate_scenario(
     config: Config,
     map: &Map,
     mut rng: XorShiftRng,
-    // mut timer: Timer,
 ) -> Scenario {
-    let mut timer = Timer::new("generate_scenario");
+    let mut timer = Timer::new("building scenario");
+
     // find_data_for_map may return an error. If so, just plumb it back to the caller using the ?
     // operator
     timer.start("assigning people to houses");

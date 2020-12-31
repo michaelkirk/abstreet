@@ -1,6 +1,5 @@
 use geo::algorithm::intersects::Intersects;
 
-use abstutil::Timer;
 use geom::{GPSBounds, Polygon};
 
 use crate::CensusArea;

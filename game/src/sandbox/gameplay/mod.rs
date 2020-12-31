@@ -83,7 +83,7 @@ pub enum LoadScenario {
     Nothing,
     Path(String),
     Scenario(Scenario),
-    // wasm futures are not `Send`, since they all ultimately run on the browsers single threaded
+    // wasm futures are not `Send`, since they all ultimately run on the browser's single threaded
     // runloop
     #[cfg(target_arch = "wasm32")]
     Future(Pin<Box<dyn Future<Output = anyhow::Result<Box<dyn Send + FnOnce(&App) -> Scenario>>>>>),
@@ -109,7 +109,7 @@ impl GameplayMode {
         }
     }
 
-    pub fn scenario(&self, app: &App, mut rng: XorShiftRng, timer: &mut Timer<'_>) -> LoadScenario {
+    pub fn scenario(&self, app: &App, mut rng: XorShiftRng, timer: &mut Timer) -> LoadScenario {
         let map = &app.primary.map;
         let name = match self {
             GameplayMode::Freeform(_) => {

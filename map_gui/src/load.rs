@@ -264,7 +264,12 @@ where
     panel: Panel,
     receiver: oneshot::Receiver<anyhow::Result<Box<dyn Send + FnOnce(&A) -> T>>>,
     on_load: Option<Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>>,
+
+    // If Runtime is dropped, any active tasks will be canceled, so we retain it here even
+    // though we never access it. It might make more sense for Runtime to live on App if we're
+    // going to be doing more background spawning.
     #[cfg(not(target_arch = "wasm32"))]
+    #[allow(dead_code)]
     runtime: Runtime,
 }
 
@@ -302,10 +307,10 @@ where
         loading_title: &str,
         on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>,
     ) -> Box<dyn State<A>> {
-        let mut runtime = Runtime::new().unwrap();
+        let runtime = Runtime::new().unwrap();
         let (tx, receiver) = oneshot::channel();
         runtime.spawn(async move {
-            tx.send(future.await);
+            tx.send(future.await).ok().unwrap();
         });
 
         Box::new(FutureLoader {
@@ -328,8 +333,8 @@ where
         match self.receiver.try_recv() {
             Err(e) => {
                 error!("channel failed: {:?}", e);
-                let func = self.on_load.take().unwrap();
-                return func(ctx, app, Err(anyhow::anyhow!("channel canceled")));
+                let on_load = self.on_load.take().unwrap();
+                return on_load(ctx, app, Err(anyhow::anyhow!("channel canceled")));
             }
             Ok(None) => {
                 self.panel = ctx.make_loading_screen(Text::from_multiline(vec![
@@ -347,14 +352,14 @@ where
             }
             Ok(Some(Err(e))) => {
                 error!("error in fetching data");
-                let func = self.on_load.take().unwrap();
-                return func(ctx, app, Err(e));
+                let on_load = self.on_load.take().unwrap();
+                return on_load(ctx, app, Err(e));
             }
             Ok(Some(Ok(builder))) => {
                 debug!("future complete");
                 let t = builder(app);
-                let func = self.on_load.take().unwrap();
-                return func(ctx, app, Ok(t));
+                let on_load = self.on_load.take().unwrap();
+                return on_load(ctx, app, Ok(t));
             }
         }
     }
