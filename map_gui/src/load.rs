@@ -246,6 +246,7 @@ mod wasm_loader {
 }
 
 use futures_channel::oneshot;
+use geom::Duration;
 use instant::Instant;
 use std::future::Future;
 use std::pin::Pin;
@@ -258,12 +259,13 @@ pub struct FutureLoader<A, T>
 where
     A: AppLike,
 {
+    loading_title: String,
+    started: Instant,
+    panel: Panel,
+    receiver: oneshot::Receiver<anyhow::Result<Box<dyn Send + FnOnce(&A) -> T>>>,
+    on_load: Option<Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>>,
     #[cfg(not(target_arch = "wasm32"))]
     runtime: Runtime,
-    receiver: oneshot::Receiver<anyhow::Result<Box<dyn Send + FnOnce(&A) -> T>>>,
-    panel: Panel,
-    started: Instant,
-    on_load: Option<Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>>,
 }
 
 impl<A, T> FutureLoader<A, T>
@@ -283,10 +285,11 @@ where
             tx.send(future.await);
         });
         Box::new(FutureLoader {
+            loading_title: loading_title.to_string(),
+            started: Instant::now(),
+            panel: ctx.make_loading_screen(Text::from(Line(loading_title))),
             receiver,
             on_load: Some(on_load),
-            panel: ctx.make_loading_screen(Text::from(Line(loading_title))),
-            started: Instant::now(),
         })
     }
 
@@ -306,11 +309,12 @@ where
         });
 
         Box::new(FutureLoader {
-            runtime,
+            loading_title: loading_title.to_string(),
+            started: Instant::now(),
+            panel: ctx.make_loading_screen(Text::from(Line(loading_title))),
             receiver,
             on_load: Some(on_load),
-            panel: ctx.make_loading_screen(Text::from(Line(loading_title))),
-            started: Instant::now(),
+            runtime,
         })
     }
 }
@@ -328,7 +332,14 @@ where
                 return func(ctx, app, Err(anyhow::anyhow!("channel canceled")));
             }
             Ok(None) => {
-                info!("FutureLoader#event not ready yet, spinning the event loop.");
+                self.panel = ctx.make_loading_screen(Text::from_multiline(vec![
+                    Line(&self.loading_title),
+                    Line(format!(
+                        "Time spent: {}",
+                        Duration::realtime_elapsed(self.started)
+                    )),
+                ]));
+
                 // Until the response is received, just ask winit to regularly call event(), so we
                 // can keep polling the channel.
                 ctx.request_update(UpdateType::Game);
