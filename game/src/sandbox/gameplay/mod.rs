@@ -133,18 +133,25 @@ impl GameplayMode {
         } else if name == "home_to_work" {
             LoadScenario::Scenario(ScenarioGenerator::proletariat_robot(map, &mut rng, timer))
         } else if name == "census" {
-            let scenario_builder = popdat::scenario_builder(
-                "typical monday",
-                popdat::Config::default(),
-                map.get_boundary_polygon().clone(),
-                map.get_gps_bounds().clone(),
-                sim::fork_rng(&mut rng),
-            );
+            let map_area = map.get_boundary_polygon().clone();
+            let map_bounds = map.get_gps_bounds().clone();
+            let rng = sim::fork_rng(&mut rng);
 
             LoadScenario::Future(Box::pin(async move {
-                let scenario_from_map = scenario_builder.await?;
+                let areas = popdat::CensusArea::fetch_all_for_map(&map_area, &map_bounds).await?;
+
                 let scenario_from_app: Box<dyn Send + FnOnce(&App) -> Scenario> =
-                    Box::new(move |app: &App| scenario_from_map(&app.primary.map));
+                    Box::new(move |app: &App| {
+                        let config = popdat::Config::default();
+                        popdat::generate_scenario(
+                            "typical monday",
+                            areas,
+                            config,
+                            &app.primary.map,
+                            rng,
+                        )
+                    });
+
                 Ok(scenario_from_app)
             }))
         } else {

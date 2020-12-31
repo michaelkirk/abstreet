@@ -100,23 +100,8 @@ impl Config {
 
 /// Wires together all the pieces, so you can just hand this any map, and it'll automatically find
 /// appropriate census data, and use it to produce a Scenario.
-pub async fn scenario_builder(
-    scenario_name: &str,
-    config: Config,
-    map_area: geom::Polygon,
-    map_bounds: geom::GPSBounds,
-    rng: XorShiftRng,
-) -> anyhow::Result<Box<dyn Send + FnOnce(&Map) -> Scenario>> {
-    let areas = CensusArea::fetch_all_for_map(&map_area, &map_bounds).await?;
-
-    let scenario_name = scenario_name.to_string();
-    let builder: Box<dyn Send + FnOnce(&Map) -> Scenario> =
-        Box::new(move |map| generate_scenario(scenario_name, areas, config, map, rng));
-    Ok(builder)
-}
-
 pub fn generate_scenario(
-    scenario_name: String,
+    scenario_name: &str,
     areas: Vec<CensusArea>,
     config: Config,
     map: &Map,
