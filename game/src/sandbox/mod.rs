@@ -682,7 +682,7 @@ impl State<App> for SandboxLoader {
                             use map_gui::load::FutureLoader;
                             return Transition::Push(FutureLoader::<App, Scenario>::new(
                                 ctx,
-                                future,
+                                Box::pin(future),
                                 "Loading Scenario",
                                 Box::new(|_, _, scenario| {
                                     // TODO show error/retry alert?

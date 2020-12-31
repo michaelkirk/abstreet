@@ -245,6 +245,7 @@ mod wasm_loader {
     }
 }
 
+use futures_channel::oneshot;
 use instant::Instant;
 use std::future::Future;
 use std::pin::Pin;
@@ -254,10 +255,10 @@ pub struct FutureLoader<A, T>
 where
     A: AppLike,
 {
-    future: Pin<Box<Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>>>,
+    receiver: oneshot::Receiver<anyhow::Result<Box<dyn FnOnce(&A) -> T>>>,
     panel: Panel,
     started: Instant,
-    on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, Result<T, String>) -> Transition<A>>,
+    on_load: Option<Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>>,
 }
 
 impl<A, T> FutureLoader<A, T>
@@ -267,37 +268,75 @@ where
 {
     pub fn new(
         ctx: &mut EventCtx,
-        future: Pin<Box<Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>>>,
+        future: Pin<Box<dyn Future<Output = anyhow::Result<Box<dyn FnOnce(&A) -> T>>>>>,
         loading_title: &str,
-        on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, Result<T, String>) -> Transition<A>>,
+        on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>,
     ) -> Box<dyn State<A>> {
         Box::new(FutureLoader {
-            future: future,
-            on_load,
+            receiver: spawn_future(future),
+            on_load: Some(on_load),
             panel: ctx.make_loading_screen(Text::from(Line(loading_title))),
             started: Instant::now(),
         })
     }
 }
+
+#[cfg(target_arch = "wasm32")]
+fn spawn_future<T>(future: impl Future) -> futures_channel::oneshot::Receiver<T> {
+    let (tx, rx) = oneshot::channel();
+    wasm_bindgen_futures::spawn_local(async move {
+        let builder = future.await?;
+        tx.send(builder);
+    });
+    rx
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn spawn_future<F, T: Sized>(future: F) -> futures_channel::oneshot::Receiver<T>
+where
+    F: Future<Output = T>,
+{
+    use tokio::runtime::Runtime;
+
+    let (tx, rx) = oneshot::channel();
+    let mut rt = Runtime::new().unwrap();
+    rt.block_on(async move {
+        tx.send(future.await);
+    });
+    rx
+}
+
 impl<A, T> State<A> for FutureLoader<A, T>
 where
     A: 'static + AppLike,
     T: 'static,
 {
     fn event(&mut self, ctx: &mut EventCtx, app: &mut A) -> Transition<A> {
-        // let context = todo!();
-        // if let futures::task::Poll::Ready(result) = self.future.poll(context) {
-        //     info!("FutureLoader#event ready! Calling on_load.");
-        //     let result = result.unwrap();
-        //     let scenario = result(app);
-        //     return (self.on_load)(ctx, app, result);
-        // }
-
-        info!("FutureLoader#event not ready yet, spinning the event loop.");
-        // Until the response is received, just ask winit to regularly call event(), so we can
-        // keep polling the channel.
-        ctx.request_update(UpdateType::Game);
-        Transition::Keep
+        match self.receiver.try_recv() {
+            Err(e) => {
+                error!("channel failed");
+                let func = self.on_load.take().unwrap();
+                return func(ctx, app, Err(anyhow::anyhow!("channel canceled")));
+            }
+            Ok(None) => {
+                info!("FutureLoader#event not ready yet, spinning the event loop.");
+                // Until the response is received, just ask winit to regularly call event(), so we
+                // can keep polling the channel.
+                ctx.request_update(UpdateType::Game);
+                return Transition::Keep;
+            }
+            Ok(Some(Err(e))) => {
+                error!("error in fetching data");
+                let func = self.on_load.take().unwrap();
+                return func(ctx, app, Err(e));
+            }
+            Ok(Some(Ok(builder))) => {
+                debug!("future complete");
+                let t = builder(app);
+                let func = self.on_load.take().unwrap();
+                return func(ctx, app, Ok(t));
+            }
+        }
     }
 
     fn draw(&self, g: &mut GfxCtx, _: &A) {
