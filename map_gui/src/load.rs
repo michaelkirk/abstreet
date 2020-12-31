@@ -287,7 +287,7 @@ where
     ) -> Box<dyn State<A>> {
         let (tx, receiver) = oneshot::channel();
         wasm_bindgen_futures::spawn_local(async move {
-            tx.send(future.await);
+            tx.send(future.await).ok().unwrap();
         });
         Box::new(FutureLoader {
             loading_title: loading_title.to_string(),
@@ -365,7 +365,6 @@ where
     }
 
     fn draw(&self, g: &mut GfxCtx, _: &A) {
-        // TODO Activity or Progress indicator
         g.clear(Color::BLACK);
         self.panel.draw(g);
     }
