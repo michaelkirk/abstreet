@@ -1,3 +1,6 @@
+use core::future::Future;
+use core::pin::Pin;
+
 use rand_xorshift::XorShiftRng;
 
 use abstutil::{MapName, Timer};
@@ -77,8 +80,6 @@ pub trait GameplayState: downcast_rs::Downcast {
 }
 downcast_rs::impl_downcast!(GameplayState);
 
-use core::future::Future;
-use core::pin::Pin;
 pub enum LoadScenario {
     Nothing,
     Path(String),

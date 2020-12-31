@@ -1,10 +1,18 @@
 //! Loading large resources (like maps, scenarios, and prebaked data) requires different strategies
 //! on native and web. Both cases are wrapped up as a State that runs a callback when done.
 
+use std::future::Future;
+use std::pin::Pin;
+
+use futures_channel::oneshot;
+use instant::Instant;
 use serde::de::DeserializeOwned;
+#[cfg(not(target_arch = "wasm32"))]
+use tokio::runtime::Runtime;
 
 use abstutil::{MapName, Timer};
-use widgetry::{Color, EventCtx, GfxCtx, State, Transition};
+use geom::Duration;
+use widgetry::{Color, EventCtx, GfxCtx, Line, Panel, State, Text, Transition, UpdateType};
 
 use crate::tools::PopupMsg;
 use crate::AppLike;
@@ -244,16 +252,6 @@ mod wasm_loader {
         }
     }
 }
-
-use futures_channel::oneshot;
-use geom::Duration;
-use instant::Instant;
-use std::future::Future;
-use std::pin::Pin;
-use widgetry::{Line, Panel, Text, UpdateType};
-
-#[cfg(not(target_arch = "wasm32"))]
-use tokio::runtime::Runtime;
 
 pub struct FutureLoader<A, T>
 where
