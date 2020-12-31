@@ -282,11 +282,14 @@ where
 }
 
 #[cfg(target_arch = "wasm32")]
-fn spawn_future<T>(future: impl Future) -> futures_channel::oneshot::Receiver<T> {
+fn spawn_future<F, T: Sized>(future: F) -> futures_channel::oneshot::Receiver<T>
+where
+    F: 'static + Future<Output = T>,
+    T: 'static,
+{
     let (tx, rx) = oneshot::channel();
     wasm_bindgen_futures::spawn_local(async move {
-        let builder = future.await?;
-        tx.send(builder);
+        tx.send(future.await);
     });
     rx
 }
