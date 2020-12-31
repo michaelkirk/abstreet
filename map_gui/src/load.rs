@@ -298,7 +298,7 @@ where
     ) -> Box<dyn State<A>> {
         let mut runtime = Runtime::new().unwrap();
         let (tx, receiver) = oneshot::channel();
-        runtime::spawn(async move {
+        runtime.spawn(async move {
             tx.send(future.await);
         });
 
