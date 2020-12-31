@@ -105,20 +105,20 @@ pub fn generate_scenario(
     areas: Vec<CensusArea>,
     config: Config,
     map: &Map,
-    mut rng: XorShiftRng,
+    rng: &mut XorShiftRng,
 ) -> Scenario {
     let mut timer = Timer::new("building scenario");
 
     // find_data_for_map may return an error. If so, just plumb it back to the caller using the ?
     // operator
     timer.start("assigning people to houses");
-    let people = distribute_people::assign_people_to_houses(areas, map, &mut rng, &config);
+    let people = distribute_people::assign_people_to_houses(areas, map, rng, &config);
     timer.stop("assigning people to houses");
 
-    let mut scenario = Scenario::empty(map, &scenario_name);
+    let mut scenario = Scenario::empty(map, scenario_name);
     timer.start("building people");
     scenario.people.extend(make_person::make_people(
-        people, map, &mut timer, &mut rng, &config,
+        people, map, &mut timer, rng, &config,
     ));
     timer.stop("building people");
 

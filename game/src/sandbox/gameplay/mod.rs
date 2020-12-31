@@ -135,7 +135,7 @@ impl GameplayMode {
         } else if name == "census" {
             let map_area = map.get_boundary_polygon().clone();
             let map_bounds = map.get_gps_bounds().clone();
-            let rng = sim::fork_rng(&mut rng);
+            let mut rng = sim::fork_rng(&mut rng);
 
             LoadScenario::Future(Box::pin(async move {
                 let areas = popdat::CensusArea::fetch_all_for_map(&map_area, &map_bounds).await?;
@@ -148,7 +148,7 @@ impl GameplayMode {
                             areas,
                             config,
                             &app.primary.map,
-                            rng,
+                            &mut rng,
                         )
                     });
 
