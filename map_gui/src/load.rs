@@ -250,11 +250,13 @@ use instant::Instant;
 use std::future::Future;
 use std::pin::Pin;
 use widgetry::{Line, Panel, Text, UpdateType};
+use tokio::runtime::Runtime;
 
 pub struct FutureLoader<A, T>
 where
     A: AppLike,
 {
+    runtime: Runtime,
     receiver: oneshot::Receiver<anyhow::Result<Box<dyn Send + FnOnce(&A) -> T>>>,
     panel: Panel,
     started: Instant,
@@ -274,8 +276,11 @@ where
         loading_title: &str,
         on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>,
     ) -> Box<dyn State<A>> {
+        let mut runtime = Runtime::new().unwrap();
+        let receiver = spawn_future(&mut runtime, future);
         Box::new(FutureLoader {
-            receiver: spawn_future(future),
+            runtime,
+            receiver,
             on_load: Some(on_load),
             panel: ctx.make_loading_screen(Text::from(Line(loading_title))),
             started: Instant::now(),
@@ -297,17 +302,14 @@ where
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn spawn_future<F, T>(future: F) -> futures_channel::oneshot::Receiver<T>
+fn spawn_future<F, T>(runtime: &mut Runtime, future: F) -> futures_channel::oneshot::Receiver<T>
 where
     F: 'static + Future<Output = T> + Send,
     T: 'static + Sized + Send,
 {
-    use tokio::runtime::Runtime;
-
     let (tx, rx) = oneshot::channel();
-    let mut rt = Runtime::new().unwrap();
-    rt.spawn(async move {
-        tx.send(future.await);
+    runtime.spawn(async move {
+        tx.send(future.await).ok().unwrap();
     });
     rx
 }
@@ -320,7 +322,7 @@ where
     fn event(&mut self, ctx: &mut EventCtx, app: &mut A) -> Transition<A> {
         match self.receiver.try_recv() {
             Err(e) => {
-                error!("channel failed");
+                error!("channel failed: {:?}", e);
                 let func = self.on_load.take().unwrap();
                 return func(ctx, app, Err(anyhow::anyhow!("channel canceled")));
             }
