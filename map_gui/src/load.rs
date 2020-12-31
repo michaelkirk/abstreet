@@ -250,12 +250,15 @@ use instant::Instant;
 use std::future::Future;
 use std::pin::Pin;
 use widgetry::{Line, Panel, Text, UpdateType};
+
+#[cfg(not(target_arch = "wasm32"))]
 use tokio::runtime::Runtime;
 
 pub struct FutureLoader<A, T>
 where
     A: AppLike,
 {
+    #[cfg(not(target_arch = "wasm32"))]
     runtime: Runtime,
     receiver: oneshot::Receiver<anyhow::Result<Box<dyn Send + FnOnce(&A) -> T>>>,
     panel: Panel,
@@ -268,6 +271,23 @@ where
     A: 'static + AppLike,
     T: 'static,
 {
+    #[cfg(target_arch = "wasm32")]
+    pub fn new(
+        ctx: &mut EventCtx,
+        future: Pin<Box<dyn Future<Output = anyhow::Result<Box<dyn Send + FnOnce(&A) -> T>>>>>,
+        loading_title: &str,
+        on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>,
+    ) -> Box<dyn State<A>> {
+        let receiver = spawn_future(future);
+        Box::new(FutureLoader {
+            receiver,
+            on_load: Some(on_load),
+            panel: ctx.make_loading_screen(Text::from(Line(loading_title))),
+            started: Instant::now(),
+        })
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn new(
         ctx: &mut EventCtx,
         future: Pin<
@@ -277,7 +297,11 @@ where
         on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>,
     ) -> Box<dyn State<A>> {
         let mut runtime = Runtime::new().unwrap();
-        let receiver = spawn_future(&mut runtime, future);
+        let (tx, receiver) = oneshot::channel();
+        runtime::spawn(async move {
+            tx.send(future.await);
+        });
+
         Box::new(FutureLoader {
             runtime,
             receiver,
@@ -297,19 +321,6 @@ where
     let (tx, rx) = oneshot::channel();
     wasm_bindgen_futures::spawn_local(async move {
         tx.send(future.await);
-    });
-    rx
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-fn spawn_future<F, T>(runtime: &mut Runtime, future: F) -> futures_channel::oneshot::Receiver<T>
-where
-    F: 'static + Future<Output = T> + Send,
-    T: 'static + Sized + Send,
-{
-    let (tx, rx) = oneshot::channel();
-    runtime.spawn(async move {
-        tx.send(future.await).ok().unwrap();
     });
     rx
 }

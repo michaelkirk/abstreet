@@ -83,14 +83,7 @@ pub enum LoadScenario {
     Nothing,
     Path(String),
     Scenario(Scenario),
-    Future(
-        Pin<
-            Box<
-                dyn Send
-                    + Future<Output = anyhow::Result<Box<dyn Send + FnOnce(&App) -> Scenario>>>,
-            >,
-        >,
-    ),
+    Future(Pin<Box<dyn Future<Output = anyhow::Result<Box<dyn Send + FnOnce(&App) -> Scenario>>>>>),
 }
 
 impl GameplayMode {
