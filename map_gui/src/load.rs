@@ -278,7 +278,10 @@ where
         loading_title: &str,
         on_load: Box<dyn FnOnce(&mut EventCtx, &mut A, anyhow::Result<T>) -> Transition<A>>,
     ) -> Box<dyn State<A>> {
-        let receiver = spawn_future(future);
+        let (tx, receiver) = oneshot::channel();
+        wasm_bindgen_futures::spawn_local(async move {
+            tx.send(future.await);
+        });
         Box::new(FutureLoader {
             receiver,
             on_load: Some(on_load),
@@ -310,19 +313,6 @@ where
             started: Instant::now(),
         })
     }
-}
-
-#[cfg(target_arch = "wasm32")]
-fn spawn_future<F, T: Sized>(future: F) -> futures_channel::oneshot::Receiver<T>
-where
-    F: 'static + Future<Output = T>,
-    T: 'static,
-{
-    let (tx, rx) = oneshot::channel();
-    wasm_bindgen_futures::spawn_local(async move {
-        tx.send(future.await);
-    });
-    rx
 }
 
 impl<A, T> State<A> for FutureLoader<A, T>
