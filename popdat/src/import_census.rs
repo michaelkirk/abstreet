@@ -11,7 +11,7 @@ impl CensusArea {
         bounds: &GPSBounds,
     ) -> Result<Vec<CensusArea>> {
         use flatgeobuf::HttpFgbReader;
-        use geozero_core::geo_types::Geo;
+        use geozero::ToGeo;
 
         use geo::algorithm::{bounding_rect::BoundingRect, map_coords::MapCoordsInplace};
         let mut geo_map_area: geo::Polygon<_> = map_area.clone().into();
@@ -45,16 +45,14 @@ impl CensusArea {
                 continue;
             }
             let population: usize = props["population"].parse()?;
-            let geometry = match feature.geometry() {
-                Some(g) => g,
-                None => {
-                    warn!("skipping feature with missing geometry");
+            let geometry = match feature.to_geo() {
+                Ok(g) => g,
+                Err(e) => {
+                    warn!("skipping invalid geometry: {}", e);
                     continue;
                 }
             };
-            let mut geo = Geo::new();
-            geometry.process(&mut geo, flatgeobuf::GeometryType::MultiPolygon)?;
-            if let geo::Geometry::MultiPolygon(multi_poly) = geo.geometry() {
+            if let geo::Geometry::MultiPolygon(multi_poly) = geometry {
                 let geo_polygon = multi_poly
                     .0
                     .first()
