@@ -38,13 +38,13 @@ impl CensusArea {
         let mut results = vec![];
         while let Some(feature) = fgb.next().await? {
             use flatgeobuf::FeatureProperties;
-            // PERF TODO: how to parse into usize directly? And avoid parsing entire props dict?
-            let props = feature.properties()?;
-            if !props.contains_key("population") {
-                warn!("skipping feature with missing population");
-                continue;
-            }
-            let population: usize = props["population"].parse()?;
+            let population: u64 = match feature.property("population") {
+                Some(pop) => pop,
+                None => {
+                    warn!("skipping feature with no population.");
+                    continue;
+                }
+            };
             let geometry = match feature.to_geo() {
                 Ok(g) => g,
                 Err(e) => {
@@ -61,7 +61,7 @@ impl CensusArea {
                     warn!(
                         "dropping {} extra polygons from census area: {:?}",
                         multi_poly.0.len() - 1,
-                        props
+                        feature.properties()
                     );
                 }
 

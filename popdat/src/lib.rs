@@ -43,7 +43,7 @@ mod make_person;
 #[derive(Debug, PartialEq)]
 pub struct CensusArea {
     pub polygon: geo::Polygon<f64>,
-    pub population: usize,
+    pub population: u64,
     // TODO Not sure what goes here, whatever census data actually has that could be useful
 }
 

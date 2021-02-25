@@ -37,7 +37,7 @@ pub fn assign_people_to_houses(
 /// in each.
 pub fn distribute_population_to_homes(
     polygon: geo::Polygon<f64>,
-    population: usize,
+    population: u64,
     map: &Map,
     rng: &mut XorShiftRng,
 ) -> Vec<(BuildingID, usize)> {
