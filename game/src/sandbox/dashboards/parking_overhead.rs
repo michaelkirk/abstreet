@@ -1,7 +1,9 @@
 use geom::Duration;
 use sim::{TripEndpoint, TripID, TripPhaseType};
 use widgetry::table::{Col, Filter, Table};
-use widgetry::{EventCtx, Filler, GfxCtx, Line, Outcome, Panel, State, Text, Toggle, Widget};
+use widgetry::{
+    CreateTextSpan, EventCtx, Filler, GfxCtx, Outcome, Panel, State, Text, Toggle, Widget,
+};
 
 use crate::app::{App, Transition};
 use crate::sandbox::dashboards::generic_trip_table::{open_trip_transition, preview_trip};
@@ -23,29 +25,31 @@ impl ParkingOverhead {
             Widget::col(vec![
                 Widget::row(vec![
                     Text::from_multiline(vec![
-                        Line(
+                        CreateTextSpan(
                             "Trips taken by car also include time to walk between the building \
                              and parking spot, as well as the time to find parking.",
                         ),
-                        Line("Overhead is 1 - driving time / total time"),
-                        Line("Ideally, overhead is 0% -- the entire trip is just spent driving."),
-                        Line(""),
-                        Line("High overhead could mean:"),
-                        Line(
+                        CreateTextSpan("Overhead is 1 - driving time / total time"),
+                        CreateTextSpan(
+                            "Ideally, overhead is 0% -- the entire trip is just spent driving.",
+                        ),
+                        CreateTextSpan(""),
+                        CreateTextSpan("High overhead could mean:"),
+                        CreateTextSpan(
                             "- the car burned more resources and caused more traffic looking for \
                              parking",
                         ),
-                        Line(
+                        CreateTextSpan(
                             "- somebody with impaired movement had to walk far to reach their \
                              vehicle",
                         ),
-                        Line("- the person was inconvenienced"),
-                        Line(""),
-                        Line(
+                        CreateTextSpan("- the person was inconvenienced"),
+                        CreateTextSpan(""),
+                        CreateTextSpan(
                             "Note: Trips beginning/ending outside the map have an artifically \
                              high overhead,",
                         ),
-                        Line("since the time spent driving off-map isn't shown here."),
+                        CreateTextSpan("since the time spent driving off-map isn't shown here."),
                     ])
                     .into_widget(ctx),
                     Filler::square_width(ctx, 0.15).named("preview"),

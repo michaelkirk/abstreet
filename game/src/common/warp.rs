@@ -5,7 +5,9 @@ use map_gui::tools::{grey_out_map, PopupMsg};
 use map_gui::ID;
 use map_model::{AreaID, BuildingID, BusRouteID, IntersectionID, LaneID, ParkingLotID, RoadID};
 use sim::{PedestrianID, PersonID, TripID};
-use widgetry::{EventCtx, GfxCtx, Key, Line, Outcome, Panel, State, Text, TextExt, Warper, Widget};
+use widgetry::{
+    CreateTextSpan, EventCtx, GfxCtx, Key, Outcome, Panel, State, Text, TextExt, Warper, Widget,
+};
 
 use crate::app::{App, PerMap, Transition};
 use crate::info::{OpenTrip, Tab};
@@ -74,7 +76,7 @@ impl DebugWarp {
         Box::new(DebugWarp {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Warp to an object by ID")
+                    CreateTextSpan("Warp to an object by ID")
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
@@ -89,32 +91,32 @@ impl DebugWarp {
                 // d
                 // isorienting...
                 Text::from_all(vec![
-                    Line("r").fg(c),
-                    Line("oad, "),
-                    Line("l").fg(c),
-                    Line("ane, "),
-                    Line("i").fg(c),
-                    Line("ntersection, "),
-                    Line("b").fg(c),
-                    Line("uilding, "),
-                    Line("p").fg(c),
-                    Line("edestrian, "),
-                    Line("c").fg(c),
-                    Line("ar, "),
-                    Line("t").fg(c),
-                    Line("rip, "),
-                    Line("P").fg(c),
-                    Line("erson, "),
-                    Line("R").fg(c),
-                    Line("oute, parking "),
-                    Line("L").fg(c),
-                    Line("ot"),
+                    CreateTextSpan("r").fg(c),
+                    CreateTextSpan("oad, "),
+                    CreateTextSpan("l").fg(c),
+                    CreateTextSpan("ane, "),
+                    CreateTextSpan("i").fg(c),
+                    CreateTextSpan("ntersection, "),
+                    CreateTextSpan("b").fg(c),
+                    CreateTextSpan("uilding, "),
+                    CreateTextSpan("p").fg(c),
+                    CreateTextSpan("edestrian, "),
+                    CreateTextSpan("c").fg(c),
+                    CreateTextSpan("ar, "),
+                    CreateTextSpan("t").fg(c),
+                    CreateTextSpan("rip, "),
+                    CreateTextSpan("P").fg(c),
+                    CreateTextSpan("erson, "),
+                    CreateTextSpan("R").fg(c),
+                    CreateTextSpan("oute, parking "),
+                    CreateTextSpan("L").fg(c),
+                    CreateTextSpan("ot"),
                 ])
                 .into_widget(ctx),
                 Text::from_all(vec![
-                    Line("Or "),
-                    Line("j").fg(c),
-                    Line("ump to the previous position"),
+                    CreateTextSpan("Or "),
+                    CreateTextSpan("j").fg(c),
+                    CreateTextSpan("ump to the previous position"),
                 ])
                 .into_widget(ctx),
                 Widget::text_entry(ctx, String::new(), true).named("input"),

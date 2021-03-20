@@ -8,8 +8,8 @@ use map_gui::tools::ColorLegend;
 use map_model::{osm, BuildingID, BuildingType, IntersectionID, LaneID, Map, RoadID, TurnType};
 use sim::{TripEndpoint, TripInfo, TripMode};
 use widgetry::{
-    Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Line, Outcome, Panel,
-    RewriteColor, Slider, State, Text, TextExt, Toggle, VerticalAlignment, Widget,
+    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key,
+    Outcome, Panel, RewriteColor, Slider, State, Text, TextExt, Toggle, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -280,7 +280,7 @@ impl CommuterPatterns {
                             .map(|(_, count)| count)
                             .unwrap_or(0);
                         let label_text = format!("{}", abstutil::prettyprint_usize(count));
-                        let label = Text::from(Line(label_text).fg(Color::BLACK))
+                        let label = Text::from(CreateTextSpan(label_text).fg(Color::BLACK))
                             .render_autocropped(ctx)
                             .scale(2.0)
                             .centered_on(compare_to_block.shape.polylabel());
@@ -681,7 +681,7 @@ fn partition_sidewalk_loops(app: &App) -> Vec<Loop> {
 fn make_panel(ctx: &mut EventCtx, app: &App) -> Panel {
     Panel::new(Widget::col(vec![
         Widget::row(vec![
-            Line("Commute map by block")
+            CreateTextSpan("Commute map by block")
                 .small_heading()
                 .into_widget(ctx),
             ctx.style().btn_close_widget(ctx),

@@ -6,8 +6,9 @@ use map_gui::tools::PopupMsg;
 use map_gui::ID;
 use map_model::{IntersectionCluster, IntersectionID, PathConstraints};
 use widgetry::{
-    Color, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Line,
-    Panel, SimpleState, State, Text, TextExt, Toggle, VerticalAlignment, Widget,
+    Color, CreateTextSpan, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx,
+    HorizontalAlignment, Key, Panel, SimpleState, State, Text, TextExt, Toggle, VerticalAlignment,
+    Widget,
 };
 
 use crate::app::{App, ShowEverything, Transition};
@@ -29,7 +30,7 @@ impl UberTurnPicker {
 
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                Line("Select multiple intersections")
+                CreateTextSpan("Select multiple intersections")
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
@@ -174,16 +175,20 @@ impl UberTurnViewer {
 
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                Line("Uber-turn viewer").small_heading().into_widget(ctx),
+                CreateTextSpan("Uber-turn viewer")
+                    .small_heading()
+                    .into_widget(ctx),
                 Widget::vert_separator(ctx, 50.0),
                 ctx.style()
                     .btn_prev()
                     .disabled(idx == 0)
                     .hotkey(Key::LeftArrow)
                     .build_widget(ctx, "previous uber-turn"),
-                Text::from(Line(format!("{}/{}", idx + 1, ic.uber_turns.len())).secondary())
-                    .into_widget(ctx)
-                    .centered_vert(),
+                Text::from(
+                    CreateTextSpan(format!("{}/{}", idx + 1, ic.uber_turns.len())).secondary(),
+                )
+                .into_widget(ctx)
+                .centered_vert(),
                 ctx.style()
                     .btn_next()
                     .disabled(ic.uber_turns.is_empty() || idx == ic.uber_turns.len() - 1)

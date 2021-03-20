@@ -11,8 +11,8 @@ use sim::{
     VehicleType,
 };
 use widgetry::{
-    Drawable, EventCtx, GeomBatch, GfxCtx, Key, Line, LinePlot, Outcome, Panel, PlotOptions,
-    Series, TextExt, Toggle, Widget,
+    CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Key, LinePlot, Outcome, Panel,
+    PlotOptions, Series, TextExt, Toggle, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -654,7 +654,7 @@ fn make_table<I: Into<String>>(ctx: &EventCtx, rows: Vec<(I, String)>) -> Vec<Wi
     rows.into_iter()
         .map(|(k, v)| {
             Widget::row(vec![
-                Line(k).secondary().into_widget(ctx),
+                CreateTextSpan(k).secondary().into_widget(ctx),
                 // TODO not quite...
                 v.text_widget(ctx).centered_vert().align_right(),
             ])
@@ -691,7 +691,7 @@ fn throughput<F: Fn(&Analytics) -> Vec<(AgentType, Vec<(Time, usize)>)>>(
     let mut plot_opts = PlotOptions::filterable();
     plot_opts.disabled = opts.disabled_series();
     Widget::col(vec![
-        Line(title).small_heading().into_widget(ctx),
+        CreateTextSpan(title).small_heading().into_widget(ctx),
         LinePlot::new(ctx, series, plot_opts),
     ])
     .padding(10)
@@ -778,8 +778,8 @@ impl DataOptions {
                 ctx,
                 "Show before changes",
                 vec![
-                    Line("Show before "),
-                    Line(&app.primary.map.get_edits().edits_name).underlined(),
+                    CreateTextSpan("Show before "),
+                    CreateTextSpan(&app.primary.map.get_edits().edits_name).underlined(),
                 ],
                 None,
                 self.show_before,

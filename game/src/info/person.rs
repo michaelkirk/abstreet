@@ -11,8 +11,8 @@ use sim::{
     TripMode, TripResult, VehicleType,
 };
 use widgetry::{
-    include_labeled_bytes, Color, ControlState, CornerRounding, EdgeInsets, EventCtx, GeomBatch,
-    Image, Key, Line, RewriteColor, Text, TextExt, TextSpan, Widget,
+    include_labeled_bytes, Color, ControlState, CornerRounding, CreateTextSpan, EdgeInsets,
+    EventCtx, GeomBatch, Image, Key, RewriteColor, Text, TextExt, TextSpan, Widget,
 };
 
 use crate::app::App;
@@ -146,7 +146,7 @@ pub fn trips(
                 .batch(),
                 // Without this bottom padding, text is much closer to bottom of pill than top -
                 // seemingly moreso than just text ascender/descender descrepancies - why?
-                Line(trip_status)
+                CreateTextSpan(trip_status)
                     .small()
                     .fg(color)
                     .batch(ctx)
@@ -165,12 +165,18 @@ pub fn trips(
             })
             .margin_right(21),
             if trip.modified {
-                Line("modified").batch(ctx).centered_vert().margin_right(15)
+                CreateTextSpan("modified")
+                    .batch(ctx)
+                    .centered_vert()
+                    .margin_right(15)
             } else {
                 Widget::nothing()
             },
             if trip.capped {
-                Line("capped").batch(ctx).centered_vert().margin_right(15)
+                CreateTextSpan("capped")
+                    .batch(ctx)
+                    .centered_vert()
+                    .margin_right(15)
             } else {
                 Widget::nothing()
             },
@@ -317,8 +323,8 @@ pub fn bio(
         };
         rows.push(
             Text::from_all(vec![
-                Line("Pandemic model state: ").secondary(),
-                Line(status),
+                CreateTextSpan("Pandemic model state: ").secondary(),
+                CreateTextSpan(status),
             ])
             .into_widget(ctx),
         );
@@ -451,7 +457,9 @@ pub fn crowd(
     let mut rows = vec![];
 
     rows.push(Widget::row(vec![
-        Line("Pedestrian crowd").small_heading().into_widget(ctx),
+        CreateTextSpan("Pedestrian crowd")
+            .small_heading()
+            .into_widget(ctx),
         header_btns(ctx),
     ]));
 
@@ -496,7 +504,7 @@ pub fn parked_car(
     let mut rows = vec![];
 
     rows.push(Widget::row(vec![
-        Line(format!("Parked car #{}", id.0))
+        CreateTextSpan(format!("Parked car #{}", id.0))
             .small_heading()
             .into_widget(ctx),
         Widget::row(vec![
@@ -614,7 +622,9 @@ fn header(
     };
 
     rows.push(Widget::custom_row(vec![
-        Line(format!("{}", id)).small_heading().into_widget(ctx),
+        CreateTextSpan(format!("{}", id))
+            .small_heading()
+            .into_widget(ctx),
         if let Some(icon) = maybe_icon {
             let batch = GeomBatch::load_svg(ctx, icon)
                 .color(RewriteColor::ChangeAll(Color::hex("#A3A3A3")))
@@ -625,7 +635,7 @@ fn header(
             Widget::nothing()
         }
         .centered_vert(),
-        Line(format!("{}", descr))
+        CreateTextSpan(format!("{}", descr))
             .small_heading()
             .fg(Color::hex("#A3A3A3"))
             .into_widget(ctx)
@@ -685,13 +695,13 @@ fn current_status(ctx: &EventCtx, person: &Person, map: &Map) -> Widget {
 // TODO Dedupe with the version in helpers
 fn cmp_duration_shorter(after: Duration, before: Duration) -> TextSpan {
     if after.epsilon_eq(before) {
-        Line("no change").small()
+        CreateTextSpan("no change").small()
     } else if after < before {
-        Line(format!("{} faster", before - after))
+        CreateTextSpan(format!("{} faster", before - after))
             .small()
             .fg(Color::GREEN)
     } else if after > before {
-        Line(format!("{} slower", after - before))
+        CreateTextSpan(format!("{} slower", after - before))
             .small()
             .fg(Color::RED)
     } else {

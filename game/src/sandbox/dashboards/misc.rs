@@ -2,8 +2,8 @@ use abstutil::{prettyprint_usize, Counter};
 use geom::Time;
 use map_model::BusRouteID;
 use widgetry::{
-    Autocomplete, EventCtx, GfxCtx, Image, Line, LinePlot, Outcome, Panel, PlotOptions, Series,
-    State, TextExt, Widget,
+    Autocomplete, CreateTextSpan, EventCtx, GfxCtx, Image, LinePlot, Outcome, Panel, PlotOptions,
+    Series, State, TextExt, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -146,7 +146,7 @@ impl TransitRoutes {
 
         let col = vec![
             DashTab::TransitRoutes.picker(ctx, app),
-            Line(format!("{} Transit routes", routes.len()))
+            CreateTextSpan(format!("{} Transit routes", routes.len()))
                 .small_heading()
                 .into_widget(ctx),
             Widget::row(vec![

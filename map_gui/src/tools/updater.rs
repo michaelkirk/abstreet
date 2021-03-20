@@ -6,7 +6,8 @@ use anyhow::Result;
 use abstio::{DataPacks, Manifest, MapName};
 use abstutil::Timer;
 use widgetry::{
-    EventCtx, GfxCtx, Key, Line, Outcome, Panel, State, TextExt, Toggle, Transition, Widget,
+    CreateTextSpan, EventCtx, GfxCtx, Key, Outcome, Panel, State, TextExt, Toggle, Transition,
+    Widget,
 };
 
 use crate::tools::{ChooseSomething, PopupMsg};
@@ -30,13 +31,13 @@ impl<A: AppLike + 'static> Picker<A> {
 
         let mut col = vec![
             Widget::row(vec![
-                Line("Download more cities")
+                CreateTextSpan("Download more cities")
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
             ]),
             "Select the cities you want to include".text_widget(ctx),
-            Line(
+            CreateTextSpan(
                 "The file sizes shown are compressed; after downloading, the files stored on disk \
                  will be larger",
             )

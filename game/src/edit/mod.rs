@@ -10,8 +10,9 @@ use map_gui::tools::{grey_out_map, ChooseSomething, ColorLegend, PopupMsg};
 use map_gui::ID;
 use map_model::{EditCmd, IntersectionID, LaneID, LaneType, MapEdits};
 use widgetry::{
-    lctrl, Choice, Color, ControlState, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Image,
-    Key, Line, Menu, Outcome, Panel, State, Text, TextExt, VerticalAlignment, Widget,
+    lctrl, Choice, Color, ControlState, CreateTextSpan, Drawable, EventCtx, GfxCtx,
+    HorizontalAlignment, Image, Key, Menu, Outcome, Panel, State, Text, TextExt, VerticalAlignment,
+    Widget,
 };
 
 pub use self::cluster_traffic_signals::ClusterTrafficSignalEditor;
@@ -394,7 +395,7 @@ impl SaveEdits {
         let mut save = SaveEdits {
             current_name: initial_name.clone(),
             panel: Panel::new(Widget::col(vec![
-                Line(title).small_heading().into_widget(ctx),
+                CreateTextSpan(title).small_heading().into_widget(ctx),
                 Widget::row(vec![
                     "Name:".text_widget(ctx).centered_vert(),
                     Widget::text_entry(ctx, initial_name, true).named("filename"),
@@ -466,7 +467,7 @@ impl SaveEdits {
             self.panel.replace(
                 ctx,
                 "warning",
-                Line("A proposal with this name already exists")
+                CreateTextSpan("A proposal with this name already exists")
                     .fg(Color::hex("#FF5E5E"))
                     .into_widget(ctx),
             );
@@ -536,7 +537,9 @@ impl LoadEdits {
     fn new(ctx: &mut EventCtx, app: &App, mode: GameplayMode) -> Box<dyn State<App>> {
         let current_edits_name = &app.primary.map.get_edits().edits_name;
         let your_edits = vec![
-            Line("Your proposals").small_heading().into_widget(ctx),
+            CreateTextSpan("Your proposals")
+                .small_heading()
+                .into_widget(ctx),
             Menu::widget(
                 ctx,
                 abstio::list_all_objects(abstio::path_all_edits(app.primary.map.get_name()))
@@ -547,7 +550,9 @@ impl LoadEdits {
         ];
         // widgetry can't toggle keyboard focus between two menus, so just use buttons for the less
         // common use case.
-        let mut proposals = vec![Line("Community proposals").small_heading().into_widget(ctx)];
+        let mut proposals = vec![CreateTextSpan("Community proposals")
+            .small_heading()
+            .into_widget(ctx)];
         // Up-front filter out proposals that definitely don't fit the current map
         for name in abstio::list_all_objects(abstio::path("system/proposals")) {
             let path = abstio::path(format!("system/proposals/{}.json", name));
@@ -560,7 +565,9 @@ impl LoadEdits {
             mode,
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Load proposal").small_heading().into_widget(ctx),
+                    CreateTextSpan("Load proposal")
+                        .small_heading()
+                        .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 ctx.style()
@@ -652,7 +659,7 @@ impl State<App> for LoadEdits {
 
 fn make_topcenter(ctx: &mut EventCtx, app: &App) -> Panel {
     Panel::new(Widget::col(vec![
-        Line("Editing map")
+        CreateTextSpan("Editing map")
             .small_heading()
             .into_widget(ctx)
             .centered_horiz(),
@@ -816,7 +823,7 @@ fn make_changelist(ctx: &mut EventCtx, app: &App) -> Panel {
         let (summary, details) = edits.commands[idx].describe(&app.primary.map);
         let mut txt = Text::from(format!("{}) {}", idx + 1, summary));
         for line in details {
-            txt.add_line(Line(line).secondary());
+            txt.add_line(CreateTextSpan(line).secondary());
         }
         let btn = ctx
             .style()
@@ -870,7 +877,7 @@ impl ConfirmDiscard {
                         .into_widget(ctx)
                         .container()
                         .padding_top(6),
-                    Line("Alert").small_heading().into_widget(ctx),
+                    CreateTextSpan("Alert").small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 "Are you sure you want to discard changes you made?".text_widget(ctx),

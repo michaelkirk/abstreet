@@ -1,8 +1,8 @@
 use map_gui::tools::{grey_out_map, HeatmapOptions};
 use sim::AgentType;
 use widgetry::{
-    DrawBaselayer, EventCtx, GfxCtx, HorizontalAlignment, Image, Key, Line, Outcome, Panel, State,
-    TextExt, VerticalAlignment, Widget,
+    CreateTextSpan, DrawBaselayer, EventCtx, GfxCtx, HorizontalAlignment, Image, Key, Outcome,
+    Panel, State, TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -78,7 +78,7 @@ impl PickLayer {
 
     pub fn pick(ctx: &mut EventCtx, app: &App) -> Box<dyn State<App>> {
         let mut col = vec![Widget::custom_row(vec![
-            Line("Layers").small_heading().into_widget(ctx),
+            CreateTextSpan("Layers").small_heading().into_widget(ctx),
             ctx.style().btn_close_widget(ctx),
         ])];
 

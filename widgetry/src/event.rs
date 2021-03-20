@@ -4,7 +4,7 @@ use winit::event::{
 
 use geom::Duration;
 
-use crate::{EventCtx, Line, ScreenDims, ScreenPt, TextSpan};
+use crate::{CreateTextSpan, EventCtx, ScreenDims, ScreenPt, TextSpan};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Event {
@@ -390,7 +390,7 @@ impl Key {
     }
 
     pub fn txt(self, ctx: &EventCtx) -> TextSpan {
-        Line(self.describe()).fg(ctx.style().text_hotkey_color)
+        CreateTextSpan(self.describe()).fg(ctx.style().text_hotkey_color)
     }
 }
 

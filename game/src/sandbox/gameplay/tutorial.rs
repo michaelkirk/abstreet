@@ -13,8 +13,8 @@ use sim::{
     SpawnOverTime, TripEndpoint, TripMode, TripPurpose, VehicleType,
 };
 use widgetry::{
-    hotkeys, lctrl, Color, EventCtx, GfxCtx, HorizontalAlignment, Key, Line, Outcome, Panel,
-    ScreenPt, State, Text, TextExt, VerticalAlignment, Widget,
+    hotkeys, lctrl, Color, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome,
+    Panel, ScreenPt, State, Text, TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -472,7 +472,7 @@ impl Task {
                     ("intersection on the map border", state.inspected_border),
                 ] {
                     if done {
-                        txt.add_line(Line(format!("[X] {}", name)).fg(Color::GREEN));
+                        txt.add_line(CreateTextSpan(format!("[X] {}", name)).fg(Color::GREEN));
                     } else {
                         txt.add_line(format!("[ ] {}", name));
                     }
@@ -482,31 +482,34 @@ impl Task {
             Task::TimeControls => "Wait until after 5pm",
             Task::PauseResume => {
                 let mut txt = Text::from("[ ] Pause/resume ");
-                txt.append(Line(format!("{} times", 3 - state.num_pauses)).fg(Color::GREEN));
+                txt.append(
+                    CreateTextSpan(format!("{} times", 3 - state.num_pauses)).fg(Color::GREEN),
+                );
                 return txt;
             }
             Task::Escort => {
                 // Inspect the target car, wait for them to park, draw WASH ME on the window
                 let mut txt = Text::new();
                 if state.following_car {
-                    txt.add_line(Line("[X] follow the target car").fg(Color::GREEN));
+                    txt.add_line(CreateTextSpan("[X] follow the target car").fg(Color::GREEN));
                 } else {
                     txt.add_line("[ ] follow the target car");
                 }
                 if state.car_parked {
-                    txt.add_line(Line("[X] wait for them to park").fg(Color::GREEN));
+                    txt.add_line(CreateTextSpan("[X] wait for them to park").fg(Color::GREEN));
                 } else {
                     txt.add_line("[ ] wait for them to park");
                 }
                 if state.prank_done {
                     txt.add_line(
-                        Line("[X] click car and press c to draw WASH ME").fg(Color::GREEN),
+                        CreateTextSpan("[X] click car and press c to draw WASH ME")
+                            .fg(Color::GREEN),
                     );
                 } else {
                     txt.add_line("[ ] click car and press ");
                     // TODO ctx.style().hotkey_color
-                    txt.append(Line(Key::C.describe()).fg(Color::GREEN));
-                    txt.append(Line(" to draw WASH ME"));
+                    txt.append(CreateTextSpan(Key::C.describe()).fg(Color::GREEN));
+                    txt.append(CreateTextSpan(" to draw WASH ME"));
                 }
                 return txt;
             }
@@ -514,8 +517,8 @@ impl Task {
                 let mut txt = Text::from("1) Find a road with almost no parking spots available");
                 txt.add_line("2) Click it and press ");
                 // TODO ctx.style().hotkey_color
-                txt.append(Line(Key::C.describe()).fg(Color::GREEN));
-                txt.append(Line(" to check the occupancy"));
+                txt.append(CreateTextSpan(Key::C.describe()).fg(Color::GREEN));
+                txt.append(CreateTextSpan(" to check the occupancy"));
                 return txt;
             }
             Task::WatchBikes => "Watch for 3 minutes",
@@ -729,7 +732,7 @@ impl TutorialState {
 
     fn make_top_right(&self, ctx: &mut EventCtx, edit_map: bool) -> Panel {
         let mut col = vec![Widget::row(vec![
-            Line("Tutorial").small_heading().into_widget(ctx),
+            CreateTextSpan("Tutorial").small_heading().into_widget(ctx),
             Widget::vert_separator(ctx, 50.0),
             ctx.style()
                 .btn_prev()
@@ -738,7 +741,7 @@ impl TutorialState {
             {
                 let mut txt = Text::from(format!("Task {}", self.current.stage + 1));
                 // TODO Smaller font and use alpha for the "/9" part
-                txt.append(Line(format!("/{}", self.stages.len())).fg(Color::grey(0.7)));
+                txt.append(CreateTextSpan(format!("/{}", self.stages.len())).fg(Color::grey(0.7)));
                 txt.into_widget(ctx)
             },
             ctx.style()
@@ -753,7 +756,7 @@ impl TutorialState {
             if task != Task::Nil {
                 col.push(Widget::row(vec![
                     Text::from(
-                        Line(format!(
+                        CreateTextSpan(format!(
                             "Task {}: {}",
                             self.current.stage + 1,
                             self.stage().task.label()
@@ -814,7 +817,7 @@ impl TutorialState {
             msg_panel: if let Some((ref lines, horiz_align, _)) = self.lines() {
                 let mut col = vec![{
                     let mut txt = Text::new();
-                    txt.add_line(Line(self.stage().task.label()).small_heading());
+                    txt.add_line(CreateTextSpan(self.stage().task.label()).small_heading());
                     txt.add_line("");
 
                     for l in lines {
@@ -1402,8 +1405,11 @@ fn intro_story(ctx: &mut EventCtx) -> Box<dyn State<App>> {
         .build(
             ctx,
             Box::new(|ctx| {
-                Text::from(Line("Use the tutorial to learn the basic controls.").fg(Color::BLACK))
-                    .into_widget(ctx)
+                Text::from(
+                    CreateTextSpan("Use the tutorial to learn the basic controls.")
+                        .fg(Color::BLACK),
+                )
+                .into_widget(ctx)
             }),
         )
 }

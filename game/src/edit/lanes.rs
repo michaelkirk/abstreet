@@ -2,7 +2,7 @@ use map_gui::render::Renderable;
 use map_gui::ID;
 use map_model::{EditCmd, LaneID, LaneType, Map};
 use widgetry::{
-    Choice, Color, ControlState, EventCtx, GfxCtx, HorizontalAlignment, Key, Line, Panel,
+    Choice, Color, ControlState, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Key, Panel,
     SimpleState, State, TextExt, VerticalAlignment, Widget,
 };
 
@@ -69,7 +69,7 @@ impl LaneEditor {
         let parent = app.primary.map.get_parent(l);
         let col = vec![
             Widget::row(vec![
-                Line(format!("Editing {}", l))
+                CreateTextSpan(format!("Editing {}", l))
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style()

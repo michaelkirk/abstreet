@@ -14,7 +14,9 @@ use tokio::runtime::Runtime;
 use abstio::MapName;
 use abstutil::Timer;
 use geom::Duration;
-use widgetry::{Color, EventCtx, GfxCtx, Line, Panel, State, Text, Transition, UpdateType};
+use widgetry::{
+    Color, CreateTextSpan, EventCtx, GfxCtx, Panel, State, Text, Transition, UpdateType,
+};
 
 use crate::tools::PopupMsg;
 use crate::AppLike;
@@ -182,7 +184,7 @@ mod wasm_loader {
     use web_sys::{Request, RequestInit, RequestMode, Response};
 
     use geom::Duration;
-    use widgetry::{Line, Panel, State, Text, UpdateType};
+    use widgetry::{CreateTextSpan, Panel, State, Text, UpdateType};
 
     use super::*;
 
@@ -287,8 +289,8 @@ mod wasm_loader {
             }
 
             self.panel = ctx.make_loading_screen(Text::from_multiline(vec![
-                Line(format!("Loading {}...", self.url)),
-                Line(format!(
+                CreateTextSpan(format!("Loading {}...", self.url)),
+                CreateTextSpan(format!(
                     "Time spent: {}",
                     Duration::realtime_elapsed(self.started)
                 )),
@@ -400,8 +402,8 @@ mod wasm_loader {
             }
 
             self.panel = ctx.make_loading_screen(Text::from_multiline(vec![
-                Line(format!("Loading {}...", self.url)),
-                Line(format!(
+                CreateTextSpan(format!("Loading {}...", self.url)),
+                CreateTextSpan(format!(
                     "Time spent: {}",
                     Duration::realtime_elapsed(self.started)
                 )),
@@ -522,8 +524,8 @@ where
             }
             Ok(None) => {
                 self.panel = ctx.make_loading_screen(Text::from_multiline(vec![
-                    Line(&self.loading_title),
-                    Line(format!(
+                    CreateTextSpan(&self.loading_title),
+                    CreateTextSpan(format!(
                         "Time spent: {}",
                         Duration::realtime_elapsed(self.started)
                     )),

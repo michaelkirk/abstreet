@@ -6,8 +6,9 @@ use abstutil::{elapsed_seconds, Timer, TimerSink};
 use geom::{Percent, Polygon};
 
 use crate::{
-    svg, text, Canvas, Color, Drawable, Event, GeomBatch, GfxCtx, HorizontalAlignment, Key, Line,
-    Panel, Prerender, ScreenDims, Style, Text, UserInput, VerticalAlignment, Widget,
+    svg, text, Canvas, Color, CreateTextSpan, Drawable, Event, GeomBatch, GfxCtx,
+    HorizontalAlignment, Key, Panel, Prerender, ScreenDims, Style, Text, UserInput,
+    VerticalAlignment, Widget,
 };
 
 #[derive(Clone, PartialEq, Debug)]
@@ -251,7 +252,7 @@ impl<'a> LoadingScreen<'a> {
             updates_requested: vec![],
         };
 
-        let mut txt = Text::from(Line(&self.title).small_heading());
+        let mut txt = Text::from(CreateTextSpan(&self.title).small_heading());
         for l in &self.lines {
             txt.add_line(l);
         }

@@ -2,8 +2,8 @@ use geom::{Duration, Time};
 use map_gui::ID;
 use map_model::IntersectionID;
 use widgetry::{
-    Color, EventCtx, GfxCtx, HorizontalAlignment, Image, Key, Line, Outcome, Panel, RewriteColor,
-    State, Text, VerticalAlignment, Widget,
+    Color, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Image, Key, Outcome, Panel,
+    RewriteColor, State, Text, VerticalAlignment, Widget,
 };
 
 use crate::app::Transition;
@@ -168,13 +168,13 @@ impl GameplayState for FixTrafficSignals {
                     let mut txt = Text::from("Hint");
                     txt.add_line("");
                     txt.add_appended(vec![
-                        Line("Press "),
+                        CreateTextSpan("Press "),
                         Key::L.txt(ctx),
-                        Line(" to open layers. Try "),
+                        CreateTextSpan(" to open layers. Try "),
                         Key::D.txt(ctx),
-                        Line("elay or worst traffic "),
+                        CreateTextSpan("elay or worst traffic "),
                         Key::J.txt(ctx),
-                        Line("ams"),
+                        CreateTextSpan("ams"),
                     ]);
                     let contents = txt.into_widget(ctx);
                     return Some(Transition::Push(FYI::new(ctx, contents, app.cs.panel_bg)));
@@ -208,12 +208,16 @@ impl GameplayState for FixTrafficSignals {
                     return Some(Transition::Push(FYI::new(
                         ctx,
                         Text::from_multiline(vec![
-                            Line("You changed some traffic signals in the middle of the day."),
-                            Line(
+                            CreateTextSpan(
+                                "You changed some traffic signals in the middle of the day.",
+                            ),
+                            CreateTextSpan(
                                 "First see if you can survive for a full day, making changes \
                                  along the way.",
                             ),
-                            Line("Then you should check if your changes work from midnight."),
+                            CreateTextSpan(
+                                "Then you should check if your changes work from midnight.",
+                            ),
                         ])
                         .into_widget(ctx),
                         app.cs.panel_bg,
@@ -236,7 +240,7 @@ impl GameplayState for FixTrafficSignals {
             self.top_right = Panel::new(Widget::col(vec![
                 challenge_header(ctx, "Traffic signal survivor"),
                 Widget::row(vec![
-                    Line(format!("Delay exceeded {} at {}", THRESHOLD, time))
+                    CreateTextSpan(format!("Delay exceeded {} at {}", THRESHOLD, time))
                         .fg(Color::RED)
                         .into_widget(ctx)
                         .centered_vert(),
@@ -249,8 +253,8 @@ impl GameplayState for FixTrafficSignals {
             let meter = if let Some((_, delay)) = self.worst {
                 Widget::row(vec![
                     Text::from_all(vec![
-                        Line("Worst delay: "),
-                        Line(delay.to_string(&app.opts.units)).fg(
+                        CreateTextSpan("Worst delay: "),
+                        CreateTextSpan(delay.to_string(&app.opts.units)).fg(
                             if delay < Duration::minutes(5) {
                                 Color::hex("#F9EC51")
                             } else if delay < Duration::minutes(15) {
@@ -277,8 +281,11 @@ impl GameplayState for FixTrafficSignals {
                     } else {
                         Widget::nothing()
                     },
-                    Text::from_all(vec![Line("Worst delay: "), Line("none!").secondary()])
-                        .into_widget(ctx),
+                    Text::from_all(vec![
+                        CreateTextSpan("Worst delay: "),
+                        CreateTextSpan("none!").secondary(),
+                    ])
+                    .into_widget(ctx),
                     Image::from_path("system/assets/tools/location.svg")
                         .color(RewriteColor::ChangeAlpha(0.5))
                         .into_widget(ctx)
@@ -289,7 +296,7 @@ impl GameplayState for FixTrafficSignals {
             self.top_right = Panel::new(Widget::col(vec![
                 challenge_header(ctx, "Traffic signal survivor"),
                 Widget::row(vec![
-                    Line(format!(
+                    CreateTextSpan(format!(
                         "Keep delay at all intersections under {}",
                         THRESHOLD
                     ))
@@ -348,43 +355,43 @@ fn cutscene_pt1_task(ctx: &mut EventCtx) -> Widget {
     let icon_builder = Image::empty().color(Color::BLACK).dims(50.0);
     Widget::custom_col(vec![
         Text::from_multiline(vec![
-            Line(format!(
+            CreateTextSpan(format!(
                 "Don't let anyone be delayed by one traffic signal more than {}!",
                 THRESHOLD
             ))
             .fg(Color::BLACK),
-            Line("Survive as long as possible through 24 hours of a busy weekday.")
+            CreateTextSpan("Survive as long as possible through 24 hours of a busy weekday.")
                 .fg(Color::BLACK),
         ])
         .into_widget(ctx)
         .margin_below(30),
         Widget::custom_row(vec![
             Widget::col(vec![
-                Line("Time").fg(Color::BLACK).into_widget(ctx),
+                CreateTextSpan("Time").fg(Color::BLACK).into_widget(ctx),
                 icon_builder
                     .clone()
                     .source_path("system/assets/tools/time.svg")
                     .into_widget(ctx),
-                Line("24 hours").fg(Color::BLACK).into_widget(ctx),
+                CreateTextSpan("24 hours").fg(Color::BLACK).into_widget(ctx),
             ]),
             Widget::col(vec![
-                Line("Goal").fg(Color::BLACK).into_widget(ctx),
+                CreateTextSpan("Goal").fg(Color::BLACK).into_widget(ctx),
                 icon_builder
                     .clone()
                     .source_path("system/assets/tools/location.svg")
                     .into_widget(ctx),
                 Text::from_multiline(vec![
-                    Line("Keep delay at all intersections").fg(Color::BLACK),
-                    Line(format!("under {}", THRESHOLD)).fg(Color::BLACK),
+                    CreateTextSpan("Keep delay at all intersections").fg(Color::BLACK),
+                    CreateTextSpan(format!("under {}", THRESHOLD)).fg(Color::BLACK),
                 ])
                 .into_widget(ctx),
             ]),
             Widget::col(vec![
-                Line("Score").fg(Color::BLACK).into_widget(ctx),
+                CreateTextSpan("Score").fg(Color::BLACK).into_widget(ctx),
                 icon_builder
                     .source_path("system/assets/tools/star.svg")
                     .into_widget(ctx),
-                Line("How long you survive")
+                CreateTextSpan("How long you survive")
                     .fg(Color::BLACK)
                     .into_widget(ctx),
             ]),

@@ -10,9 +10,9 @@ use map_model::{
     TurnPriority,
 };
 use widgetry::{
-    include_labeled_bytes, lctrl, Color, ControlState, DrawBaselayer, Drawable, EventCtx,
-    GeomBatch, GfxCtx, HorizontalAlignment, Key, Line, MultiButton, Outcome, Panel, RewriteColor,
-    State, Text, TextExt, VerticalAlignment, Widget,
+    include_labeled_bytes, lctrl, Color, ControlState, CreateTextSpan, DrawBaselayer, Drawable,
+    EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, MultiButton, Outcome, Panel,
+    RewriteColor, State, Text, TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, ShowEverything, Transition};
@@ -526,7 +526,7 @@ fn make_top_panel(ctx: &mut EventCtx, app: &App, can_undo: bool, can_redo: bool)
     ];
     Panel::new(Widget::col(vec![
         Widget::row(vec![
-            Line("Traffic signal editor")
+            CreateTextSpan("Traffic signal editor")
                 .small_heading()
                 .into_widget(ctx),
             ctx.style()
@@ -542,8 +542,8 @@ fn make_top_panel(ctx: &mut EventCtx, app: &App, can_undo: bool, can_redo: bool)
                 .btn_outline
                 .text("Export")
                 .tooltip(Text::from_multiline(vec![
-                    Line("This will create a JSON file in traffic_signal_data/.").small(),
-                    Line(
+                    CreateTextSpan("This will create a JSON file in traffic_signal_data/.").small(),
+                    CreateTextSpan(
                         "Contribute this to map how this traffic signal is currently timed in \
                          real life.",
                     )
@@ -571,7 +571,7 @@ fn make_side_panel(
     let mut txt = Text::new();
     if members.len() == 1 {
         let i = *members.iter().next().unwrap();
-        txt.add_line(Line(i.to_string()).big_heading_plain());
+        txt.add_line(CreateTextSpan(i.to_string()).big_heading_plain());
 
         let mut road_names = BTreeSet::new();
         for r in &app.primary.map.get_i(i).roads {
@@ -583,12 +583,14 @@ fn make_side_panel(
             );
         }
         for r in road_names {
-            txt.add_line(Line(format!("  {}", r)).secondary());
+            txt.add_line(CreateTextSpan(format!("  {}", r)).secondary());
         }
     } else {
-        txt.add_line(Line(format!("{} intersections", members.len())).big_heading_plain());
         txt.add_line(
-            Line(
+            CreateTextSpan(format!("{} intersections", members.len())).big_heading_plain(),
+        );
+        txt.add_line(
+            CreateTextSpan(
                 members
                     .iter()
                     .map(|i| format!("#{}", i.0))

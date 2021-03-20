@@ -2,8 +2,8 @@ use std::marker::PhantomData;
 
 use geom::{Distance, Pt2D, Ring, Time};
 use widgetry::{
-    ControlState, Drawable, EventCtx, Filler, GfxCtx, HorizontalAlignment, Line, Outcome, Panel,
-    ScreenPt, Spinner, Transition, VerticalAlignment, Widget,
+    ControlState, CreateTextSpan, Drawable, EventCtx, Filler, GfxCtx, HorizontalAlignment, Outcome,
+    Panel, ScreenPt, Spinner, Transition, VerticalAlignment, Widget,
 };
 
 use crate::AppLike;
@@ -148,7 +148,7 @@ impl<A: AppLike + 'static, T: MinimapControls<A>> Minimap<A, T> {
                     .bg(app.cs().inner_panel_bg),
                 if self.controls.has_zorder(app) {
                     Widget::col(vec![
-                        Line("Z-order:").small().into_widget(ctx),
+                        CreateTextSpan("Z-order:").small().into_widget(ctx),
                         Spinner::widget(
                             ctx,
                             app.draw_map().zorder_range,

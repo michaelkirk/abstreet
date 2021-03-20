@@ -1,8 +1,8 @@
 use geom::Pt2D;
 
 use crate::{
-    Choice, EventCtx, GfxCtx, Key, Line, Outcome, ScreenDims, ScreenPt, ScreenRectangle, Style,
-    Text, Widget, WidgetImpl, WidgetOutput,
+    Choice, CreateTextSpan, EventCtx, GfxCtx, Key, Outcome, ScreenDims, ScreenPt, ScreenRectangle,
+    Style, Text, Widget, WidgetImpl, WidgetOutput,
 };
 
 pub struct Menu<T> {
@@ -49,26 +49,27 @@ impl<T: 'static> Menu<T> {
             if choice.active {
                 if let Some(ref key) = choice.hotkey {
                     txt.add_appended(vec![
-                        Line(key.describe()).fg(style.text_hotkey_color),
-                        Line(format!(" - {}", choice.label)).fg(text_color),
+                        CreateTextSpan(key.describe()).fg(style.text_hotkey_color),
+                        CreateTextSpan(format!(" - {}", choice.label)).fg(text_color),
                     ]);
                 } else {
-                    txt.add_line(Line(&choice.label).fg(text_color))
+                    txt.add_line(CreateTextSpan(&choice.label).fg(text_color))
                 }
             } else {
                 text_color = text_color.alpha(0.8);
                 if let Some(ref key) = choice.hotkey {
                     txt.add_line(
-                        Line(format!("{} - {}", key.describe(), choice.label)).fg(text_color),
+                        CreateTextSpan(format!("{} - {}", key.describe(), choice.label))
+                            .fg(text_color),
                     );
                 } else {
-                    txt.add_line(Line(&choice.label).fg(text_color));
+                    txt.add_line(CreateTextSpan(&choice.label).fg(text_color));
                 }
             }
 
             if choice.tooltip.is_some() {
                 // TODO Ideally unicode info symbol, but the fonts don't seem to have it
-                txt.append(Line(" (!)"));
+                txt.append(CreateTextSpan(" (!)"));
             }
 
             // TODO BG color should be on the TextSpan, so this isn't so terrible?

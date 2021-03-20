@@ -53,7 +53,7 @@ pub struct TextSpan {
 
 impl<AsStrRef: AsRef<str>> From<AsStrRef> for TextSpan {
     fn from(line: AsStrRef) -> Self {
-        Line(line.as_ref())
+        CreateTextSpan(line.as_ref())
     }
 }
 
@@ -155,7 +155,7 @@ impl TextSpan {
 
 // TODO What's the better way of doing this? Also "Line" is a bit of a misnomer
 #[allow(non_snake_case)]
-pub fn Line<S: Into<String>>(text: S) -> TextSpan {
+pub fn CreateTextSpan<S: Into<String>>(text: S) -> TextSpan {
     TextSpan {
         text: text.into(),
         fg_color: None,
@@ -184,7 +184,7 @@ impl From<TextSpan> for Text {
 impl<AsStrRef: AsRef<str>> From<AsStrRef> for Text {
     fn from(line: AsStrRef) -> Text {
         let mut txt = Text::new();
-        txt.add_line(Line(line.as_ref()));
+        txt.add_line(CreateTextSpan(line.as_ref()));
         txt
     }
 }
@@ -230,13 +230,13 @@ impl Text {
     pub fn tooltip<MK: Into<Option<MultiKey>>>(ctx: &EventCtx, hotkey: MK, action: &str) -> Text {
         if let Some(ref key) = hotkey.into() {
             Text::from_all(vec![
-                Line(key.describe())
+                CreateTextSpan(key.describe())
                     .fg(ctx.style().text_hotkey_color)
                     .small(),
-                Line(format!(" - {}", action)).small(),
+                CreateTextSpan(format!(" - {}", action)).small(),
             ])
         } else {
-            Text::from(Line(action).small())
+            Text::from(CreateTextSpan(action).small())
         }
     }
 
@@ -506,19 +506,19 @@ pub trait TextExt {
 
 impl TextExt for &str {
     fn text_widget(self, ctx: &EventCtx) -> Widget {
-        Line(self).into_widget(ctx)
+        CreateTextSpan(self).into_widget(ctx)
     }
     fn batch_text(self, ctx: &EventCtx) -> Widget {
-        Line(self).batch(ctx)
+        CreateTextSpan(self).batch(ctx)
     }
 }
 
 impl TextExt for String {
     fn text_widget(self, ctx: &EventCtx) -> Widget {
-        Line(self).into_widget(ctx)
+        CreateTextSpan(self).into_widget(ctx)
     }
     fn batch_text(self, ctx: &EventCtx) -> Widget {
-        Line(self).batch(ctx)
+        CreateTextSpan(self).batch(ctx)
     }
 }
 

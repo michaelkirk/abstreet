@@ -5,7 +5,8 @@ use geom::{Duration, Time};
 use sim::{TripEndpoint, TripID, TripMode};
 use widgetry::table::{Col, Filter, Table};
 use widgetry::{
-    EventCtx, Filler, GfxCtx, Line, Outcome, Panel, State, TabController, Text, Toggle, Widget,
+    CreateTextSpan, EventCtx, Filler, GfxCtx, Outcome, Panel, State, TabController, Text, Toggle,
+    Widget,
 };
 
 use super::generic_trip_table::{open_trip_transition, preview_trip};
@@ -442,7 +443,8 @@ fn make_table_finished_trips(app: &App) -> Table<App, FinishedTrip, Filters> {
     table.column(
         "Type",
         Box::new(|ctx, app, x| {
-            Text::from(Line(x.mode.ongoing_verb()).fg(color_for_mode(app, x.mode))).render(ctx)
+            Text::from(CreateTextSpan(x.mode.ongoing_verb()).fg(color_for_mode(app, x.mode)))
+                .render(ctx)
         }),
         Col::Static,
     );
@@ -574,7 +576,8 @@ fn make_table_cancelled_trips(app: &App) -> Table<App, CancelledTrip, Filters> {
     table.column(
         "Type",
         Box::new(|ctx, app, x| {
-            Text::from(Line(x.mode.ongoing_verb()).fg(color_for_mode(app, x.mode))).render(ctx)
+            Text::from(CreateTextSpan(x.mode.ongoing_verb()).fg(color_for_mode(app, x.mode)))
+                .render(ctx)
         }),
         Col::Static,
     );
@@ -675,7 +678,8 @@ fn make_table_unfinished_trips(app: &App) -> Table<App, UnfinishedTrip, Filters>
     table.column(
         "Type",
         Box::new(|ctx, app, x| {
-            Text::from(Line(x.mode.ongoing_verb()).fg(color_for_mode(app, x.mode))).render(ctx)
+            Text::from(CreateTextSpan(x.mode.ongoing_verb()).fg(color_for_mode(app, x.mode)))
+                .render(ctx)
         }),
         Col::Static,
     );

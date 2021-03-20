@@ -11,8 +11,9 @@ use map_gui::tools::{
 use map_gui::{SimpleApp, ID};
 use map_model::osm;
 use widgetry::{
-    lctrl, Color, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key,
-    Line, Outcome, Panel, State, Text, TextExt, Toggle, Transition, VerticalAlignment, Widget,
+    lctrl, Color, CreateTextSpan, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx,
+    HorizontalAlignment, Key, Outcome, Panel, State, Text, TextExt, Toggle, Transition,
+    VerticalAlignment, Widget,
 };
 
 type App = SimpleApp<()>;
@@ -56,7 +57,7 @@ impl Viewer {
         biz_search_panel: Option<Widget>,
     ) {
         let top_panel = Panel::new(Widget::col(vec![
-            Line("OpenStreetMap viewer")
+            CreateTextSpan("OpenStreetMap viewer")
                 .small_heading()
                 .into_widget(ctx),
             ctx.style()
@@ -144,7 +145,7 @@ impl Viewer {
                             ctx,
                             format!("open https://wiki.openstreetmap.org/wiki/Key:{}", k),
                         ),
-                        Line(v).into_widget(ctx).align_right(),
+                        CreateTextSpan(v).into_widget(ctx).align_right(),
                     ]));
                 }
             }
@@ -201,7 +202,7 @@ impl Viewer {
                                 ctx,
                                 format!("open https://wiki.openstreetmap.org/wiki/Key:{}", k),
                             ),
-                            Line(v).into_widget(ctx).align_right(),
+                            CreateTextSpan(v).into_widget(ctx).align_right(),
                         ]));
                     }
                 }
@@ -471,7 +472,11 @@ impl BusinessSearch {
             col.push(Toggle::custom_checkbox(
                 ctx,
                 amenity,
-                vec![Line(format!("{}: {}", amenity, prettyprint_usize(*cnt)))],
+                vec![CreateTextSpan(format!(
+                    "{}: {}",
+                    amenity,
+                    prettyprint_usize(*cnt)
+                ))],
                 None,
                 self.show.contains(amenity),
             ));

@@ -6,8 +6,8 @@ use geom::{Distance, Duration};
 use map_model::IntersectionID;
 use sim::Scenario;
 use widgetry::{
-    Color, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Key, Line, Panel, RewriteColor,
-    SimpleState, Spinner, State, Text, TextExt, VerticalAlignment, Widget,
+    Color, CreateTextSpan, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Key, Panel,
+    RewriteColor, SimpleState, Spinner, State, Text, TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -45,7 +45,7 @@ impl ShowAbsolute {
 
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                Line(format!("Tuning offset for {} signals", members.len()))
+                CreateTextSpan(format!("Tuning offset for {} signals", members.len()))
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
@@ -134,7 +134,7 @@ impl ShowRelative {
 
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                Line(format!("Tuning offset for {} signals", members.len()))
+                CreateTextSpan(format!("Tuning offset for {} signals", members.len()))
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
@@ -226,22 +226,22 @@ impl TuneRelative {
         let offset2 = map.get_traffic_signal(i2).offset;
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                Line(format!("Tuning offset between {} and {}", i1, i2))
+                CreateTextSpan(format!("Tuning offset between {} and {}", i1, i2))
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
             ]),
             Text::from_multiline(vec![
-                Line(format!("Distance: {}", dist_btwn)),
-                Line(format!(
+                CreateTextSpan(format!("Distance: {}", dist_btwn)),
+                CreateTextSpan(format!(
                     "  about {} for a car if there's no congestion",
                     car_dt
                 )),
-                Line(format!(
+                CreateTextSpan(format!(
                     "  about {} for a bike",
                     dist_btwn / Scenario::max_bike_speed()
                 )),
-                Line(format!(
+                CreateTextSpan(format!(
                     "  about {} for a pedestrian",
                     dist_btwn / Scenario::max_ped_speed()
                 )),

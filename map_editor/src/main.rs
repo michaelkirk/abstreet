@@ -13,7 +13,7 @@ use map_gui::tools::CameraState;
 use map_model::osm;
 use map_model::raw::OriginalRoad;
 use widgetry::{
-    Canvas, Color, EventCtx, GfxCtx, HorizontalAlignment, Key, Line, Outcome, Panel,
+    Canvas, Color, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel,
     SharedAppState, State, Text, Toggle, Transition, VerticalAlignment, Widget,
 };
 
@@ -77,25 +77,25 @@ impl MainState {
         // TODO Make these dynamic!
         let mut instructions = Text::new();
         instructions.add_appended(vec![
-            Line("Press "),
+            CreateTextSpan("Press "),
             Key::I.txt(ctx),
-            Line(" to create a new intersection"),
+            CreateTextSpan(" to create a new intersection"),
         ]);
         instructions.add_line("Hover on an intersection, then...");
         instructions.add_appended(vec![
-            Line("- Press "),
+            CreateTextSpan("- Press "),
             Key::R.txt(ctx),
-            Line(" to start/end a new road"),
+            CreateTextSpan(" to start/end a new road"),
         ]);
         instructions.add_appended(vec![
-            Line("- Hold "),
+            CreateTextSpan("- Hold "),
             Key::LeftControl.txt(ctx),
-            Line(" to move it"),
+            CreateTextSpan(" to move it"),
         ]);
         instructions.add_appended(vec![
-            Line("Press "),
+            CreateTextSpan("Press "),
             Key::Backspace.txt(ctx),
-            Line(" to delete something"),
+            CreateTextSpan(" to delete something"),
         ]);
 
         (
@@ -104,7 +104,9 @@ impl MainState {
                 mode: Mode::Viewing,
                 panel: Panel::new(Widget::col(vec![
                     Widget::row(vec![
-                        Line("Map Editor").small_heading().into_widget(ctx),
+                        CreateTextSpan("Map Editor")
+                            .small_heading()
+                            .into_widget(ctx),
                         ctx.style().btn_close_widget(ctx),
                     ]),
                     Text::new().into_widget(ctx).named("instructions"),
@@ -187,24 +189,24 @@ impl State<App> for MainState {
 
                         let mut txt = Text::new();
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::R.txt(ctx),
-                            Line(" to start a road here"),
+                            CreateTextSpan(" to start a road here"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::Backspace.txt(ctx),
-                            Line(" to delete"),
+                            CreateTextSpan(" to delete"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Hold "),
+                            CreateTextSpan("- Hold "),
                             Key::LeftControl.txt(ctx),
-                            Line(" to move"),
+                            CreateTextSpan(" to move"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::T.txt(ctx),
-                            Line(" to toggle stop sign / traffic signal"),
+                            CreateTextSpan(" to toggle stop sign / traffic signal"),
                         ]);
                         let instructions = txt.into_widget(ctx);
                         self.panel.replace(ctx, "instructions", instructions);
@@ -219,14 +221,14 @@ impl State<App> for MainState {
 
                         let mut txt = Text::new();
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::Backspace.txt(ctx),
-                            Line(" to delete"),
+                            CreateTextSpan(" to delete"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Hold "),
+                            CreateTextSpan("- Hold "),
                             Key::LeftControl.txt(ctx),
-                            Line(" to move"),
+                            CreateTextSpan(" to move"),
                         ]);
                         let instructions = txt.into_widget(ctx);
                         self.panel.replace(ctx, "instructions", instructions);
@@ -250,28 +252,28 @@ impl State<App> for MainState {
 
                         let mut txt = Text::new();
                         txt.add_appended(vec![
-                            Line("Click").fg(ctx.style().text_hotkey_color),
-                            Line(" to edit lanes"),
+                            CreateTextSpan("Click").fg(ctx.style().text_hotkey_color),
+                            CreateTextSpan(" to edit lanes"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::Backspace.txt(ctx),
-                            Line(" to delete"),
+                            CreateTextSpan(" to delete"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::P.txt(ctx),
-                            Line(" to insert a new point here"),
+                            CreateTextSpan(" to insert a new point here"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::X.txt(ctx),
-                            Line(" to remove interior points"),
+                            CreateTextSpan(" to remove interior points"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::M.txt(ctx),
-                            Line(" to merge"),
+                            CreateTextSpan(" to merge"),
                         ]);
                         let instructions = txt.into_widget(ctx);
                         self.panel.replace(ctx, "instructions", instructions);
@@ -286,14 +288,14 @@ impl State<App> for MainState {
 
                         let mut txt = Text::new();
                         txt.add_appended(vec![
-                            Line("- Press "),
+                            CreateTextSpan("- Press "),
                             Key::Backspace.txt(ctx),
-                            Line(" to delete"),
+                            CreateTextSpan(" to delete"),
                         ]);
                         txt.add_appended(vec![
-                            Line("- Hold "),
+                            CreateTextSpan("- Hold "),
                             Key::LeftControl.txt(ctx),
-                            Line(" to move"),
+                            CreateTextSpan(" to move"),
                         ]);
                         let instructions = txt.into_widget(ctx);
                         self.panel.replace(ctx, "instructions", instructions);
@@ -339,14 +341,14 @@ impl State<App> for MainState {
 
                                 let mut txt = Text::new();
                                 txt.add_appended(vec![
-                                    Line("- Press "),
+                                    CreateTextSpan("- Press "),
                                     Key::I.txt(ctx),
-                                    Line(" to create an intersection"),
+                                    CreateTextSpan(" to create an intersection"),
                                 ]);
                                 txt.add_appended(vec![
-                                    Line("- Press "),
+                                    CreateTextSpan("- Press "),
                                     Key::B.txt(ctx),
-                                    Line(" to create a building"),
+                                    CreateTextSpan(" to create a building"),
                                 ]);
                                 let instructions = txt.into_widget(ctx);
                                 self.panel.replace(ctx, "instructions", instructions);
@@ -394,8 +396,8 @@ impl State<App> for MainState {
             Mode::SetBoundaryPt1 => {
                 let mut txt = Text::new();
                 txt.add_appended(vec![
-                    Line("Click").fg(ctx.style().text_hotkey_color),
-                    Line(" the top-left corner of this map"),
+                    CreateTextSpan("Click").fg(ctx.style().text_hotkey_color),
+                    CreateTextSpan(" the top-left corner of this map"),
                 ]);
                 let instructions = txt.into_widget(ctx);
                 self.panel.replace(ctx, "instructions", instructions);
@@ -409,8 +411,8 @@ impl State<App> for MainState {
             Mode::SetBoundaryPt2(pt1) => {
                 let mut txt = Text::new();
                 txt.add_appended(vec![
-                    Line("Click").fg(ctx.style().text_hotkey_color),
-                    Line(" the bottom-right corner of this map"),
+                    CreateTextSpan("Click").fg(ctx.style().text_hotkey_color),
+                    CreateTextSpan(" the bottom-right corner of this map"),
                 ]);
                 let instructions = txt.into_widget(ctx);
                 self.panel.replace(ctx, "instructions", instructions);

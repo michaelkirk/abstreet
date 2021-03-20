@@ -9,8 +9,9 @@ use map_gui::{SimpleApp, ID};
 use map_model::{osm, RoadID};
 use osm::WayID;
 use widgetry::{
-    lctrl, Choice, Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Line,
-    Menu, Outcome, Panel, State, Text, TextExt, Toggle, Transition, VerticalAlignment, Widget,
+    lctrl, Choice, Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx,
+    HorizontalAlignment, Key, Menu, Outcome, Panel, State, Text, TextExt, Toggle, Transition,
+    VerticalAlignment, Widget,
 };
 
 type App = SimpleApp<()>;
@@ -127,7 +128,9 @@ impl ParkingMapper {
             draw_layer: ctx.upload(batch),
             show,
             panel: Panel::new(Widget::col(vec![
-                Line("Parking mapper").small_heading().into_widget(ctx),
+                CreateTextSpan("Parking mapper")
+                    .small_heading()
+                    .into_widget(ctx),
                 ctx.style()
                     .btn_popup_icon_text(
                         "system/assets/tools/map.svg",
@@ -230,19 +233,19 @@ impl State<App> for ParkingMapper {
                     let mut txt = Text::new();
                     txt.add_line(format!("Click to map parking for OSM way {}", way));
                     txt.add_appended(vec![
-                        Line("Shortcut: press "),
+                        CreateTextSpan("Shortcut: press "),
                         Key::N.txt(ctx),
-                        Line(" to indicate no parking"),
+                        CreateTextSpan(" to indicate no parking"),
                     ]);
                     txt.add_appended(vec![
-                        Line("Press "),
+                        CreateTextSpan("Press "),
                         Key::S.txt(ctx),
-                        Line(" to open Bing StreetSide here"),
+                        CreateTextSpan(" to open Bing StreetSide here"),
                     ]);
                     txt.add_appended(vec![
-                        Line("Press "),
+                        CreateTextSpan("Press "),
                         Key::E.txt(ctx),
-                        Line(" to edit OpenStreetMap for this way"),
+                        CreateTextSpan(" to edit OpenStreetMap for this way"),
                     ]);
                     for (k, v) in road.osm_tags.inner() {
                         if k.starts_with("abst:") {
@@ -254,10 +257,10 @@ impl State<App> for ParkingMapper {
                             }
                         } else if k == "sidewalk" {
                             if !road.osm_tags.contains_key(osm::INFERRED_SIDEWALKS) {
-                                txt.add_line(Line(format!("{} = {}", k, v)).secondary());
+                                txt.add_line(CreateTextSpan(format!("{} = {}", k, v)).secondary());
                             }
                         } else {
-                            txt.add_line(Line(format!("{} = {}", k, v)).secondary());
+                            txt.add_line(CreateTextSpan(format!("{} = {}", k, v)).secondary());
                         }
                     }
                     self.panel.replace(ctx, "info", txt.into_widget(ctx));
@@ -421,7 +424,7 @@ impl ChangeWay {
         Box::new(ChangeWay {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("What kind of parking does this road have?")
+                    CreateTextSpan("What kind of parking does this road have?")
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),

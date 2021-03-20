@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use map_model::{AmenityType, BuildingID, BuildingType};
-use widgetry::{Color, Drawable, EventCtx, GeomBatch, Line, Text};
+use widgetry::{Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, Text};
 
 use crate::App;
 
@@ -63,10 +63,12 @@ impl Buildings {
                     // Call out non-single family homes
                     if num_housing_units > 1 {
                         batch.append(
-                            Text::from(Line(num_housing_units.to_string()).fg(Color::BLACK))
-                                .render_autocropped(ctx)
-                                .scale(0.2)
-                                .centered_on(b.label_center),
+                            Text::from(
+                                CreateTextSpan(num_housing_units.to_string()).fg(Color::BLACK),
+                            )
+                            .render_autocropped(ctx)
+                            .scale(0.2)
+                            .centered_on(b.label_center),
                         );
                     }
                     continue;

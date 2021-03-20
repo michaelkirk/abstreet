@@ -7,8 +7,8 @@ use map_gui::colors::ColorSchemeChoice;
 use map_gui::tools::{nice_map_name, ChooseSomething, CityPicker};
 use map_gui::AppLike;
 use widgetry::{
-    lctrl, Choice, DrawBaselayer, EventCtx, GfxCtx, HorizontalAlignment, Key, Line, Outcome, Panel,
-    State, TextExt, VerticalAlignment, Widget,
+    lctrl, Choice, CreateTextSpan, DrawBaselayer, EventCtx, GfxCtx, HorizontalAlignment, Key,
+    Outcome, Panel, State, TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -31,7 +31,9 @@ impl DevToolsMode {
         Box::new(DevToolsMode {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Internal dev tools").small_heading().into_widget(ctx),
+                    CreateTextSpan("Internal dev tools")
+                        .small_heading()
+                        .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 Widget::row(vec![

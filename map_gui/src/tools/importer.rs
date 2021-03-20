@@ -5,7 +5,7 @@ use clipboard::{ClipboardContext, ClipboardProvider};
 
 use abstio::MapName;
 use widgetry::{
-    EventCtx, GfxCtx, Line, Outcome, Panel, State, TextExt, Toggle, Transition, Widget,
+    CreateTextSpan, EventCtx, GfxCtx, Outcome, Panel, State, TextExt, Toggle, Transition, Widget,
 };
 
 use crate::load::MapLoader;
@@ -25,7 +25,9 @@ impl<A: AppLike + 'static> ImportCity<A> {
     ) -> Box<dyn State<A>> {
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                Line("Import a new city").small_heading().into_widget(ctx),
+                CreateTextSpan("Import a new city")
+                    .small_heading()
+                    .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
             ]),
             Widget::row(vec![

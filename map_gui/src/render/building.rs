@@ -2,7 +2,7 @@ use std::cell::RefCell;
 
 use geom::{Angle, Distance, Line, Polygon, Pt2D, Ring};
 use map_model::{Building, BuildingID, LaneType, Map, OffstreetParking, NORMAL_LANE_THICKNESS};
-use widgetry::{Color, Drawable, EventCtx, GeomBatch, GfxCtx, Line, Text};
+use widgetry::{Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Text};
 
 use crate::colors::{ColorScheme, ColorSchemeChoice};
 use crate::options::{CameraAngle, Options};

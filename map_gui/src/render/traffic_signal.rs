@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 
 use geom::{Angle, ArrowCap, Circle, Distance, Duration, Line, PolyLine, Pt2D};
 use map_model::{IntersectionID, Movement, Stage, StageType, TurnPriority, SIDEWALK_THICKNESS};
-use widgetry::{Color, GeomBatch, Line, Prerender, RewriteColor, Text};
+use widgetry::{Color, CreateTextSpan, GeomBatch, Prerender, RewriteColor, Text};
 
 use crate::options::TrafficSignalStyle;
 use crate::render::intersection::make_crosswalk;
@@ -208,7 +208,7 @@ pub fn draw_stage_number(
         Circle::new(center, radius).to_polygon(),
     );
     batch.append(
-        Text::from(Line(format!("{}", idx + 1)).fg(Color::WHITE))
+        Text::from(CreateTextSpan(format!("{}", idx + 1)).fg(Color::WHITE))
             .render_autocropped(prerender)
             .scale(0.075)
             .centered_on(center),

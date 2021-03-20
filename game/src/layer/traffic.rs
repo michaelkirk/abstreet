@@ -10,8 +10,8 @@ use map_gui::ID;
 use map_model::{IntersectionID, Map, Traversable};
 use sim::{AgentType, VehicleType};
 use widgetry::{
-    Color, Drawable, EventCtx, GeomBatch, GfxCtx, Line, Outcome, Panel, Text, TextExt, Toggle,
-    Widget,
+    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Outcome, Panel, Text, TextExt,
+    Toggle, Widget,
 };
 
 use crate::app::App;
@@ -68,7 +68,7 @@ impl Backpressure {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Backpressure"),
             Text::from(
-                Line("This counts all active trips passing through a road in the future")
+                CreateTextSpan("This counts all active trips passing through a road in the future")
                     .secondary(),
             )
             .wrap_to_pct(ctx, 15)
@@ -208,9 +208,11 @@ impl Throughput {
         let intersection_counter = stats.intersection_thruput.all_total_counts(&agent_types);
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Throughput"),
-            Text::from(Line("This counts all people crossing since midnight").secondary())
-                .wrap_to_pct(ctx, 15)
-                .into_widget(ctx),
+            Text::from(
+                CreateTextSpan("This counts all people crossing since midnight").secondary(),
+            )
+            .wrap_to_pct(ctx, 15)
+            .into_widget(ctx),
             if app.has_prebaked().is_some() {
                 Toggle::switch(ctx, "Compare before proposal", None, false)
             } else {
@@ -482,7 +484,8 @@ impl TrafficJams {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Traffic jams"),
             Text::from(
-                Line("A jam starts when delay exceeds 5 mins, then spreads out").secondary(),
+                CreateTextSpan("A jam starts when delay exceeds 5 mins, then spreads out")
+                    .secondary(),
             )
             .wrap_to_pct(ctx, 15)
             .into_widget(ctx),

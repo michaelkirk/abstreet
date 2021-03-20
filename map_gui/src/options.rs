@@ -1,8 +1,8 @@
 use abstutil::CmdArgs;
 use geom::{Duration, UnitFmt};
 use widgetry::{
-    Choice, EventCtx, GeomBatch, GfxCtx, Key, Line, Outcome, Panel, Spinner, State, TextExt,
-    Toggle, Widget,
+    Choice, CreateTextSpan, EventCtx, GeomBatch, GfxCtx, Key, Outcome, Panel, Spinner, State,
+    TextExt, Toggle, Widget,
 };
 
 use crate::colors::ColorSchemeChoice;
@@ -128,7 +128,7 @@ impl OptionsPanel {
         Box::new(OptionsPanel {
             panel: Panel::new(Widget::col(vec![
                 Widget::custom_row(vec![
-                    Line("Settings").small_heading().into_widget(ctx),
+                    CreateTextSpan("Settings").small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 "Camera controls".text_widget(ctx),

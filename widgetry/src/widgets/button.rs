@@ -1,9 +1,9 @@
 use geom::{Distance, Polygon};
 
 use crate::{
-    text::Font, Color, ContentMode, ControlState, CornerRounding, Drawable, EdgeInsets, EventCtx,
-    GeomBatch, GfxCtx, Image, Line, MultiKey, Outcome, OutlineStyle, RewriteColor, ScreenDims,
-    ScreenPt, ScreenRectangle, Text, Widget, WidgetImpl, WidgetOutput,
+    text::Font, Color, ContentMode, ControlState, CornerRounding, CreateTextSpan, Drawable,
+    EdgeInsets, EventCtx, GeomBatch, GfxCtx, Image, MultiKey, Outcome, OutlineStyle, RewriteColor,
+    ScreenDims, ScreenPt, ScreenRectangle, Text, Widget, WidgetImpl, WidgetOutput,
 };
 
 use crate::geom::geom_batch_stack::{Axis, GeomBatchStack};
@@ -222,7 +222,7 @@ impl<'b, 'a: 'b, 'c> ButtonBuilder<'a, 'c> {
     pub fn label_underlined_text(mut self, text: &'a str) -> Self {
         let mut label = self.default_style.label.take().unwrap_or_default();
         label.text = Some(text.to_string());
-        label.styled_text = Some(Text::from(Line(text).underlined()));
+        label.styled_text = Some(Text::from(CreateTextSpan(text).underlined()));
         self.default_style.label = Some(label);
         self
     }
@@ -621,7 +621,7 @@ impl<'b, 'a: 'b, 'c> ButtonBuilder<'a, 'c> {
                     .color
                     .or(default.and_then(|d| d.color))
                     .unwrap_or(ctx.style().text_fg_color);
-                let mut line = Line(text).fg(color);
+                let mut line = CreateTextSpan(text).fg(color);
 
                 if let Some(font_size) = label.font_size.or(default.and_then(|d| d.font_size)) {
                     line = line.size(font_size);

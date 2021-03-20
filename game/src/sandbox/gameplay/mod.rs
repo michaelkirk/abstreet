@@ -10,7 +10,8 @@ use geom::Duration;
 use map_model::{EditCmd, EditIntersection, MapEdits};
 use sim::{OrigPersonID, Scenario, ScenarioGenerator, ScenarioModifier};
 use widgetry::{
-    lctrl, Color, EventCtx, GeomBatch, GfxCtx, Key, Line, Outcome, Panel, State, TextExt, Widget,
+    lctrl, Color, CreateTextSpan, EventCtx, GeomBatch, GfxCtx, Key, Outcome, Panel, State, TextExt,
+    Widget,
 };
 
 pub use self::freeform::spawn_agents_around;
@@ -227,7 +228,10 @@ impl GameplayMode {
 
 fn challenge_header(ctx: &mut EventCtx, title: &str) -> Widget {
     Widget::row(vec![
-        Line(title).small_heading().into_widget(ctx).centered_vert(),
+        CreateTextSpan(title)
+            .small_heading()
+            .into_widget(ctx)
+            .centered_vert(),
         ctx.style()
             .btn_plain
             .icon("system/assets/tools/info.svg")

@@ -5,8 +5,8 @@ use map_gui::{AppLike, ID};
 use map_model::{PathRequest, RoadID, RoutingParams, Traversable, NORMAL_LANE_THICKNESS};
 use sim::{TripEndpoint, TripMode};
 use widgetry::{
-    Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Line, Outcome, Panel,
-    Spinner, State, Text, TextExt, TextSpan, VerticalAlignment, Widget,
+    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key,
+    Outcome, Panel, Spinner, State, Text, TextExt, TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -27,7 +27,9 @@ impl RouteExplorer {
             goal: None,
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Route explorer").small_heading().into_widget(ctx),
+                    CreateTextSpan("Route explorer")
+                        .small_heading()
+                        .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 ctx.style()
@@ -288,7 +290,9 @@ impl AllRoutesExplorer {
         Box::new(AllRoutesExplorer {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("All routes explorer").small_heading().into_widget(ctx),
+                    CreateTextSpan("All routes explorer")
+                        .small_heading()
+                        .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 format!("{} total requests", prettyprint_usize(requests.len())).text_widget(ctx),
@@ -454,16 +458,16 @@ fn calculate_demand(app: &App, requests: &Vec<PathRequest>, timer: &mut Timer) -
 
 fn cmp_count(after: usize, before: usize) -> Vec<TextSpan> {
     if after == before {
-        vec![Line("same")]
+        vec![CreateTextSpan("same")]
     } else if after < before {
         vec![
-            Line(prettyprint_usize(before - after)).fg(Color::GREEN),
-            Line(" less"),
+            CreateTextSpan(prettyprint_usize(before - after)).fg(Color::GREEN),
+            CreateTextSpan(" less"),
         ]
     } else if after > before {
         vec![
-            Line(prettyprint_usize(after - before)).fg(Color::RED),
-            Line(" more"),
+            CreateTextSpan(prettyprint_usize(after - before)).fg(Color::RED),
+            CreateTextSpan(" more"),
         ]
     } else {
         unreachable!()

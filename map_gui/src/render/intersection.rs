@@ -95,11 +95,15 @@ impl DrawIntersection {
                             // a fixed SVG asset and just rotate it, but we'd still need to
                             // calculate the octagon hitbox for the stop sign editor.
                             default_geom.append(
-                                Text::from(widgetry::Line("STOP").small_heading().fg(Color::WHITE))
-                                    .render_autocropped(prerender.as_ref())
-                                    .scale(0.02)
-                                    .centered_on(center)
-                                    .rotate(angle.opposite().rotate_degs(-90.0)),
+                                Text::from(
+                                    widgetry::CreateTextSpan("STOP")
+                                        .small_heading()
+                                        .fg(Color::WHITE),
+                                )
+                                .render_autocropped(prerender.as_ref())
+                                .scale(0.02)
+                                .centered_on(center)
+                                .rotate(angle.opposite().rotate_degs(-90.0)),
                             );
                         }
                     }

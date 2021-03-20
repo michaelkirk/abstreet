@@ -4,8 +4,8 @@ use map_gui::ID;
 use map_model::{AmenityType, BuildingID};
 use sim::{Scenario, TripEndpoint};
 use widgetry::{
-    Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Line, Outcome, Panel, State,
-    Text, Toggle, VerticalAlignment, Widget,
+    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Outcome,
+    Panel, State, Text, Toggle, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -94,7 +94,7 @@ impl PopularDestinations {
             draw: ctx.upload(batch),
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Most popular destinations")
+                    CreateTextSpan("Most popular destinations")
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),

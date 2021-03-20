@@ -5,8 +5,8 @@ use geom::{ArrowCap, Circle, Distance, Duration, PolyLine, Polygon, Pt2D};
 use map_gui::tools::PopupMsg;
 use sim::{AgentID, DelayCause};
 use widgetry::{
-    Cached, Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Line, Outcome,
-    Panel, State, Text, TextExt, VerticalAlignment, Widget,
+    Cached, Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment,
+    Outcome, Panel, State, Text, TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -37,7 +37,7 @@ impl Viewer {
             arrows: Drawable::empty(ctx),
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("What agents are blocked by others?")
+                    CreateTextSpan("What agents are blocked by others?")
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
@@ -219,8 +219,8 @@ impl State<App> for Viewer {
                     if let Some((delay, _)) = self.graph.get(&agent) {
                         let (batch, problem) = self.trace_root_cause(app, agent);
                         let txt = Text::from_multiline(vec![
-                            Line(format!("Waiting {}", delay)),
-                            Line(problem),
+                            CreateTextSpan(format!("Waiting {}", delay)),
+                            CreateTextSpan(problem),
                         ]);
                         (ctx.upload(batch), txt)
                     } else {

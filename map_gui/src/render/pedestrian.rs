@@ -1,7 +1,7 @@
 use geom::{ArrowCap, Circle, Distance, PolyLine, Polygon, Pt2D};
 use map_model::{DrivingSide, Map, SIDEWALK_THICKNESS};
 use sim::{DrawPedCrowdInput, DrawPedestrianInput, PedCrowdLocation, PedestrianID, Sim};
-use widgetry::{Color, Drawable, GeomBatch, GfxCtx, Line, Prerender, Text};
+use widgetry::{Color, CreateTextSpan, Drawable, GeomBatch, GfxCtx, Prerender, Text};
 
 use crate::colors::ColorScheme;
 use crate::render::{grey_out_unhighlighted_people, DrawOptions, Renderable, OUTLINE_THICKNESS};
@@ -237,7 +237,7 @@ impl DrawPedCrowd {
         let mut batch = GeomBatch::new();
         batch.push(cs.ped_crowd, blob.clone());
         batch.append(
-            Text::from(Line(format!("{}", input.members.len())).fg(Color::BLACK))
+            Text::from(CreateTextSpan(format!("{}", input.members.len())).fg(Color::BLACK))
                 .render_autocropped(prerender)
                 .scale(0.02)
                 .centered_on(blob.center()),

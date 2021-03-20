@@ -7,8 +7,8 @@ use geom::{Duration, Line, Pt2D, Speed};
 use map_gui::tools::open_browser;
 use sim::{AlertHandler, ScenarioGenerator, Sim, SimOptions};
 use widgetry::{
-    hotkeys, Color, ContentMode, DrawBaselayer, EdgeInsets, EventCtx, Font, GfxCtx, Image, Key,
-    Line, Outcome, Panel, ScreenDims, State, Text, UpdateType, Widget,
+    hotkeys, Color, ContentMode, CreateTextSpan, DrawBaselayer, EdgeInsets, EventCtx, Font, GfxCtx,
+    Image, Key, Outcome, Panel, ScreenDims, State, Text, UpdateType, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -91,7 +91,7 @@ impl MainMenu {
     pub fn new(ctx: &mut EventCtx) -> Box<dyn State<App>> {
         let col = vec![
             {
-                let mut txt = Text::from(Line("A/B STREET").display_title());
+                let mut txt = Text::from(CreateTextSpan("A/B STREET").display_title());
                 txt.add_line("Created by Dustin Carlino, Yuwen Li, & Michael Kirk");
                 txt.into_widget(ctx).centered_horiz()
             },
@@ -121,7 +121,7 @@ impl MainMenu {
                         .label_text("Tutorial")
                         .tooltip({
                             let mut txt = Text::tooltip(ctx, Key::T, "Tutorial");
-                            txt.add_line(Line("Learn how to play the game").small());
+                            txt.add_line(CreateTextSpan("Learn how to play the game").small());
                             txt
                         })
                         .hotkey(Key::T)
@@ -132,7 +132,7 @@ impl MainMenu {
                         .label_text("Sandbox")
                         .tooltip({
                             let mut txt = Text::tooltip(ctx, Key::S, "Sandbox");
-                            txt.add_line(Line("No goals, try out any idea here").small());
+                            txt.add_line(CreateTextSpan("No goals, try out any idea here").small());
                             txt
                         })
                         .hotkey(Key::S)
@@ -143,7 +143,7 @@ impl MainMenu {
                         .label_text("Challenge")
                         .tooltip({
                             let mut txt = Text::tooltip(ctx, Key::C, "Challenges");
-                            txt.add_line(Line("Fix specific problems").small());
+                            txt.add_line(CreateTextSpan("Fix specific problems").small());
                             txt
                         })
                         .hotkey(Key::C)
@@ -157,7 +157,9 @@ impl MainMenu {
                     .text("Community Proposals")
                     .tooltip({
                         let mut txt = Text::tooltip(ctx, Key::P, "Community Proposals");
-                        txt.add_line(Line("See existing ideas for improving traffic").small());
+                        txt.add_line(
+                            CreateTextSpan("See existing ideas for improving traffic").small(),
+                        );
                         txt
                     })
                     .hotkey(Key::P)
@@ -259,16 +261,16 @@ impl About {
                 .align_left(),
             {
                 Text::from_multiline(vec![
-                    Line("A/B STREET").display_title(),
-                    Line("Created by Dustin Carlino, Yuwen Li, & Michael Kirk"),
-                    Line("Character art by Holly Hansel"),
-                    Line(""),
-                    Line(
+                    CreateTextSpan("A/B STREET").display_title(),
+                    CreateTextSpan("Created by Dustin Carlino, Yuwen Li, & Michael Kirk"),
+                    CreateTextSpan("Character art by Holly Hansel"),
+                    CreateTextSpan(""),
+                    CreateTextSpan(
                         "Data from OpenStreetMap, King County GIS, and Puget Sound Regional \
                          Council",
                     ),
-                    Line(""),
-                    Line(
+                    CreateTextSpan(""),
+                    CreateTextSpan(
                         "Disclaimer: This game is based on imperfect data, heuristics concocted \
                          under the influence of cold brew, a simplified traffic simulation model, \
                          and a deeply flawed understanding of how much articulated buses can bend \
@@ -382,7 +384,7 @@ impl Screensaver {
 #[cfg(not(target_arch = "wasm32"))]
 #[allow(unused)]
 mod built_info {
-    use widgetry::{Color, DrawBaselayer, Line, State, Text};
+    use widgetry::{Color, CreateTextSpan, DrawBaselayer, State, Text};
 
     include!(concat!(env!("OUT_DIR"), "/built.rs"));
 
@@ -392,7 +394,9 @@ mod built_info {
         let mut txt = Text::from(format!("This version built on {}", t.date().naive_local()));
         // Releases every Sunday
         if (chrono::Utc::now() - t).num_days() > 8 {
-            txt.append(Line(format!(" (get the new release from abstreet.org)")).fg(Color::RED));
+            txt.append(
+                CreateTextSpan(format!(" (get the new release from abstreet.org)")).fg(Color::RED),
+            );
         }
         txt
     }

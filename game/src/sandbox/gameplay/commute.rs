@@ -3,8 +3,8 @@ use std::collections::BTreeMap;
 use geom::{Duration, Time};
 use sim::{OrigPersonID, PersonID, TripID};
 use widgetry::{
-    Color, EventCtx, GfxCtx, HorizontalAlignment, Image, Line, Outcome, Panel, State, Text,
-    TextExt, VerticalAlignment, Widget,
+    Color, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Image, Outcome, Panel, State,
+    Text, TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -177,7 +177,7 @@ impl GameplayState for OptimizeCommute {
         let (before, after, done) = get_score(app, &self.trips);
         let mut txt = Text::from(format!("Total time: {} (", after));
         txt.append_all(cmp_duration_shorter(app, after, before));
-        txt.append(Line(")"));
+        txt.append(CreateTextSpan(")"));
 
         self.top_right = Panel::new(Widget::col(vec![
             challenge_header(ctx, "Optimize the VIP's commute"),
@@ -285,44 +285,45 @@ fn cutscene_task(mode: &GameplayMode) -> Box<dyn Fn(&mut EventCtx) -> Widget> {
         let icon_builder = Image::empty().color(Color::BLACK).dims(50.0);
         Widget::custom_col(vec![
             Text::from_multiline(vec![
-                Line(format!("Speed up the VIP's trips by a total of {}", goal)).fg(Color::BLACK),
-                Line("Ignore the damage done to everyone else.").fg(Color::BLACK),
+                CreateTextSpan(format!("Speed up the VIP's trips by a total of {}", goal))
+                    .fg(Color::BLACK),
+                CreateTextSpan("Ignore the damage done to everyone else.").fg(Color::BLACK),
             ])
             .into_widget(ctx)
             .margin_below(30),
             Widget::row(vec![
                 Widget::col(vec![
-                    Line("Time").fg(Color::BLACK).into_widget(ctx),
+                    CreateTextSpan("Time").fg(Color::BLACK).into_widget(ctx),
                     icon_builder
                         .clone()
                         .source_path("system/assets/tools/time.svg")
                         .into_widget(ctx),
                     Text::from_multiline(vec![
-                        Line("Until the VIP's").fg(Color::BLACK),
-                        Line("last trip is done").fg(Color::BLACK),
+                        CreateTextSpan("Until the VIP's").fg(Color::BLACK),
+                        CreateTextSpan("last trip is done").fg(Color::BLACK),
                     ])
                     .into_widget(ctx),
                 ]),
                 Widget::col(vec![
-                    Line("Goal").fg(Color::BLACK).into_widget(ctx),
+                    CreateTextSpan("Goal").fg(Color::BLACK).into_widget(ctx),
                     icon_builder
                         .clone()
                         .source_path("system/assets/tools/location.svg")
                         .into_widget(ctx),
                     Text::from_multiline(vec![
-                        Line("Speed up the VIP's trips").fg(Color::BLACK),
-                        Line(format!("by at least {}", goal)).fg(Color::BLACK),
+                        CreateTextSpan("Speed up the VIP's trips").fg(Color::BLACK),
+                        CreateTextSpan(format!("by at least {}", goal)).fg(Color::BLACK),
                     ])
                     .into_widget(ctx),
                 ]),
                 Widget::col(vec![
-                    Line("Score").fg(Color::BLACK).into_widget(ctx),
+                    CreateTextSpan("Score").fg(Color::BLACK).into_widget(ctx),
                     icon_builder
                         .source_path("system/assets/tools/star.svg")
                         .into_widget(ctx),
                     Text::from_multiline(vec![
-                        Line("How much time").fg(Color::BLACK),
-                        Line("the VIP saves").fg(Color::BLACK),
+                        CreateTextSpan("How much time").fg(Color::BLACK),
+                        CreateTextSpan("the VIP saves").fg(Color::BLACK),
                     ])
                     .into_widget(ctx),
                 ]),

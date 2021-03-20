@@ -4,8 +4,8 @@ use geom::{Circle, Distance, Duration, FindClosest, Polygon, Time};
 use map_gui::tools::ColorNetwork;
 use map_gui::ID;
 use widgetry::{
-    Choice, Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Line, Outcome,
-    Panel, Slider, State, Text, TextExt, Toggle, VerticalAlignment, Widget,
+    Choice, Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment,
+    Outcome, Panel, Slider, State, Text, TextExt, Toggle, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -38,7 +38,9 @@ impl CollisionsViewer {
         Box::new(CollisionsViewer {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Collisions viewer").small_heading().into_widget(ctx),
+                    CreateTextSpan("Collisions viewer")
+                        .small_heading()
+                        .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 format!("{} collisions", prettyprint_usize(count))
@@ -242,11 +244,11 @@ impl Dataviz {
             tooltips.push((
                 circle,
                 Text::from_multiline(vec![
-                    Line(format!(
+                    CreateTextSpan(format!(
                         "Time: {}",
                         (Time::START_OF_DAY + collision.time).ampm_tostring()
                     )),
-                    Line(format!("Severity: {:?}", collision.severity)),
+                    CreateTextSpan(format!("Severity: {:?}", collision.severity)),
                 ]),
             ));
         }

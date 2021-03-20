@@ -5,7 +5,7 @@ use geom::Percent;
 use map_gui::tools::PopupMsg;
 use map_model::{AmenityType, BuildingID};
 use widgetry::{
-    Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Line, Panel,
+    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel,
     SimpleState, State, TextExt, Toggle, Transition, VerticalAlignment, Widget,
 };
 
@@ -22,7 +22,7 @@ impl FindHome {
     pub fn new(ctx: &mut EventCtx, options: Options) -> Box<dyn State<App>> {
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                Line("Find your walkable home")
+                CreateTextSpan("Find your walkable home")
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
@@ -141,7 +141,7 @@ impl Results {
         amenities: Vec<AmenityType>,
     ) -> Box<dyn State<App>> {
         let panel = Panel::new(Widget::col(vec![
-            Line("Results for your walkable home")
+            CreateTextSpan("Results for your walkable home")
                 .small_heading()
                 .into_widget(ctx),
             // TODO Adjust text to say bikeshed, or otherwise reflect the options chosen

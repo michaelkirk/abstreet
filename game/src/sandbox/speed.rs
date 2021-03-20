@@ -4,8 +4,9 @@ use map_gui::tools::PopupMsg;
 use map_gui::ID;
 use sim::AlertLocation;
 use widgetry::{
-    Choice, Color, ControlState, EdgeInsets, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key,
-    Line, Outcome, Panel, PersistentSplit, ScreenDims, Text, TextExt, VerticalAlignment, Widget,
+    Choice, Color, ControlState, CreateTextSpan, EdgeInsets, EventCtx, GeomBatch, GfxCtx,
+    HorizontalAlignment, Key, Outcome, Panel, PersistentSplit, ScreenDims, Text, TextExt,
+    VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -79,7 +80,7 @@ impl TimePanel {
                 ]
                 .into_iter()
                 .map(|(s, label)| {
-                    let mut txt = Text::from(Line(label).small());
+                    let mut txt = Text::from(CreateTextSpan(label).small());
                     txt.extend(Text::tooltip(ctx, Key::LeftArrow, "slow down"));
                     txt.extend(Text::tooltip(ctx, Key::RightArrow, "speed up"));
 
@@ -225,7 +226,8 @@ impl TimePanel {
         }
 
         let text_geom = Text::from(
-            Line(format!("Finished Trips: {}", prettyprint_usize(finished))).fg(text_color),
+            CreateTextSpan(format!("Finished Trips: {}", prettyprint_usize(finished)))
+                .fg(text_color),
         )
         .render(ctx)
         .translate(8.0, 0.0);
@@ -264,20 +266,20 @@ impl TimePanel {
             // TODO: up/down icons
             let line = if baseline_finished > finished {
                 let difference = baseline_finished - finished;
-                Line(format!(
+                CreateTextSpan(format!(
                     "{} less than baseline",
                     prettyprint_usize(difference)
                 ))
                 .fg(ctx.style().text_destructive_color)
             } else if baseline_finished < finished {
                 let difference = finished - baseline_finished;
-                Line(format!(
+                CreateTextSpan(format!(
                     "{} more than baseline",
                     prettyprint_usize(difference)
                 ))
                 .fg(ctx.style().text_tooltip_color)
             } else {
-                Line("No change from baseline")
+                CreateTextSpan("No change from baseline")
             };
             tooltip_text.add_line(line);
         }
@@ -313,7 +315,7 @@ impl TimePanel {
         };
 
         Widget::col(vec![
-            Text::from(Line(self.time.ampm_tostring()).big_monospaced()).into_widget(ctx),
+            Text::from(CreateTextSpan(self.time.ampm_tostring()).big_monospaced()).into_widget(ctx),
             trips_bar.margin_above(12),
             if app.primary.dirty_from_edits {
                 ctx.style()

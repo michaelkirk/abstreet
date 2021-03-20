@@ -14,8 +14,9 @@ use map_model::connectivity::WalkingOptions;
 use map_model::{AmenityType, Building, BuildingID, LaneType};
 use widgetry::table::{Col, Filter, Table};
 use widgetry::{
-    lctrl, Cached, Choice, Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key,
-    Line, Outcome, Panel, RewriteColor, State, Text, Toggle, Transition, VerticalAlignment, Widget,
+    lctrl, Cached, Choice, Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx,
+    HorizontalAlignment, Key, Outcome, Panel, RewriteColor, State, Text, Toggle, Transition,
+    VerticalAlignment, Widget,
 };
 
 use crate::find_home::FindHome;
@@ -278,7 +279,7 @@ fn build_panel(ctx: &mut EventCtx, app: &App, start: &Building, isochrone: &Isoc
     let mut rows = Vec::new();
 
     rows.push(
-        Line("15-minute neighborhood explorer")
+        CreateTextSpan("15-minute neighborhood explorer")
             .small_heading()
             .into_widget(ctx),
     );
@@ -295,24 +296,24 @@ fn build_panel(ctx: &mut EventCtx, app: &App, start: &Building, isochrone: &Isoc
 
     rows.push(
         Text::from_all(vec![
-            Line("Starting from: ").secondary(),
-            Line(&start.address),
+            CreateTextSpan("Starting from: ").secondary(),
+            CreateTextSpan(&start.address),
         ])
         .into_widget(ctx),
     );
 
     rows.push(
         Text::from_all(vec![
-            Line("Estimated population: ").secondary(),
-            Line(prettyprint_usize(isochrone.population)),
+            CreateTextSpan("Estimated population: ").secondary(),
+            CreateTextSpan(prettyprint_usize(isochrone.population)),
         ])
         .into_widget(ctx),
     );
 
     rows.push(
         Text::from_all(vec![
-            Line("Estimated street parking spots: ").secondary(),
-            Line(prettyprint_usize(isochrone.onstreet_parking_spots)),
+            CreateTextSpan("Estimated street parking spots: ").secondary(),
+            CreateTextSpan(prettyprint_usize(isochrone.onstreet_parking_spots)),
         ])
         .into_widget(ctx),
     );
@@ -486,7 +487,7 @@ impl ExploreAmenities {
 
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                Line(format!("{} within 15 minutes", category))
+                CreateTextSpan(format!("{} within 15 minutes", category))
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),

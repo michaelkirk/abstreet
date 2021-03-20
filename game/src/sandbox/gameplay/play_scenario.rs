@@ -7,8 +7,8 @@ use map_gui::tools::{
 };
 use sim::{ScenarioModifier, TripMode};
 use widgetry::{
-    lctrl, Choice, EventCtx, GfxCtx, HorizontalAlignment, Key, Line, Outcome, Panel, Slider,
-    Spinner, State, Text, TextExt, VerticalAlignment, Widget,
+    lctrl, Choice, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel,
+    Slider, Spinner, State, Text, TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -167,7 +167,7 @@ impl GameplayState for PlayScenario {
 
         let rows = vec![
             Widget::custom_row(vec![
-                Line("Sandbox")
+                CreateTextSpan("Sandbox")
                     .small_heading()
                     .into_widget(ctx)
                     .margin_right(18),
@@ -218,7 +218,7 @@ impl EditScenarioModifiers {
         modifiers: Vec<ScenarioModifier>,
     ) -> Box<dyn State<App>> {
         let mut rows = vec![
-            Line("Modify traffic patterns")
+            CreateTextSpan("Modify traffic patterns")
                 .small_heading()
                 .into_widget(ctx),
             Text::from(
@@ -400,7 +400,9 @@ impl ChangeMode {
             scenario_name,
             modifiers,
             panel: Panel::new(Widget::col(vec![
-                Line("Change trip mode").small_heading().into_widget(ctx),
+                CreateTextSpan("Change trip mode")
+                    .small_heading()
+                    .into_widget(ctx),
                 Widget::row(vec![
                     "Percent of people to modify:"
                         .text_widget(ctx)

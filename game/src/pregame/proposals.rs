@@ -4,7 +4,9 @@ use geom::Percent;
 use map_gui::load::MapLoader;
 use map_gui::tools::{open_browser, PopupMsg};
 use map_model::PermanentMapEdits;
-use widgetry::{DrawBaselayer, EventCtx, GfxCtx, Key, Line, Outcome, Panel, State, Text, Widget};
+use widgetry::{
+    CreateTextSpan, DrawBaselayer, EventCtx, GfxCtx, Key, Outcome, Panel, State, Text, Widget,
+};
 
 use crate::app::{App, Transition};
 use crate::edit::apply_map_edits;
@@ -29,7 +31,7 @@ impl Proposals {
         {
             if current == Some(name.clone()) {
                 let mut txt = Text::new();
-                txt.add_line(Line(&edits.proposal_description[0]).small_heading());
+                txt.add_line(CreateTextSpan(&edits.proposal_description[0]).small_heading());
                 for l in edits.proposal_description.iter().skip(1) {
                     txt.add_line(l);
                 }
@@ -81,8 +83,8 @@ impl Proposals {
 
         let mut col = vec![
             {
-                let mut txt = Text::from(Line("A/B STREET").display_title());
-                txt.add_line(Line("PROPOSALS").big_heading_styled());
+                let mut txt = Text::from(CreateTextSpan("A/B STREET").display_title());
+                txt.add_line(CreateTextSpan("PROPOSALS").big_heading_styled());
                 txt.add_line("");
                 txt.add_line("These are proposed changes to Seattle made by community members.");
                 txt.add_line("Contact dabreegster@gmail.com to add your idea here!");

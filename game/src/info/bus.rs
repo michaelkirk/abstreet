@@ -4,7 +4,7 @@ use map_gui::tools::ColorNetwork;
 use map_gui::ID;
 use map_model::{BusRoute, BusRouteID, BusStopID, PathStep};
 use sim::{AgentID, CarID};
-use widgetry::{Color, EventCtx, Key, Line, Text, TextExt, Widget};
+use widgetry::{Color, CreateTextSpan, EventCtx, Key, Text, TextExt, Widget};
 
 use crate::app::App;
 use crate::info::{header_btns, make_tabs, Details, Tab};
@@ -16,10 +16,10 @@ pub fn stop(ctx: &mut EventCtx, app: &App, details: &mut Details, id: BusStopID)
     let sim = &app.primary.sim;
 
     rows.push(Widget::row(vec![
-        Line("Bus stop").small_heading().into_widget(ctx),
+        CreateTextSpan("Bus stop").small_heading().into_widget(ctx),
         header_btns(ctx),
     ]));
-    rows.push(Line(&bs.name).into_widget(ctx));
+    rows.push(CreateTextSpan(&bs.name).into_widget(ctx));
 
     let all_arrivals = &sim.get_analytics().bus_arrivals;
     for r in app.primary.map.get_routes_serving_stop(id) {
@@ -41,9 +41,11 @@ pub fn stop(ctx: &mut EventCtx, app: &App, details: &mut Details, id: BusStopID)
         let mut txt = Text::new();
         if let Some((t, _)) = arrivals.last() {
             // TODO Button to jump to the bus
-            txt.add_line(Line(format!("  Last bus arrived {} ago", sim.time() - *t)).secondary());
+            txt.add_line(
+                CreateTextSpan(format!("  Last bus arrived {} ago", sim.time() - *t)).secondary(),
+            );
         } else {
-            txt.add_line(Line("  No arrivals yet").secondary());
+            txt.add_line(CreateTextSpan("  No arrivals yet").secondary());
         }
         rows.push(txt.into_widget(ctx));
     }
@@ -69,7 +71,7 @@ pub fn stop(ctx: &mut EventCtx, app: &App, details: &mut Details, id: BusStopID)
     let mut txt = Text::new();
     txt.add_line("Total");
     txt.append(
-        Line(format!(
+        CreateTextSpan(format!(
             ": {} boardings, {} alightings",
             prettyprint_usize(boardings.sum()),
             prettyprint_usize(alightings.sum())
@@ -79,7 +81,7 @@ pub fn stop(ctx: &mut EventCtx, app: &App, details: &mut Details, id: BusStopID)
     for r in app.primary.map.get_routes_serving_stop(id) {
         txt.add_line(format!("Route {}", r.short_name));
         txt.append(
-            Line(format!(
+            CreateTextSpan(format!(
                 ": {} boardings, {} alightings",
                 prettyprint_usize(boardings.get(r.id)),
                 prettyprint_usize(alightings.get(r.id))
@@ -118,7 +120,7 @@ pub fn bus_status(ctx: &mut EventCtx, app: &App, details: &mut Details, id: CarI
     );
 
     rows.push(
-        Line(format!(
+        CreateTextSpan(format!(
             "Currently has {} passengers",
             app.primary.sim.num_transit_passengers(id),
         ))
@@ -147,7 +149,7 @@ fn bus_header(
 
     let mut rows = vec![];
     rows.push(Widget::row(vec![
-        Line(format!(
+        CreateTextSpan(format!(
             "{} (route {})",
             id,
             app.primary.map.get_br(route).short_name
@@ -172,7 +174,7 @@ pub fn route(ctx: &mut EventCtx, app: &App, details: &mut Details, id: BusRouteI
     let mut rows = vec![];
 
     rows.push(Widget::row(vec![
-        Line(format!("Route {}", route.short_name))
+        CreateTextSpan(format!("Route {}", route.short_name))
             .small_heading()
             .into_widget(ctx),
         header_btns(ctx),
@@ -234,8 +236,8 @@ pub fn route(ctx: &mut EventCtx, app: &App, details: &mut Details, id: BusRouteI
 
     rows.push(
         Text::from_all(vec![
-            Line("Total"),
-            Line(format!(
+            CreateTextSpan("Total"),
+            CreateTextSpan(format!(
                 ": {} boardings, {} alightings, {} currently waiting",
                 prettyprint_usize(boardings.sum()),
                 prettyprint_usize(alightings.sum()),
@@ -268,8 +270,8 @@ pub fn route(ctx: &mut EventCtx, app: &App, details: &mut Details, id: BusRouteI
                 .icon("system/assets/tools/pin.svg")
                 .build_widget(ctx, &name),
             Text::from_all(vec![
-                Line(&bs.name),
-                Line(format!(
+                CreateTextSpan(&bs.name),
+                CreateTextSpan(format!(
                     ": {} boardings, {} alightings, {} currently waiting",
                     prettyprint_usize(boardings.get(bs.id)),
                     prettyprint_usize(alightings.get(bs.id)),

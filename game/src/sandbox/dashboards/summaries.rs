@@ -9,8 +9,8 @@ use geom::{Distance, Duration, Polygon, Pt2D};
 use map_gui::tools::PopupMsg;
 use sim::TripMode;
 use widgetry::{
-    Choice, Color, CompareTimes, DrawWithTooltips, EventCtx, GeomBatch, GfxCtx, Line, Outcome,
-    Panel, State, Text, TextExt, Toggle, Widget,
+    Choice, Color, CompareTimes, CreateTextSpan, DrawWithTooltips, EventCtx, GeomBatch, GfxCtx,
+    Outcome, Panel, State, Text, TextExt, Toggle, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -155,13 +155,14 @@ fn summary_boxes(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
 
     Widget::row(vec![
         Text::from_multiline(vec![
-            Line(format!("Faster Trips: {}", prettyprint_usize(num_faster))).big_heading_plain(),
-            Line(format!(
+            CreateTextSpan(format!("Faster Trips: {}", prettyprint_usize(num_faster)))
+                .big_heading_plain(),
+            CreateTextSpan(format!(
                 "{:.2}% of finished trips",
                 100.0 * (num_faster as f64) / num_total
             ))
             .small(),
-            Line(format!(
+            CreateTextSpan(format!(
                 "Average {} faster per trip",
                 if num_faster == 0 {
                     Duration::ZERO
@@ -170,7 +171,7 @@ fn summary_boxes(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
                 }
             ))
             .small(),
-            Line(format!("Saved {} in total", sum_faster)).small(),
+            CreateTextSpan(format!("Saved {} in total", sum_faster)).small(),
         ])
         .into_widget(ctx)
         .container()
@@ -178,13 +179,14 @@ fn summary_boxes(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
         .bg(Color::hex("#72CE36").alpha(0.5))
         .outline(ctx.style().section_outline),
         Text::from_multiline(vec![
-            Line(format!("Slower Trips: {}", prettyprint_usize(num_slower))).big_heading_plain(),
-            Line(format!(
+            CreateTextSpan(format!("Slower Trips: {}", prettyprint_usize(num_slower)))
+                .big_heading_plain(),
+            CreateTextSpan(format!(
                 "{:.2}% of finished trips",
                 100.0 * (num_slower as f64) / num_total
             ))
             .small(),
-            Line(format!(
+            CreateTextSpan(format!(
                 "Average {} slower per trip",
                 if num_slower == 0 {
                     Duration::ZERO
@@ -193,7 +195,7 @@ fn summary_boxes(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
                 }
             ))
             .small(),
-            Line(format!("Lost {} in total", sum_slower)).small(),
+            CreateTextSpan(format!("Lost {} in total", sum_slower)).small(),
         ])
         .into_widget(ctx)
         .container()
@@ -201,8 +203,9 @@ fn summary_boxes(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
         .bg(Color::hex("#EB3223").alpha(0.5))
         .outline(ctx.style().section_outline),
         Text::from_multiline(vec![
-            Line(format!("Unchanged: {}", prettyprint_usize(num_same))).big_heading_plain(),
-            Line(format!(
+            CreateTextSpan(format!("Unchanged: {}", prettyprint_usize(num_same)))
+                .big_heading_plain(),
+            CreateTextSpan(format!(
                 "{:.2}% of finished trips",
                 100.0 * (num_same as f64) / num_total
             ))
@@ -228,7 +231,7 @@ fn scatter_plot(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
     }
 
     Widget::col(vec![
-        Line("Trip time before and after")
+        CreateTextSpan("Trip time before and after")
             .small_heading()
             .into_widget(ctx),
         CompareTimes::new(
@@ -274,7 +277,7 @@ fn contingency_table(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
     // Draw the X axis, time before changes in buckets.
     for (idx, mins) in endpts.iter().enumerate() {
         batch.append(
-            Text::from(Line(mins.to_string()).secondary())
+            Text::from(CreateTextSpan(mins.to_string()).secondary())
                 .render(ctx)
                 .centered_on(Pt2D::new(
                     (idx as f64) / (num_buckets as f64) * total_width,
@@ -286,9 +289,9 @@ fn contingency_table(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
     if false {
         batch.append(
             Text::from_multiline(vec![
-                Line("trip").secondary(),
-                Line("time").secondary(),
-                Line("after").secondary(),
+                CreateTextSpan("trip").secondary(),
+                CreateTextSpan("time").secondary(),
+                CreateTextSpan("after").secondary(),
             ])
             .render(ctx)
             .translate(total_width, total_height / 2.0),
@@ -347,13 +350,14 @@ fn contingency_table(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
             tooltips.push((
                 rect,
                 Text::from_multiline(vec![
-                    Line(format!(
+                    CreateTextSpan(format!(
                         "{} trips between {} and {} minutes",
                         prettyprint_usize(num_savings),
                         endpts[idx],
                         endpts[idx + 1]
                     )),
-                    Line(format!("Saved {} in total", total_savings)).fg(Color::hex("#72CE36")),
+                    CreateTextSpan(format!("Saved {} in total", total_savings))
+                        .fg(Color::hex("#72CE36")),
                 ]),
             ));
         }
@@ -368,13 +372,14 @@ fn contingency_table(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
             tooltips.push((
                 rect,
                 Text::from_multiline(vec![
-                    Line(format!(
+                    CreateTextSpan(format!(
                         "{} trips between {} and {} minutes",
                         prettyprint_usize(num_loss),
                         endpts[idx],
                         endpts[idx + 1]
                     )),
-                    Line(format!("Lost {} in total", total_loss)).fg(Color::hex("#EB3223")),
+                    CreateTextSpan(format!("Lost {} in total", total_loss))
+                        .fg(Color::hex("#EB3223")),
                 ]),
             ));
         }
@@ -385,15 +390,15 @@ fn contingency_table(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
 
     Widget::col(vec![
         Text::from_multiline(vec![
-            Line("Number of slower/faster trips").small_heading(),
-            Line("by ranges of trip time (after)").small_heading(),
+            CreateTextSpan("Number of slower/faster trips").small_heading(),
+            CreateTextSpan("by ranges of trip time (after)").small_heading(),
         ])
         .into_widget(ctx),
-        Line("number of trips (faster)")
+        CreateTextSpan("number of trips (faster)")
             .secondary()
             .into_widget(ctx),
         DrawWithTooltips::new(ctx, batch, tooltips, Box::new(|_| GeomBatch::new())),
-        Line("number of trips (slower)")
+        CreateTextSpan("number of trips (slower)")
             .secondary()
             .into_widget(ctx),
     ])

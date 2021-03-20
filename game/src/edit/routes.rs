@@ -1,8 +1,8 @@
 use geom::{Duration, Time};
 use map_model::{BusRouteID, EditCmd};
 use widgetry::{
-    EventCtx, GfxCtx, HorizontalAlignment, Key, Line, Outcome, Panel, Spinner, State, TextExt,
-    VerticalAlignment, Widget,
+    CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, Spinner, State,
+    TextExt, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -22,10 +22,12 @@ impl RouteEditor {
         Box::new(RouteEditor {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Route editor").small_heading().into_widget(ctx),
+                    CreateTextSpan("Route editor")
+                        .small_heading()
+                        .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
-                Line(&route.full_name).into_widget(ctx),
+                CreateTextSpan(&route.full_name).into_widget(ctx),
                 // TODO This UI needs design, just something to start plumbing the edits
                 Widget::row(vec![
                     "Frequency in minutes".text_widget(ctx),

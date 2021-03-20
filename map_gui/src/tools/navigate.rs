@@ -2,8 +2,8 @@ use std::collections::HashSet;
 
 use map_model::RoadID;
 use widgetry::{
-    Autocomplete, Color, Drawable, EventCtx, GeomBatch, GfxCtx, Key, Line, Outcome, Panel, State,
-    Text, Transition, Widget,
+    Autocomplete, Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Key, Outcome,
+    Panel, State, Text, Transition, Widget,
 };
 
 use crate::tools::grey_out_map;
@@ -19,7 +19,9 @@ impl Navigator {
         Box::new(Navigator {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Enter a street name").small_heading().into_widget(ctx),
+                    CreateTextSpan("Enter a street name")
+                        .small_heading()
+                        .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 Autocomplete::new(
@@ -109,7 +111,8 @@ impl CrossStreet {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
                     {
-                        let mut txt = Text::from(Line("What cross street?").small_heading());
+                        let mut txt =
+                            Text::from(CreateTextSpan("What cross street?").small_heading());
                         // TODO This isn't so clear...
                         txt.add_line(format!(
                             "(Or just quit to go to {})",
@@ -203,7 +206,7 @@ impl SearchBuildings {
         Box::new(SearchBuildings {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    Line("Enter a business name or address")
+                    CreateTextSpan("Enter a business name or address")
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),

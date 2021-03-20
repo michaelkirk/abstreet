@@ -5,8 +5,8 @@ use map_gui::ID;
 use map_model::{IntersectionID, Map, RoadID};
 use sim::{AgentType, TripMode, TripPhaseType};
 use widgetry::{
-    lctrl, Color, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Line, Panel, ScreenDims,
-    ScreenPt, ScreenRectangle, Text, TextSpan, Toggle, VerticalAlignment, Widget,
+    lctrl, Color, CreateTextSpan, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel,
+    ScreenDims, ScreenPt, ScreenRectangle, Text, TextSpan, Toggle, VerticalAlignment, Widget,
 };
 
 pub use self::warp::{warp_to_id, Warping};
@@ -107,20 +107,20 @@ impl CommonState {
             CommonState::osd_for(app, id.clone())
         } else if app.opts.dev {
             Text::from_all(vec![
-                Line("Nothing selected. Hint: "),
-                Line("Ctrl+J").fg(g.style().text_hotkey_color),
-                Line(" to warp"),
+                CreateTextSpan("Nothing selected. Hint: "),
+                CreateTextSpan("Ctrl+J").fg(g.style().text_hotkey_color),
+                CreateTextSpan(" to warp"),
             ])
         } else {
             Text::new()
         };
         if !keys.is_empty() {
-            osd.append(Line("   Hotkeys: "));
+            osd.append(CreateTextSpan("   Hotkeys: "));
             for (idx, key) in keys.into_iter().enumerate() {
                 if idx != 0 {
-                    osd.append(Line(", "));
+                    osd.append(CreateTextSpan(", "));
                 }
-                osd.append(Line(key.describe()).fg(g.style().text_hotkey_color));
+                osd.append(CreateTextSpan(key.describe()).fg(g.style().text_hotkey_color));
             }
         }
 
@@ -133,42 +133,42 @@ impl CommonState {
         match id {
             ID::Lane(l) => {
                 if app.opts.dev {
-                    osd.append(Line(l.to_string()).bold_body());
-                    osd.append(Line(" is "));
+                    osd.append(CreateTextSpan(l.to_string()).bold_body());
+                    osd.append(CreateTextSpan(" is "));
                 }
                 let r = map.get_parent(l);
                 osd.append_all(vec![
-                    Line(format!("{} of ", map.get_l(l).lane_type.describe())),
-                    Line(r.get_name(app.opts.language.as_ref())).underlined(),
+                    CreateTextSpan(format!("{} of ", map.get_l(l).lane_type.describe())),
+                    CreateTextSpan(r.get_name(app.opts.language.as_ref())).underlined(),
                 ]);
                 if app.opts.dev {
-                    osd.append(Line(" ("));
-                    osd.append(Line(r.id.to_string()).bold_body());
-                    osd.append(Line(")"));
+                    osd.append(CreateTextSpan(" ("));
+                    osd.append(CreateTextSpan(r.id.to_string()).bold_body());
+                    osd.append(CreateTextSpan(")"));
                 }
             }
             ID::Building(b) => {
                 if app.opts.dev {
-                    osd.append(Line(b.to_string()).bold_body());
-                    osd.append(Line(" is "));
+                    osd.append(CreateTextSpan(b.to_string()).bold_body());
+                    osd.append(CreateTextSpan(" is "));
                 }
                 let bldg = map.get_b(b);
-                osd.append(Line(&bldg.address).underlined())
+                osd.append(CreateTextSpan(&bldg.address).underlined())
             }
             ID::ParkingLot(pl) => {
-                osd.append(Line(pl.to_string()).bold_body());
+                osd.append(CreateTextSpan(pl.to_string()).bold_body());
             }
             ID::Intersection(i) => {
                 if map.get_i(i).is_border() {
-                    osd.append(Line("Border "));
+                    osd.append(CreateTextSpan("Border "));
                 }
 
                 if app.opts.dev {
-                    osd.append(Line(i.to_string()).bold_body());
+                    osd.append(CreateTextSpan(i.to_string()).bold_body());
                 } else {
-                    osd.append(Line("Intersection"));
+                    osd.append(CreateTextSpan("Intersection"));
                 }
-                osd.append(Line(" of "));
+                osd.append(CreateTextSpan(" of "));
 
                 let mut road_names = BTreeSet::new();
                 for r in &map.get_i(i).roads {
@@ -178,35 +178,38 @@ impl CommonState {
             }
             ID::Car(c) => {
                 if app.opts.dev {
-                    osd.append(Line(c.to_string()).bold_body());
+                    osd.append(CreateTextSpan(c.to_string()).bold_body());
                 } else {
-                    osd.append(Line(format!("a {}", c.1)));
+                    osd.append(CreateTextSpan(format!("a {}", c.1)));
                 }
                 if let Some(r) = app.primary.sim.bus_route_id(c) {
                     osd.append_all(vec![
-                        Line(" serving "),
-                        Line(&map.get_br(r).full_name).underlined(),
+                        CreateTextSpan(" serving "),
+                        CreateTextSpan(&map.get_br(r).full_name).underlined(),
                     ]);
                 }
             }
             ID::Pedestrian(p) => {
                 if app.opts.dev {
-                    osd.append(Line(p.to_string()).bold_body());
+                    osd.append(CreateTextSpan(p.to_string()).bold_body());
                 } else {
-                    osd.append(Line("a pedestrian"));
+                    osd.append(CreateTextSpan("a pedestrian"));
                 }
             }
             ID::PedCrowd(list) => {
-                osd.append(Line(format!("a crowd of {} pedestrians", list.len())));
+                osd.append(CreateTextSpan(format!(
+                    "a crowd of {} pedestrians",
+                    list.len()
+                )));
             }
             ID::BusStop(bs) => {
                 if app.opts.dev {
-                    osd.append(Line(bs.to_string()).bold_body());
+                    osd.append(CreateTextSpan(bs.to_string()).bold_body());
                 } else {
-                    osd.append(Line("transit stop "));
-                    osd.append(Line(&map.get_bs(bs).name).underlined());
+                    osd.append(CreateTextSpan("transit stop "));
+                    osd.append(CreateTextSpan(&map.get_bs(bs).name).underlined());
                 }
-                osd.append(Line(" served by "));
+                osd.append(CreateTextSpan(" served by "));
 
                 let routes: BTreeSet<String> = map
                     .get_routes_serving_stop(bs)
@@ -217,14 +220,16 @@ impl CommonState {
             }
             ID::Area(a) => {
                 // Only selectable in dev mode anyway
-                osd.append(Line(a.to_string()).bold_body());
+                osd.append(CreateTextSpan(a.to_string()).bold_body());
             }
             ID::Road(r) => {
                 if app.opts.dev {
-                    osd.append(Line(r.to_string()).bold_body());
-                    osd.append(Line(" is "));
+                    osd.append(CreateTextSpan(r.to_string()).bold_body());
+                    osd.append(CreateTextSpan(" is "));
                 }
-                osd.append(Line(map.get_r(r).get_name(app.opts.language.as_ref())).underlined());
+                osd.append(
+                    CreateTextSpan(map.get_r(r).get_name(app.opts.language.as_ref())).underlined(),
+                );
             }
         }
         osd
@@ -235,9 +240,9 @@ impl CommonState {
             CommonState::osd_for(app, id.clone())
         } else if app.opts.dev {
             Text::from_all(vec![
-                Line("Nothing selected. Hint: "),
-                Line("Ctrl+J").fg(g.style().text_hotkey_color),
-                Line(" to warp"),
+                CreateTextSpan("Nothing selected. Hint: "),
+                CreateTextSpan("Ctrl+J").fg(g.style().text_hotkey_color),
+                CreateTextSpan(" to warp"),
             ])
         } else {
             Text::new()
@@ -248,9 +253,9 @@ impl CommonState {
     pub fn draw_custom_osd(g: &mut GfxCtx, app: &App, mut osd: Text) {
         if let Some(ref action) = app.per_obj.click_action {
             osd.append_all(vec![
-                Line("; "),
-                Line("click").fg(g.style().text_hotkey_color),
-                Line(format!(" to {}", action)),
+                CreateTextSpan("; "),
+                CreateTextSpan("click").fg(g.style().text_hotkey_color),
+                CreateTextSpan(format!(" to {}", action)),
             ]);
         }
 
@@ -327,31 +332,31 @@ pub fn list_names<F: Fn(TextSpan) -> TextSpan>(txt: &mut Text, styler: F, names:
         if idx != 0 {
             if idx == len - 1 {
                 if len == 2 {
-                    txt.append(Line(" and "));
+                    txt.append(CreateTextSpan(" and "));
                 } else {
-                    txt.append(Line(", and "));
+                    txt.append(CreateTextSpan(", and "));
                 }
             } else {
-                txt.append(Line(", "));
+                txt.append(CreateTextSpan(", "));
             }
         }
-        txt.append(styler(Line(n)));
+        txt.append(styler(CreateTextSpan(n)));
     }
 }
 
 // Shorter is better
 pub fn cmp_duration_shorter(app: &App, after: Duration, before: Duration) -> Vec<TextSpan> {
     if after.epsilon_eq(before) {
-        vec![Line("same")]
+        vec![CreateTextSpan("same")]
     } else if after < before {
         vec![
-            Line((before - after).to_string(&app.opts.units)).fg(Color::GREEN),
-            Line(" faster"),
+            CreateTextSpan((before - after).to_string(&app.opts.units)).fg(Color::GREEN),
+            CreateTextSpan(" faster"),
         ]
     } else if after > before {
         vec![
-            Line((after - before).to_string(&app.opts.units)).fg(Color::RED),
-            Line(" slower"),
+            CreateTextSpan((after - before).to_string(&app.opts.units)).fg(Color::RED),
+            CreateTextSpan(" slower"),
         ]
     } else {
         unreachable!()

@@ -2,7 +2,7 @@ use std::cell::RefCell;
 
 use geom::{Distance, Polygon, Pt2D};
 use map_model::{LaneType, Map, Road, RoadID};
-use widgetry::{Drawable, GeomBatch, GfxCtx, Line, Prerender, Text};
+use widgetry::{CreateTextSpan, Drawable, GeomBatch, GfxCtx, Prerender, Text};
 
 use crate::render::{DrawOptions, Renderable};
 use crate::{AppLike, ID};
@@ -86,13 +86,13 @@ impl DrawRoad {
 
                 if false {
                     // TODO Not ready yet
-                    batch.append(
-                        Line(name)
-                            .fg(fg)
-                            .render_curvey(prerender, &r.center_pts, 0.1),
-                    );
+                    batch.append(CreateTextSpan(name).fg(fg).render_curvey(
+                        prerender,
+                        &r.center_pts,
+                        0.1,
+                    ));
                 } else {
-                    let txt = Text::from(Line(name).fg(fg)).bg(bg);
+                    let txt = Text::from(CreateTextSpan(name).fg(fg)).bg(bg);
                     let (pt, angle) = r.center_pts.must_dist_along(r.center_pts.length() / 2.0);
                     batch.append(
                         txt.render_autocropped(prerender)

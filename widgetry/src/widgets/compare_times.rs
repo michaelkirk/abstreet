@@ -1,8 +1,8 @@
 use geom::{Angle, Circle, Distance, Duration, Pt2D};
 
 use crate::{
-    Color, Drawable, EventCtx, GeomBatch, GfxCtx, Line, ScreenDims, ScreenPt, ScreenRectangle,
-    Text, TextExt, Widget, WidgetImpl, WidgetOutput,
+    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, ScreenDims, ScreenPt,
+    ScreenRectangle, Text, TextExt, Widget, WidgetImpl, WidgetOutput,
 };
 
 // TODO This is tuned for the trip time comparison right now.
@@ -96,7 +96,7 @@ impl CompareTimes {
             labels
                 .iter()
                 .rev()
-                .map(|x| Line(x.to_string()).small().into_widget(ctx))
+                .map(|x| CreateTextSpan(x.to_string()).small().into_widget(ctx))
                 .collect(),
         )
         .evenly_spaced();
@@ -111,7 +111,7 @@ impl CompareTimes {
         let x_axis = Widget::custom_row(
             labels
                 .iter()
-                .map(|x| Line(x.to_string()).small().into_widget(ctx))
+                .map(|x| CreateTextSpan(x.to_string()).small().into_widget(ctx))
                 .collect(),
         )
         .evenly_spaced();
@@ -167,9 +167,9 @@ impl WidgetImpl for CompareTimes {
                 let after = (1.0 - pct_y) * self.max;
                 if after <= before {
                     g.draw_mouse_tooltip(Text::from_multiline(vec![
-                        Line(format!("Before: {}", before)),
-                        Line(format!("After: {}", after)),
-                        Line(format!(
+                        CreateTextSpan(format!("Before: {}", before)),
+                        CreateTextSpan(format!("After: {}", after)),
+                        CreateTextSpan(format!(
                             "{} faster (-{:.1}%)",
                             before - after,
                             100.0 * (1.0 - after / before)
@@ -178,9 +178,9 @@ impl WidgetImpl for CompareTimes {
                     ]));
                 } else {
                     g.draw_mouse_tooltip(Text::from_multiline(vec![
-                        Line(format!("Before: {}", before)),
-                        Line(format!("After: {}", after)),
-                        Line(format!(
+                        CreateTextSpan(format!("Before: {}", before)),
+                        CreateTextSpan(format!("After: {}", after)),
+                        CreateTextSpan(format!(
                             "{} slower (+{:.1}%)",
                             after - before,
                             100.0 * (after / before - 1.0)

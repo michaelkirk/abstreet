@@ -4,7 +4,7 @@ use geom::{Angle, Circle, Distance, Speed, Time};
 use map_gui::render::DrawPedestrian;
 use map_model::{BuildingID, LaneID, OffstreetParking, Traversable, SIDEWALK_THICKNESS};
 use sim::{DrawPedestrianInput, PedestrianID, PersonID, TripMode, TripResult, VehicleType};
-use widgetry::{Color, EventCtx, Line, Text, TextExt, Widget};
+use widgetry::{Color, CreateTextSpan, EventCtx, Text, TextExt, Widget};
 
 use crate::app::App;
 use crate::info::{header_btns, make_table, make_tabs, Details, Tab};
@@ -79,8 +79,8 @@ pub fn info(ctx: &mut EventCtx, app: &App, details: &mut Details, id: BuildingID
         {
             let color = app.cs.parking_trip;
             // TODO But this color doesn't show up well against the info panel...
-            txt.add_line(Line("Nearest parking").fg(color));
-            txt.append(Line(format!(
+            txt.add_line(CreateTextSpan("Nearest parking").fg(color));
+            txt.append(CreateTextSpan(format!(
                 " is ~{} away by foot",
                 pl.length() / Speed::miles_per_hour(3.0)
             )));
@@ -233,7 +233,9 @@ fn header(
     let mut rows = vec![];
 
     rows.push(Widget::row(vec![
-        Line(id.to_string()).small_heading().into_widget(ctx),
+        CreateTextSpan(id.to_string())
+            .small_heading()
+            .into_widget(ctx),
         header_btns(ctx),
     ]));
 

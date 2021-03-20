@@ -6,7 +6,7 @@ use map_gui::tools::{ColorDiscrete, ColorLegend, ColorNetwork};
 use map_gui::ID;
 use map_model::{AmenityType, LaneType, PathConstraints};
 use sim::AgentType;
-use widgetry::{Color, Drawable, EventCtx, GfxCtx, Line, Panel, Text, TextExt, Widget};
+use widgetry::{Color, CreateTextSpan, Drawable, EventCtx, GfxCtx, Panel, Text, TextExt, Widget};
 
 use crate::app::App;
 use crate::layer::{header, Layer, LayerOutcome, PANEL_PLACEMENT};
@@ -128,20 +128,20 @@ impl BikeActivity {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Cycling activity"),
             Text::from_multiline(vec![
-                Line(format!("{} bike lanes", num_lanes)),
-                Line(format!(
+                CreateTextSpan(format!("{} bike lanes", num_lanes)),
+                CreateTextSpan(format!(
                     "total distance of {}",
                     total_dist.to_string(&app.opts.units)
                 )),
             ])
             .into_widget(ctx),
-            Line("Throughput on bike lanes").into_widget(ctx),
+            CreateTextSpan("Throughput on bike lanes").into_widget(ctx),
             ColorLegend::gradient(
                 ctx,
                 &app.cs.good_to_bad_green,
                 vec!["lowest count", "highest"],
             ),
-            Line("Throughput on unprotected roads").into_widget(ctx),
+            CreateTextSpan("Throughput on unprotected roads").into_widget(ctx),
             ColorLegend::gradient(
                 ctx,
                 &app.cs.good_to_bad_red,
@@ -240,8 +240,8 @@ impl Static {
             "map edits",
             format!("Map edits ({})", edits.edits_name),
             Text::from_multiline(vec![
-                Line(format!("{} roads changed", edits.changed_roads.len())),
-                Line(format!(
+                CreateTextSpan(format!("{} roads changed", edits.changed_roads.len())),
+                CreateTextSpan(format!(
                     "{} intersections changed",
                     edits.original_intersections.len()
                 )),

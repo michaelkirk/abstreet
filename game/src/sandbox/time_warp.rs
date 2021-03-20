@@ -6,8 +6,8 @@ use map_gui::render::DrawOptions;
 use map_gui::tools::{grey_out_map, PopupMsg};
 use map_gui::ID;
 use widgetry::{
-    Choice, DrawBaselayer, EventCtx, GeomBatch, GfxCtx, Key, Line, Outcome, Panel, Slider, State,
-    TabController, Text, Toggle, UpdateType, Widget,
+    Choice, CreateTextSpan, DrawBaselayer, EventCtx, GeomBatch, GfxCtx, Key, Outcome, Panel,
+    Slider, State, TabController, Text, Toggle, UpdateType, Widget,
 };
 
 use crate::app::{App, FindDelayedIntersections, ShowEverything, Transition};
@@ -42,7 +42,9 @@ impl JumpToTime {
             let slider_width = 500.0;
 
             Widget::col(vec![
-                Line("Jump to what time?").small_heading().into_widget(ctx),
+                CreateTextSpan("Jump to what time?")
+                    .small_heading()
+                    .into_widget(ctx),
                 if app.has_prebaked().is_some() {
                     GeomBatch::from(vec![(
                         ctx.style().icon_fg.alpha(0.7),
@@ -78,7 +80,9 @@ impl JumpToTime {
             .tooltip("Jump to delay");
         let jump_to_delay_content = Widget::col(vec![
             Widget::row(vec![
-                Line("Jump to next").small_heading().into_widget(ctx),
+                CreateTextSpan("Jump to next")
+                    .small_heading()
+                    .into_widget(ctx),
                 Widget::dropdown(
                     ctx,
                     "delay",
@@ -90,7 +94,9 @@ impl JumpToTime {
                         Choice::new("10", Duration::minutes(10)),
                     ],
                 ),
-                Line("minute delay").small_heading().into_widget(ctx),
+                CreateTextSpan("minute delay")
+                    .small_heading()
+                    .into_widget(ctx),
             ]),
             Toggle::checkbox(
                 ctx,
@@ -320,26 +326,26 @@ impl State<App> for TimeWarpScreen {
             let elapsed_wall_time = Duration::realtime_elapsed(self.wall_time_started);
             let txt = Text::from_multiline(vec![
                 // I'm covered in shame for not doing this from the start.
-                Line("Let's do the time warp again!").small_heading(),
-                Line(format!(
+                CreateTextSpan("Let's do the time warp again!").small_heading(),
+                CreateTextSpan(format!(
                     "{} / {}",
                     now.ampm_tostring(),
                     self.target.ampm_tostring()
                 )),
-                Line(format!(
+                CreateTextSpan(format!(
                     "Speed: {}x",
                     prettyprint_usize((elapsed_sim_time / elapsed_wall_time) as usize)
                 )),
                 if let Some(n) = finished_before {
                     // TODO Underline
-                    Line(format!(
+                    CreateTextSpan(format!(
                         "Finished trips: {} ({} compared to before \"{}\")",
                         prettyprint_usize(finished_after),
                         compare_count(finished_after, n),
                         app.primary.map.get_edits().edits_name,
                     ))
                 } else {
-                    Line(format!(
+                    CreateTextSpan(format!(
                         "Finished trips: {}",
                         prettyprint_usize(finished_after)
                     ))

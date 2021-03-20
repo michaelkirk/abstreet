@@ -2,7 +2,7 @@ pub use commuter::CommuterPatterns;
 pub use traffic_signals::TrafficSignalDemand;
 pub use trip_table::TripTable;
 
-use widgetry::{Choice, EventCtx, Image, Line, Panel, TextExt, Widget};
+use widgetry::{Choice, CreateTextSpan, EventCtx, Image, Panel, TextExt, Widget};
 
 use crate::app::App;
 use crate::app::Transition;
@@ -43,7 +43,7 @@ impl DashTab {
         }
         Widget::row(vec![
             Image::from_path("system/assets/meters/trip_histogram.svg").into_widget(ctx),
-            Line("Data").big_heading_plain().into_widget(ctx),
+            CreateTextSpan("Data").big_heading_plain().into_widget(ctx),
             Widget::dropdown(ctx, "tab", self, choices),
             format!("By {}", app.primary.sim.time().ampm_tostring())
                 .text_widget(ctx)
