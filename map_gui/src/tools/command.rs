@@ -4,9 +4,7 @@ use std::time::Duration;
 use instant::Instant;
 use subprocess::{Communicator, Popen};
 
-use widgetry::{
-    Color, CreateTextSpan, EventCtx, GfxCtx, Panel, State, Text, Transition, UpdateType,
-};
+use widgetry::{Color, EventCtx, GfxCtx, Panel, State, Text, TextSpan, Transition, UpdateType};
 
 use crate::tools::PopupMsg;
 use crate::AppLike;
@@ -115,7 +113,7 @@ impl<A: AppLike + 'static> State<A> for RunCommand<A> {
 
         // Throttle rerendering?
         let mut txt = Text::from(
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "Running command... {} so far",
                 geom::Duration::realtime_elapsed(self.started)
             ))

@@ -5,7 +5,7 @@ use map_model::{
     Direction, DrivingSide, Intersection, IntersectionID, IntersectionType, LaneType, Map, Road,
     RoadWithStopSign, Turn, TurnType, SIDEWALK_THICKNESS,
 };
-use widgetry::{Color, Drawable, GeomBatch, GfxCtx, Prerender, RewriteColor, Text};
+use widgetry::{Color, Drawable, GeomBatch, GfxCtx, Prerender, RewriteColor, Text, TextExt};
 
 use crate::colors::ColorScheme;
 use crate::render::{
@@ -95,15 +95,11 @@ impl DrawIntersection {
                             // a fixed SVG asset and just rotate it, but we'd still need to
                             // calculate the octagon hitbox for the stop sign editor.
                             default_geom.append(
-                                Text::from(
-                                    widgetry::CreateTextSpan("STOP")
-                                        .small_heading()
-                                        .fg(Color::WHITE),
-                                )
-                                .render_autocropped(prerender.as_ref())
-                                .scale(0.02)
-                                .centered_on(center)
-                                .rotate(angle.opposite().rotate_degs(-90.0)),
+                                Text::from("STOP".span().small_heading().fg(Color::WHITE))
+                                    .render_autocropped(prerender.as_ref())
+                                    .scale(0.02)
+                                    .centered_on(center)
+                                    .rotate(angle.opposite().rotate_degs(-90.0)),
                             );
                         }
                     }

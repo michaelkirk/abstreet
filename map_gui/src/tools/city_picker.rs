@@ -4,8 +4,8 @@ use abstio::{CityName, MapName};
 use geom::{Distance, Percent, Polygon, Pt2D};
 use map_model::City;
 use widgetry::{
-    Autocomplete, Color, ControlState, CreateTextSpan, DrawBaselayer, EventCtx, GeomBatch, GfxCtx,
-    Image, Key, Outcome, Panel, RewriteColor, ScreenPt, State, Text, TextExt, Transition, Widget,
+    Autocomplete, Color, ControlState, DrawBaselayer, EventCtx, GeomBatch, GfxCtx, Image, Key,
+    Outcome, Panel, RewriteColor, ScreenPt, State, Text, TextExt, TextSpan, Transition, Widget,
 };
 
 use crate::load::{FileLoader, MapLoader};
@@ -104,7 +104,7 @@ impl<A: AppLike + 'static> CityPicker<A> {
                     }
                 }
 
-                let mut other_places = vec![CreateTextSpan("Other places").into_widget(ctx)];
+                let mut other_places = vec!["Other places".span().into_widget(ctx)];
                 for (country, cities) in cities_per_country() {
                     // If there's only one city and we're already there, skip it.
                     if cities.len() == 1 && cities[0] == city_name {
@@ -150,9 +150,7 @@ impl<A: AppLike + 'static> CityPicker<A> {
                     on_load: Some(on_load),
                     panel: Panel::new(Widget::col(vec![
                         Widget::row(vec![
-                            CreateTextSpan("Select a district")
-                                .small_heading()
-                                .into_widget(ctx),
+                            "Select a district".span().small_heading().into_widget(ctx),
                             ctx.style().btn_close_widget(ctx),
                         ]),
                         Widget::row(vec![
@@ -171,7 +169,8 @@ impl<A: AppLike + 'static> CityPicker<A> {
                                 // different style on native?
                                 .label_styled_text(
                                     Text::from(
-                                        CreateTextSpan("Import a new city into A/B Street")
+                                        "Import a new city into A/B Street"
+                                            .span()
                                             .fg(Color::hex("#4CA4E5"))
                                             .underlined(),
                                     ),
@@ -348,9 +347,7 @@ impl<A: AppLike + 'static> AllCityPicker<A> {
             on_load: Some(on_load),
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan("Select a district")
-                        .small_heading()
-                        .into_widget(ctx),
+                    "Select a district".span().small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 Widget::row(vec![
@@ -450,7 +447,7 @@ impl<A: AppLike + 'static> CitiesInCountryPicker<A> {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
                     draw_flag,
-                    CreateTextSpan(format!("Select a city in {}", nice_country_name(country)))
+                    TextSpan::new(format!("Select a city in {}", nice_country_name(country)))
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),

@@ -1,8 +1,8 @@
 use geom::{Distance, Polygon};
 
 use crate::{
-    text, CreateTextSpan, EdgeInsets, EventCtx, GeomBatch, GfxCtx, Key, Outcome, ScreenDims,
-    ScreenPt, ScreenRectangle, Style, Text, WidgetImpl, WidgetOutput,
+    text, EdgeInsets, EventCtx, GeomBatch, GfxCtx, Key, Outcome, ScreenDims, ScreenPt,
+    ScreenRectangle, Style, Text, TextExt, TextSpan, WidgetImpl, WidgetOutput,
 };
 
 // TODO right now, only a single line
@@ -46,12 +46,12 @@ impl TextBox {
         if self.cursor_x < self.line.len() {
             // TODO This "cursor" looks awful!
             txt.append_all(vec![
-                CreateTextSpan("|").fg(style.text_fg_color),
-                CreateTextSpan(&self.line[self.cursor_x..=self.cursor_x]),
-                CreateTextSpan(&self.line[self.cursor_x + 1..]),
+                "|".span().fg(style.text_fg_color),
+                TextSpan::new(&self.line[self.cursor_x..=self.cursor_x]),
+                TextSpan::new(&self.line[self.cursor_x + 1..]),
             ]);
         } else {
-            txt.append(CreateTextSpan("|").fg(style.text_fg_color));
+            txt.append("|".span().fg(style.text_fg_color));
         }
         txt
     }

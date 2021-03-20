@@ -1,7 +1,7 @@
 use map_gui::tools::grey_out_map;
 use widgetry::{
-    hotkeys, ButtonStyle, Color, ControlState, CreateTextSpan, DrawBaselayer, EventCtx, GeomBatch,
-    GfxCtx, Image, Key, Outcome, Panel, State, Text, Widget,
+    hotkeys, ButtonStyle, Color, ControlState, DrawBaselayer, EventCtx, GeomBatch, GfxCtx, Image,
+    Key, Outcome, Panel, State, Text, TextSpan, Widget,
 };
 
 use crate::app::App;
@@ -38,7 +38,7 @@ impl CutsceneBuilder {
     pub fn player<I: Into<String>>(mut self, msg: I) -> CutsceneBuilder {
         self.scenes.push(Scene {
             layout: Layout::PlayerSpeaking,
-            msg: Text::from(CreateTextSpan(msg).fg(Self::fg_color())),
+            msg: Text::from(TextSpan::new(msg).fg(Self::fg_color())),
         });
         self
     }
@@ -46,7 +46,7 @@ impl CutsceneBuilder {
     pub fn boss<I: Into<String>>(mut self, msg: I) -> CutsceneBuilder {
         self.scenes.push(Scene {
             layout: Layout::BossSpeaking,
-            msg: Text::from(CreateTextSpan(msg).fg(Self::fg_color())),
+            msg: Text::from(TextSpan::new(msg).fg(Self::fg_color())),
         });
         self
     }
@@ -59,7 +59,7 @@ impl CutsceneBuilder {
     ) -> CutsceneBuilder {
         self.scenes.push(Scene {
             layout: Layout::Extra(character, scale),
-            msg: Text::from(CreateTextSpan(msg).fg(Self::fg_color())),
+            msg: Text::from(TextSpan::new(msg).fg(Self::fg_color())),
         });
         self
     }
@@ -244,7 +244,7 @@ fn make_panel(
                 .btn_back("Home")
                 .build_widget(ctx, "quit")
                 .margin_right(100),
-            CreateTextSpan(name).big_heading_styled().into_widget(ctx),
+            TextSpan::new(name).big_heading_styled().into_widget(ctx),
         ])
         .margin_below(40),
         inner

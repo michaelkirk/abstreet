@@ -4,8 +4,8 @@ use map_model::{
     ControlStopSign, ControlTrafficSignal, EditCmd, EditIntersection, IntersectionID, StageType,
 };
 use widgetry::{
-    Choice, CreateTextSpan, DrawBaselayer, EventCtx, Key, Panel, SimpleState, Spinner, State, Text,
-    TextExt, Widget,
+    Choice, DrawBaselayer, EventCtx, Key, Panel, SimpleState, Spinner, State, Text, TextExt,
+    TextSpan, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -26,7 +26,8 @@ impl ChangeDuration {
     ) -> Box<dyn State<App>> {
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                CreateTextSpan("How long should this stage last?")
+                "How long should this stage last?"
+                    .span()
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
@@ -46,18 +47,19 @@ impl ChangeDuration {
                 )
                 .named("duration"),
             ]),
-            CreateTextSpan("Minimum time is set by the time required for crosswalk")
+            "Minimum time is set by the time required for crosswalk"
+                .span()
                 .secondary()
                 .into_widget(ctx),
             Widget::col(vec![
                 Text::from_all(match signal.stages[idx].stage_type {
                     StageType::Fixed(_) => vec![
-                        CreateTextSpan("Fixed timing").small_heading(),
-                        CreateTextSpan(" (Adjust both values below to enable variable timing)"),
+                        "Fixed timing".span().small_heading(),
+                        " (Adjust both values below to enable variable timing)".span(),
                     ],
                     StageType::Variable(_, _, _) => vec![
-                        CreateTextSpan("Variable timing").small_heading(),
-                        CreateTextSpan(" (Set either values below to 0 to use fixed timing."),
+                        "Variable timing".span().small_heading(),
+                        " (Set either values below to 0 to use fixed timing.".span(),
                     ],
                 })
                 .into_widget(ctx)
@@ -142,13 +144,13 @@ impl SimpleState<App> for ChangeDuration {
         let new_label = Text::from_all(
             if panel.spinner("delay") == 0 || panel.spinner("additional") == 0 {
                 vec![
-                    CreateTextSpan("Fixed timing").small_heading(),
-                    CreateTextSpan(" (Adjust both values below to enable variable timing)"),
+                    "Fixed timing".span().small_heading(),
+                    " (Adjust both values below to enable variable timing)".span(),
                 ]
             } else {
                 vec![
-                    CreateTextSpan("Variable timing").small_heading(),
-                    CreateTextSpan(" (Set either values below to 0 to use fixed timing."),
+                    "Variable timing".span().small_heading(),
+                    " (Set either values below to 0 to use fixed timing.".span(),
                 ]
             },
         )

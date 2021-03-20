@@ -6,9 +6,8 @@ use map_gui::tools::PopupMsg;
 use map_gui::ID;
 use map_model::{IntersectionCluster, IntersectionID, PathConstraints};
 use widgetry::{
-    Color, CreateTextSpan, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx,
-    HorizontalAlignment, Key, Panel, SimpleState, State, Text, TextExt, Toggle, VerticalAlignment,
-    Widget,
+    Color, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel,
+    SimpleState, State, Text, TextExt, TextSpan, Toggle, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, ShowEverything, Transition};
@@ -30,7 +29,8 @@ impl UberTurnPicker {
 
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                CreateTextSpan("Select multiple intersections")
+                "Select multiple intersections"
+                    .span()
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
@@ -175,9 +175,7 @@ impl UberTurnViewer {
 
         let panel = Panel::new(Widget::col(vec![
             Widget::row(vec![
-                CreateTextSpan("Uber-turn viewer")
-                    .small_heading()
-                    .into_widget(ctx),
+                "Uber-turn viewer".span().small_heading().into_widget(ctx),
                 Widget::vert_separator(ctx, 50.0),
                 ctx.style()
                     .btn_prev()
@@ -185,7 +183,7 @@ impl UberTurnViewer {
                     .hotkey(Key::LeftArrow)
                     .build_widget(ctx, "previous uber-turn"),
                 Text::from(
-                    CreateTextSpan(format!("{}/{}", idx + 1, ic.uber_turns.len())).secondary(),
+                    TextSpan::new(format!("{}/{}", idx + 1, ic.uber_turns.len())).secondary(),
                 )
                 .into_widget(ctx)
                 .centered_vert(),

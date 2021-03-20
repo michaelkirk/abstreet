@@ -2,8 +2,8 @@ use abstutil::prettyprint_usize;
 use geom::Polygon;
 
 use crate::{
-    include_labeled_bytes, Color, ControlState, CreateTextSpan, EventCtx, GeomBatch, Key, Panel,
-    Text, TextExt, Widget,
+    include_labeled_bytes, Color, ControlState, EventCtx, GeomBatch, Key, Panel, Text, TextExt,
+    TextSpan, Widget,
 };
 
 const ROWS: usize = 8;
@@ -121,7 +121,7 @@ impl<A, T, F> Table<A, T, F> {
                 } else if let Col::Sortable(_) = col.col {
                     ctx.style().btn_outline.text(&col.name).build_def(ctx)
                 } else {
-                    CreateTextSpan(&col.name).into_widget(ctx).centered_vert()
+                    TextSpan::new(&col.name).into_widget(ctx).centered_vert()
                 }
             })
             .collect();

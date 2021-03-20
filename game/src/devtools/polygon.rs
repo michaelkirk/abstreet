@@ -1,7 +1,7 @@
 use geom::{Circle, Distance, LonLat, Pt2D, Ring};
 use widgetry::{
-    Color, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, State, Text,
-    VerticalAlignment, Widget,
+    Color, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, State, Text, TextExt,
+    TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -29,9 +29,7 @@ impl PolygonEditor {
         Box::new(PolygonEditor {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan("Polygon editor")
-                        .small_heading()
-                        .into_widget(ctx),
+                    "Polygon editor".span().small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 ctx.style()

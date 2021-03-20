@@ -1,8 +1,8 @@
 use geom::{Polygon, Pt2D, Triangle};
 use map_gui::tools::PopupMsg;
 use widgetry::{
-    CreateTextSpan, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, State,
-    Text, TextExt, VerticalAlignment, Widget,
+    EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, State, Text, TextExt,
+    TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -35,9 +35,7 @@ impl PolygonDebugger {
         Box::new(PolygonDebugger {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan("Geometry debugger")
-                        .small_heading()
-                        .into_widget(ctx),
+                    "Geometry debugger".span().small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 Widget::row(vec![

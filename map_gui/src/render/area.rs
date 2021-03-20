@@ -1,6 +1,6 @@
 use geom::Polygon;
 use map_model::{Area, AreaID, AreaType, Map};
-use widgetry::{Color, CreateTextSpan, EventCtx, Fill, GeomBatch, GfxCtx, Text};
+use widgetry::{Color, EventCtx, Fill, GeomBatch, GfxCtx, Text, TextSpan};
 
 use crate::colors::ColorScheme;
 use crate::render::{DrawOptions, Renderable};
@@ -23,7 +23,7 @@ impl DrawArea {
             // probably
             if let Some(name) = area.osm_tags.get("name") {
                 all_areas.append(
-                    Text::from(CreateTextSpan(name).fg(Color::BLACK))
+                    Text::from(TextSpan::new(name).fg(Color::BLACK))
                         .render_autocropped(ctx)
                         .scale(1.0)
                         .centered_on(area.polygon.polylabel())

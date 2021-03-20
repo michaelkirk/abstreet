@@ -6,7 +6,7 @@ use map_gui::tools::{ColorDiscrete, ColorLegend, ColorNetwork};
 use map_gui::ID;
 use map_model::{AmenityType, LaneType, PathConstraints};
 use sim::AgentType;
-use widgetry::{Color, CreateTextSpan, Drawable, EventCtx, GfxCtx, Panel, Text, TextExt, Widget};
+use widgetry::{Color, Drawable, EventCtx, GfxCtx, Panel, Text, TextExt, TextSpan, Widget};
 
 use crate::app::App;
 use crate::layer::{header, Layer, LayerOutcome, PANEL_PLACEMENT};
@@ -128,20 +128,20 @@ impl BikeActivity {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Cycling activity"),
             Text::from_multiline(vec![
-                CreateTextSpan(format!("{} bike lanes", num_lanes)),
-                CreateTextSpan(format!(
+                TextSpan::new(format!("{} bike lanes", num_lanes)),
+                TextSpan::new(format!(
                     "total distance of {}",
                     total_dist.to_string(&app.opts.units)
                 )),
             ])
             .into_widget(ctx),
-            CreateTextSpan("Throughput on bike lanes").into_widget(ctx),
+            "Throughput on bike lanes".span().into_widget(ctx),
             ColorLegend::gradient(
                 ctx,
                 &app.cs.good_to_bad_green,
                 vec!["lowest count", "highest"],
             ),
-            CreateTextSpan("Throughput on unprotected roads").into_widget(ctx),
+            "Throughput on unprotected roads".span().into_widget(ctx),
             ColorLegend::gradient(
                 ctx,
                 &app.cs.good_to_bad_red,
@@ -240,8 +240,8 @@ impl Static {
             "map edits",
             format!("Map edits ({})", edits.edits_name),
             Text::from_multiline(vec![
-                CreateTextSpan(format!("{} roads changed", edits.changed_roads.len())),
-                CreateTextSpan(format!(
+                TextSpan::new(format!("{} roads changed", edits.changed_roads.len())),
+                TextSpan::new(format!(
                     "{} intersections changed",
                     edits.original_intersections.len()
                 )),

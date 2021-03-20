@@ -10,8 +10,8 @@ use map_gui::ID;
 use map_model::{IntersectionID, Map, Traversable};
 use sim::{AgentType, VehicleType};
 use widgetry::{
-    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Outcome, Panel, Text, TextExt,
-    Toggle, Widget,
+    Color, Drawable, EventCtx, GeomBatch, GfxCtx, Outcome, Panel, Text, TextExt, TextSpan, Toggle,
+    Widget,
 };
 
 use crate::app::App;
@@ -68,7 +68,8 @@ impl Backpressure {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Backpressure"),
             Text::from(
-                CreateTextSpan("This counts all active trips passing through a road in the future")
+                "This counts all active trips passing through a road in the future"
+                    .span()
                     .secondary(),
             )
             .wrap_to_pct(ctx, 15)
@@ -209,7 +210,9 @@ impl Throughput {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Throughput"),
             Text::from(
-                CreateTextSpan("This counts all people crossing since midnight").secondary(),
+                "This counts all people crossing since midnight"
+                    .span()
+                    .secondary(),
             )
             .wrap_to_pct(ctx, 15)
             .into_widget(ctx),
@@ -484,7 +487,8 @@ impl TrafficJams {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Traffic jams"),
             Text::from(
-                CreateTextSpan("A jam starts when delay exceeds 5 mins, then spreads out")
+                "A jam starts when delay exceeds 5 mins, then spreads out"
+                    .span()
                     .secondary(),
             )
             .wrap_to_pct(ctx, 15)

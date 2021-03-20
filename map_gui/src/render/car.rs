@@ -1,7 +1,7 @@
 use geom::{Angle, ArrowCap, Distance, PolyLine, Polygon, Pt2D, Ring};
 use map_model::{Map, TurnType};
 use sim::{CarID, CarStatus, DrawCarInput, Sim, VehicleType};
-use widgetry::{Color, CreateTextSpan, Drawable, GeomBatch, GfxCtx, Prerender, Text};
+use widgetry::{Color, Drawable, GeomBatch, GfxCtx, Prerender, Text, TextSpan};
 
 use crate::colors::ColorScheme;
 use crate::render::{grey_out_unhighlighted_people, DrawOptions, Renderable, OUTLINE_THICKNESS};
@@ -177,7 +177,7 @@ impl DrawCar {
                 .dist_along(input.body.length() - Distance::meters(3.5))
             {
                 draw_default.append(
-                    Text::from(CreateTextSpan(line).fg(cs.bus_label))
+                    Text::from(TextSpan::new(line).fg(cs.bus_label))
                         .render_autocropped(prerender)
                         .scale(0.07)
                         .centered_on(pt)

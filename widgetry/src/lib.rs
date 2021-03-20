@@ -43,7 +43,7 @@ pub use crate::input::UserInput;
 pub use crate::runner::{run, Settings};
 pub use crate::screen_geom::{ScreenDims, ScreenPt, ScreenRectangle};
 pub use crate::style::{ButtonStyle, OutlineStyle, Style};
-pub use crate::text::{CreateTextSpan, Font, Text, TextExt, TextSpan};
+pub use crate::text::{Font, Text, TextExt, TextSpan};
 pub use crate::tools::warper::Warper;
 pub use crate::tools::Cached;
 pub use crate::widgets::autocomplete::Autocomplete;

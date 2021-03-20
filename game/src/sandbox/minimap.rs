@@ -1,8 +1,8 @@
 use abstutil::prettyprint_usize;
 use map_gui::tools::{MinimapControls, Navigator};
 use widgetry::{
-    ControlState, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Image, Key, Panel,
-    ScreenDims, Text, VerticalAlignment, Widget,
+    ControlState, EventCtx, GfxCtx, HorizontalAlignment, Image, Key, Panel, ScreenDims, Text,
+    TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -190,23 +190,23 @@ fn make_agent_toggles(ctx: &mut EventCtx, app: &App, is_enabled: [bool; 4]) -> V
 
     let pedestrian_details = {
         let tooltip = Text::from_multiline(vec![
-            CreateTextSpan("Pedestrians"),
-            CreateTextSpan(format!(
+            "Pedestrians".span(),
+            TextSpan::new(format!(
                 "Walking commuters: {}",
                 prettyprint_usize(counts.walking_commuters)
             ))
             .secondary(),
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "To/from public transit: {}",
                 prettyprint_usize(counts.walking_to_from_transit)
             ))
             .secondary(),
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "To/from a car: {}",
                 prettyprint_usize(counts.walking_to_from_car)
             ))
             .secondary(),
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "To/from a bike: {}",
                 prettyprint_usize(counts.walking_to_from_bike)
             ))
@@ -233,8 +233,8 @@ fn make_agent_toggles(ctx: &mut EventCtx, app: &App, is_enabled: [bool; 4]) -> V
 
     let bike_details = {
         let tooltip = Text::from_multiline(vec![
-            CreateTextSpan("Cyclists"),
-            CreateTextSpan(prettyprint_usize(counts.cyclists)).secondary(),
+            "Cyclists".span(),
+            TextSpan::new(prettyprint_usize(counts.cyclists)).secondary(),
         ]);
 
         colored_checkbox(
@@ -250,8 +250,8 @@ fn make_agent_toggles(ctx: &mut EventCtx, app: &App, is_enabled: [bool; 4]) -> V
 
     let car_details = {
         let tooltip = Text::from_multiline(vec![
-            CreateTextSpan("Cars"),
-            CreateTextSpan(format!(
+            "Cars".span(),
+            TextSpan::new(format!(
                 "Single-occupancy vehicles: {}",
                 prettyprint_usize(counts.sov_drivers)
             ))
@@ -270,14 +270,14 @@ fn make_agent_toggles(ctx: &mut EventCtx, app: &App, is_enabled: [bool; 4]) -> V
 
     let bus_details = {
         let tooltip = Text::from_multiline(vec![
-            CreateTextSpan("Public transit"),
-            CreateTextSpan(format!(
+            "Public transit".span(),
+            TextSpan::new(format!(
                 "{} passengers on {} buses",
                 prettyprint_usize(counts.bus_riders),
                 prettyprint_usize(counts.buses)
             ))
             .secondary(),
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "{} passengers on {} trains",
                 prettyprint_usize(counts.train_riders),
                 prettyprint_usize(counts.trains)

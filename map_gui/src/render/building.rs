@@ -2,7 +2,7 @@ use std::cell::RefCell;
 
 use geom::{Angle, Distance, Line, Polygon, Pt2D, Ring};
 use map_model::{Building, BuildingID, LaneType, Map, OffstreetParking, NORMAL_LANE_THICKNESS};
-use widgetry::{Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Text};
+use widgetry::{Color, Drawable, EventCtx, GeomBatch, GfxCtx, Text, TextExt, TextSpan};
 
 use crate::colors::{ColorScheme, ColorSchemeChoice};
 use crate::options::{CameraAngle, Options};
@@ -236,10 +236,17 @@ impl Renderable for DrawBuilding {
                 let b = app.map().get_b(self.id);
                 if let Some(a) = b.amenities.iter().next() {
                     let mut txt = Text::from(
-                        Line(a.names.get(app.opts().language.as_ref())).fg(Color::BLACK),
+                        a.names
+                            .get(app.opts().language.as_ref())
+                            .span()
+                            .fg(Color::BLACK),
                     );
                     if b.amenities.len() > 1 {
-                        txt.append(Line(format!(" (+{})", b.amenities.len() - 1)).fg(Color::BLACK));
+                        txt.append(
+                            format!(" (+{})", b.amenities.len() - 1)
+                                .span()
+                                .fg(Color::BLACK),
+                        );
                     }
                     batch.append(
                         txt.render_autocropped(g)

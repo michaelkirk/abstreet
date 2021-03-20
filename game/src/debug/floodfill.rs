@@ -3,8 +3,8 @@ use std::collections::HashSet;
 use map_gui::tools::ColorDiscrete;
 use map_model::{connectivity, LaneID, Map, PathConstraints};
 use widgetry::{
-    Choice, Color, CreateTextSpan, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Outcome, Panel,
-    State, TextExt, VerticalAlignment, Widget,
+    Choice, Color, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Outcome, Panel, State, TextExt,
+    TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -51,7 +51,7 @@ impl Floodfiller {
         Box::new(Floodfiller {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan(title).small_heading().into_widget(ctx),
+                    TextSpan::new(title).small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 format!("{} unreachable lanes", num_unreachable).text_widget(ctx),

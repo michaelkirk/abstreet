@@ -5,8 +5,8 @@ use geom::{Circle, Distance, Pt2D, Time};
 use map_gui::tools::{make_heatmap, HeatmapOptions};
 use sim::PersonState;
 use widgetry::{
-    Choice, Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Outcome, Panel, Text,
-    TextExt, Toggle, Widget,
+    Choice, Color, Drawable, EventCtx, GeomBatch, GfxCtx, Outcome, Panel, Text, TextExt, TextSpan,
+    Toggle, Widget,
 };
 
 use crate::app::App;
@@ -172,27 +172,27 @@ fn make_controls(ctx: &mut EventCtx, app: &App, opts: &Options, legend: Option<W
     let mut col = vec![
         header(ctx, "Pandemic model"),
         Text::from_multiline(vec![
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "{} Sane ({:.1}%)",
                 prettyprint_usize(model.count_sane()),
                 (model.count_sane() as f64) * pct
             )),
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "{} Exposed ({:.1}%)",
                 prettyprint_usize(model.count_exposed()),
                 (model.count_exposed() as f64) * pct
             )),
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "{} Infected ({:.1}%)",
                 prettyprint_usize(model.count_infected()),
                 (model.count_infected() as f64) * pct
             )),
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "{} Recovered ({:.1}%)",
                 prettyprint_usize(model.count_recovered()),
                 (model.count_recovered() as f64) * pct
             )),
-            CreateTextSpan(format!(
+            TextSpan::new(format!(
                 "{} Dead ({:.1}%)",
                 prettyprint_usize(model.count_dead()),
                 (model.count_dead() as f64) * pct

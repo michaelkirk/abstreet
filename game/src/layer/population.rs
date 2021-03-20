@@ -5,8 +5,7 @@ use geom::{Circle, Distance, Pt2D, Time};
 use map_gui::tools::{make_heatmap, HeatmapOptions};
 use sim::PersonState;
 use widgetry::{
-    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Image, Outcome, Panel, Toggle,
-    Widget,
+    Color, Drawable, EventCtx, GeomBatch, GfxCtx, Image, Outcome, Panel, TextSpan, Toggle, Widget,
 };
 
 use crate::app::App;
@@ -155,11 +154,11 @@ fn make_controls(ctx: &mut EventCtx, app: &App, opts: &Options, legend: Option<W
         Widget::row(vec![
             Widget::row(vec![
                 Image::from_path("system/assets/tools/home.svg").into_widget(ctx),
-                CreateTextSpan(prettyprint_usize(ppl_in_bldg))
+                TextSpan::new(prettyprint_usize(ppl_in_bldg))
                     .small()
                     .into_widget(ctx),
             ]),
-            CreateTextSpan(format!("Off-map: {}", prettyprint_usize(ppl_off_map)))
+            TextSpan::new(format!("Off-map: {}", prettyprint_usize(ppl_off_map)))
                 .small()
                 .into_widget(ctx),
         ])

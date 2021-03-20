@@ -7,8 +7,8 @@ use map_gui::render::traffic_signal::draw_signal_stage;
 use map_model::{IntersectionID, IntersectionType, StageType};
 use sim::AgentType;
 use widgetry::{
-    Color, CreateTextSpan, DrawWithTooltips, EventCtx, FanChart, GeomBatch, PlotOptions,
-    ScatterPlot, Series, Text, Toggle, Widget,
+    Color, DrawWithTooltips, EventCtx, FanChart, GeomBatch, PlotOptions, ScatterPlot, Series, Text,
+    TextSpan, Toggle, Widget,
 };
 
 use crate::app::App;
@@ -188,7 +188,7 @@ pub fn current_demand(
         app.primary.sim.time().ampm_tostring()
     ));
     txt.add_line(
-        CreateTextSpan(format!(
+        TextSpan::new(format!(
             "Includes all {} active agents anywhere on the map",
             prettyprint_usize(total_demand)
         ))
@@ -277,7 +277,7 @@ pub fn traffic_signal(
     let signal = app.primary.map.get_traffic_signal(id);
     {
         let mut txt = Text::new();
-        txt.add_line(CreateTextSpan(format!("{} stages", signal.stages.len())).small_heading());
+        txt.add_line(TextSpan::new(format!("{} stages", signal.stages.len())).small_heading());
         txt.add_line(format!("Signal offset: {}", signal.offset));
         {
             let mut total = Duration::ZERO;
@@ -293,8 +293,8 @@ pub fn traffic_signal(
     for (idx, stage) in signal.stages.iter().enumerate() {
         rows.push(
             match stage.stage_type {
-                StageType::Fixed(d) => CreateTextSpan(format!("Stage {}: {}", idx + 1, d)),
-                StageType::Variable(min, delay, additional) => CreateTextSpan(format!(
+                StageType::Fixed(d) => TextSpan::new(format!("Stage {}: {}", idx + 1, d)),
+                StageType::Variable(min, delay, additional) => TextSpan::new(format!(
                     "Stage {}: {}, {}, {} (variable)",
                     idx + 1,
                     min,
@@ -377,7 +377,8 @@ fn delay_plot(
         disabled: opts.disabled_series(),
     };
     Widget::col(vec![
-        CreateTextSpan("Delay through intersection")
+        "Delay through intersection"
+            .span()
             .small_heading()
             .into_widget(ctx),
         if fan_chart {
@@ -409,7 +410,7 @@ fn header(
         IntersectionType::Construction => format!("{} (under construction)", id),
     };
     rows.push(Widget::row(vec![
-        CreateTextSpan(label).small_heading().into_widget(ctx),
+        TextSpan::new(label).small_heading().into_widget(ctx),
         header_btns(ctx),
     ]));
 

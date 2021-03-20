@@ -5,8 +5,8 @@ use geom::{ArrowCap, Circle, Distance, Duration, PolyLine, Pt2D, Time};
 use map_gui::tools::{ChooseSomething, ColorLegend, Minimap, MinimapControls};
 use map_model::BuildingID;
 use widgetry::{
-    Choice, Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment,
-    Image, Key, Outcome, Panel, State, Text, TextExt, UpdateType, VerticalAlignment, Widget,
+    Choice, Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Image, Key, Outcome,
+    Panel, State, Text, TextExt, TextSpan, UpdateType, VerticalAlignment, Widget,
 };
 
 use crate::after_level::{RecordPath, Results, Strategize};
@@ -55,7 +55,7 @@ impl Game {
                 Image::from_path("system/assets/tools/map.svg")
                     .into_widget(ctx)
                     .centered_vert(),
-                CreateTextSpan(&level.title).into_widget(ctx),
+                TextSpan::new(&level.title).into_widget(ctx),
             ])
             .padding(10)
             .bg(Color::hex("#003046")),
@@ -122,7 +122,7 @@ impl Game {
         let pct = (app.time - Time::START_OF_DAY) / self.state.level.time_limit;
 
         let text_color = if pct < 0.75 { Color::WHITE } else { Color::RED };
-        let label = CreateTextSpan(format!(
+        let label = TextSpan::new(format!(
             "{}",
             self.state.level.time_limit - (app.time - Time::START_OF_DAY)
         ))
@@ -296,7 +296,8 @@ impl Game {
                     self.state.bldgs.all_stores(),
                 ));
                 let label = Text::from(
-                    CreateTextSpan("SANTA'S HANGRY - grab some cookies from a store!")
+                    "SANTA'S HANGRY - grab some cookies from a store!"
+                        .span()
                         .fg(Color::RED),
                 )
                 .into_widget(ctx);

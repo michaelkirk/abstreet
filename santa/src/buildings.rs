@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use map_model::{AmenityType, BuildingID, BuildingType};
-use widgetry::{Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, Text};
+use widgetry::{Color, Drawable, EventCtx, GeomBatch, Text, TextSpan};
 
 use crate::App;
 
@@ -64,7 +64,7 @@ impl Buildings {
                     if num_housing_units > 1 {
                         batch.append(
                             Text::from(
-                                CreateTextSpan(num_housing_units.to_string()).fg(Color::BLACK),
+                                TextSpan::new(num_housing_units.to_string()).fg(Color::BLACK),
                             )
                             .render_autocropped(ctx)
                             .scale(0.2)

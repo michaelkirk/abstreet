@@ -5,8 +5,8 @@ use map_gui::ID;
 use map_model::{IntersectionID, Map, RoadID};
 use sim::{AgentType, TripMode, TripPhaseType};
 use widgetry::{
-    lctrl, Color, CreateTextSpan, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel,
-    ScreenDims, ScreenPt, ScreenRectangle, Text, TextSpan, Toggle, VerticalAlignment, Widget,
+    lctrl, Color, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel, ScreenDims,
+    ScreenPt, ScreenRectangle, Text, TextExt, TextSpan, Toggle, VerticalAlignment, Widget,
 };
 
 pub use self::warp::{warp_to_id, Warping};
@@ -107,20 +107,20 @@ impl CommonState {
             CommonState::osd_for(app, id.clone())
         } else if app.opts.dev {
             Text::from_all(vec![
-                CreateTextSpan("Nothing selected. Hint: "),
-                CreateTextSpan("Ctrl+J").fg(g.style().text_hotkey_color),
-                CreateTextSpan(" to warp"),
+                "Nothing selected. Hint: ".span(),
+                "Ctrl+J".span().fg(g.style().text_hotkey_color),
+                " to warp".span(),
             ])
         } else {
             Text::new()
         };
         if !keys.is_empty() {
-            osd.append(CreateTextSpan("   Hotkeys: "));
+            osd.append("   Hotkeys: ".span());
             for (idx, key) in keys.into_iter().enumerate() {
                 if idx != 0 {
-                    osd.append(CreateTextSpan(", "));
+                    osd.append(", ".span());
                 }
-                osd.append(CreateTextSpan(key.describe()).fg(g.style().text_hotkey_color));
+                osd.append(TextSpan::new(key.describe()).fg(g.style().text_hotkey_color));
             }
         }
 
@@ -133,42 +133,42 @@ impl CommonState {
         match id {
             ID::Lane(l) => {
                 if app.opts.dev {
-                    osd.append(CreateTextSpan(l.to_string()).bold_body());
-                    osd.append(CreateTextSpan(" is "));
+                    osd.append(TextSpan::new(l.to_string()).bold_body());
+                    osd.append(" is ".span());
                 }
                 let r = map.get_parent(l);
                 osd.append_all(vec![
-                    CreateTextSpan(format!("{} of ", map.get_l(l).lane_type.describe())),
-                    CreateTextSpan(r.get_name(app.opts.language.as_ref())).underlined(),
+                    TextSpan::new(format!("{} of ", map.get_l(l).lane_type.describe())),
+                    TextSpan::new(r.get_name(app.opts.language.as_ref())).underlined(),
                 ]);
                 if app.opts.dev {
-                    osd.append(CreateTextSpan(" ("));
-                    osd.append(CreateTextSpan(r.id.to_string()).bold_body());
-                    osd.append(CreateTextSpan(")"));
+                    osd.append(" (".span());
+                    osd.append(TextSpan::new(r.id.to_string()).bold_body());
+                    osd.append(")".span());
                 }
             }
             ID::Building(b) => {
                 if app.opts.dev {
-                    osd.append(CreateTextSpan(b.to_string()).bold_body());
-                    osd.append(CreateTextSpan(" is "));
+                    osd.append(TextSpan::new(b.to_string()).bold_body());
+                    osd.append(" is ".span());
                 }
                 let bldg = map.get_b(b);
-                osd.append(CreateTextSpan(&bldg.address).underlined())
+                osd.append(TextSpan::new(&bldg.address).underlined())
             }
             ID::ParkingLot(pl) => {
-                osd.append(CreateTextSpan(pl.to_string()).bold_body());
+                osd.append(TextSpan::new(pl.to_string()).bold_body());
             }
             ID::Intersection(i) => {
                 if map.get_i(i).is_border() {
-                    osd.append(CreateTextSpan("Border "));
+                    osd.append("Border ".span());
                 }
 
                 if app.opts.dev {
-                    osd.append(CreateTextSpan(i.to_string()).bold_body());
+                    osd.append(TextSpan::new(i.to_string()).bold_body());
                 } else {
-                    osd.append(CreateTextSpan("Intersection"));
+                    osd.append("Intersection".span());
                 }
-                osd.append(CreateTextSpan(" of "));
+                osd.append(" of ".span());
 
                 let mut road_names = BTreeSet::new();
                 for r in &map.get_i(i).roads {
@@ -178,38 +178,38 @@ impl CommonState {
             }
             ID::Car(c) => {
                 if app.opts.dev {
-                    osd.append(CreateTextSpan(c.to_string()).bold_body());
+                    osd.append(TextSpan::new(c.to_string()).bold_body());
                 } else {
-                    osd.append(CreateTextSpan(format!("a {}", c.1)));
+                    osd.append(TextSpan::new(format!("a {}", c.1)));
                 }
                 if let Some(r) = app.primary.sim.bus_route_id(c) {
                     osd.append_all(vec![
-                        CreateTextSpan(" serving "),
-                        CreateTextSpan(&map.get_br(r).full_name).underlined(),
+                        " serving ".span(),
+                        TextSpan::new(&map.get_br(r).full_name).underlined(),
                     ]);
                 }
             }
             ID::Pedestrian(p) => {
                 if app.opts.dev {
-                    osd.append(CreateTextSpan(p.to_string()).bold_body());
+                    osd.append(TextSpan::new(p.to_string()).bold_body());
                 } else {
-                    osd.append(CreateTextSpan("a pedestrian"));
+                    osd.append("a pedestrian".span());
                 }
             }
             ID::PedCrowd(list) => {
-                osd.append(CreateTextSpan(format!(
+                osd.append(TextSpan::new(format!(
                     "a crowd of {} pedestrians",
                     list.len()
                 )));
             }
             ID::BusStop(bs) => {
                 if app.opts.dev {
-                    osd.append(CreateTextSpan(bs.to_string()).bold_body());
+                    osd.append(TextSpan::new(bs.to_string()).bold_body());
                 } else {
-                    osd.append(CreateTextSpan("transit stop "));
-                    osd.append(CreateTextSpan(&map.get_bs(bs).name).underlined());
+                    osd.append("transit stop ".span());
+                    osd.append(TextSpan::new(&map.get_bs(bs).name).underlined());
                 }
-                osd.append(CreateTextSpan(" served by "));
+                osd.append(" served by ".span());
 
                 let routes: BTreeSet<String> = map
                     .get_routes_serving_stop(bs)
@@ -220,15 +220,15 @@ impl CommonState {
             }
             ID::Area(a) => {
                 // Only selectable in dev mode anyway
-                osd.append(CreateTextSpan(a.to_string()).bold_body());
+                osd.append(TextSpan::new(a.to_string()).bold_body());
             }
             ID::Road(r) => {
                 if app.opts.dev {
-                    osd.append(CreateTextSpan(r.to_string()).bold_body());
-                    osd.append(CreateTextSpan(" is "));
+                    osd.append(TextSpan::new(r.to_string()).bold_body());
+                    osd.append(" is ".span());
                 }
                 osd.append(
-                    CreateTextSpan(map.get_r(r).get_name(app.opts.language.as_ref())).underlined(),
+                    TextSpan::new(map.get_r(r).get_name(app.opts.language.as_ref())).underlined(),
                 );
             }
         }
@@ -240,9 +240,9 @@ impl CommonState {
             CommonState::osd_for(app, id.clone())
         } else if app.opts.dev {
             Text::from_all(vec![
-                CreateTextSpan("Nothing selected. Hint: "),
-                CreateTextSpan("Ctrl+J").fg(g.style().text_hotkey_color),
-                CreateTextSpan(" to warp"),
+                "Nothing selected. Hint: ".span(),
+                "Ctrl+J".span().fg(g.style().text_hotkey_color),
+                " to warp".span(),
             ])
         } else {
             Text::new()
@@ -253,9 +253,9 @@ impl CommonState {
     pub fn draw_custom_osd(g: &mut GfxCtx, app: &App, mut osd: Text) {
         if let Some(ref action) = app.per_obj.click_action {
             osd.append_all(vec![
-                CreateTextSpan("; "),
-                CreateTextSpan("click").fg(g.style().text_hotkey_color),
-                CreateTextSpan(format!(" to {}", action)),
+                "; ".span(),
+                "click".span().fg(g.style().text_hotkey_color),
+                TextSpan::new(format!(" to {}", action)),
             ]);
         }
 
@@ -332,31 +332,31 @@ pub fn list_names<F: Fn(TextSpan) -> TextSpan>(txt: &mut Text, styler: F, names:
         if idx != 0 {
             if idx == len - 1 {
                 if len == 2 {
-                    txt.append(CreateTextSpan(" and "));
+                    txt.append(" and ".span());
                 } else {
-                    txt.append(CreateTextSpan(", and "));
+                    txt.append(", and ".span());
                 }
             } else {
-                txt.append(CreateTextSpan(", "));
+                txt.append(", ".span());
             }
         }
-        txt.append(styler(CreateTextSpan(n)));
+        txt.append(styler(TextSpan::new(n)));
     }
 }
 
 // Shorter is better
 pub fn cmp_duration_shorter(app: &App, after: Duration, before: Duration) -> Vec<TextSpan> {
     if after.epsilon_eq(before) {
-        vec![CreateTextSpan("same")]
+        vec!["same".span()]
     } else if after < before {
         vec![
-            CreateTextSpan((before - after).to_string(&app.opts.units)).fg(Color::GREEN),
-            CreateTextSpan(" faster"),
+            TextSpan::new((before - after).to_string(&app.opts.units)).fg(Color::GREEN),
+            " faster".span(),
         ]
     } else if after > before {
         vec![
-            CreateTextSpan((after - before).to_string(&app.opts.units)).fg(Color::RED),
-            CreateTextSpan(" slower"),
+            TextSpan::new((after - before).to_string(&app.opts.units)).fg(Color::RED),
+            " slower".span(),
         ]
     } else {
         unreachable!()

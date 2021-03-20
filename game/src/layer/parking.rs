@@ -9,7 +9,7 @@ use map_model::{
 };
 use sim::{ParkingSpot, Scenario, VehicleType};
 use widgetry::{
-    CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, Outcome, Panel, Text, Toggle, Widget,
+    Drawable, EventCtx, GeomBatch, GfxCtx, Outcome, Panel, Text, TextSpan, Toggle, Widget,
 };
 
 use crate::app::App;
@@ -105,7 +105,7 @@ impl Occupancy {
             let panel = Panel::new(Widget::col(vec![
                 header(ctx, "Parking occupancy"),
                 Text::from_multiline(vec![
-                    CreateTextSpan(format!(
+                    TextSpan::new(format!(
                         "{:.0}% of the population owns a car",
                         if total_ppl == 0 {
                             0.0
@@ -113,9 +113,9 @@ impl Occupancy {
                             100.0 * (has_car as f64) / (total_ppl as f64)
                         }
                     )),
-                    CreateTextSpan(""),
-                    CreateTextSpan("Parking simulation disabled."),
-                    CreateTextSpan("Every building has unlimited capacity.").secondary(),
+                    "".span(),
+                    "Parking simulation disabled.".span(),
+                    "Every building has unlimited capacity.".span().secondary(),
                 ])
                 .into_widget(ctx),
             ]))
@@ -199,7 +199,7 @@ impl Occupancy {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Parking occupancy"),
             Text::from_multiline(vec![
-                CreateTextSpan(format!(
+                TextSpan::new(format!(
                     "{:.0}% of the population owns a car",
                     if total_ppl == 0 {
                         0.0
@@ -207,12 +207,12 @@ impl Occupancy {
                         100.0 * (has_car as f64) / (total_ppl as f64)
                     }
                 )),
-                CreateTextSpan(format!(
+                TextSpan::new(format!(
                     "{} / {} public spots filled",
                     prettyprint_usize(public_filled),
                     prettyprint_usize(public_filled + public_avail)
                 )),
-                CreateTextSpan(format!(
+                TextSpan::new(format!(
                     "{} / {} private spots filled",
                     prettyprint_usize(private_filled),
                     prettyprint_usize(private_filled + private_avail)
@@ -347,9 +347,13 @@ impl Efficiency {
     pub fn new(ctx: &mut EventCtx, app: &App) -> Efficiency {
         let panel = Panel::new(Widget::col(vec![
             header(ctx, "Parking efficiency"),
-            Text::from(CreateTextSpan("How far away are people parked? (minutes)").secondary())
-                .wrap_to_pct(ctx, 15)
-                .into_widget(ctx),
+            Text::from(
+                "How far away are people parked? (minutes)"
+                    .span()
+                    .secondary(),
+            )
+            .wrap_to_pct(ctx, 15)
+            .into_widget(ctx),
             ColorLegend::gradient(
                 ctx,
                 &app.cs.good_to_bad_red,

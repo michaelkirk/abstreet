@@ -2,8 +2,8 @@ use abstutil::prettyprint_usize;
 use map_gui::tools::ColorDiscrete;
 use sim::Scenario;
 use widgetry::{
-    Color, CreateTextSpan, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel,
-    State, Text, VerticalAlignment, Widget,
+    Color, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, State, Text,
+    TextExt, TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -49,7 +49,7 @@ impl ScenarioManager {
         Box::new(ScenarioManager {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan(format!("Scenario {}", scenario.scenario_name))
+                    TextSpan::new(format!("Scenario {}", scenario.scenario_name))
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
@@ -60,20 +60,20 @@ impl ScenarioManager {
                     .hotkey(Key::D)
                     .build_def(ctx),
                 Text::from_multiline(vec![
-                    CreateTextSpan(format!(
+                    TextSpan::new(format!(
                         "{} people",
                         prettyprint_usize(scenario.people.len())
                     )),
-                    CreateTextSpan(format!(
+                    TextSpan::new(format!(
                         "seed {} parked cars",
                         prettyprint_usize(total_cars_needed)
                     )),
-                    CreateTextSpan(format!(
+                    TextSpan::new(format!(
                         "{} parking spots",
                         prettyprint_usize(free_parking_spots.len()),
                     )),
-                    CreateTextSpan(""),
-                    CreateTextSpan("Parked cars per building"),
+                    "".span(),
+                    "Parked cars per building".span(),
                 ])
                 .into_widget(ctx),
                 legend,

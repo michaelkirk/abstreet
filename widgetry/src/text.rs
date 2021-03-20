@@ -53,7 +53,7 @@ pub struct TextSpan {
 
 impl<AsStrRef: AsRef<str>> From<AsStrRef> for TextSpan {
     fn from(line: AsStrRef) -> Self {
-        CreateTextSpan(line.as_ref())
+        TextSpan::new(line.as_ref())
     }
 }
 
@@ -153,15 +153,15 @@ impl TextSpan {
     }
 }
 
-// TODO What's the better way of doing this? Also "Line" is a bit of a misnomer
-#[allow(non_snake_case)]
-pub fn CreateTextSpan<S: Into<String>>(text: S) -> TextSpan {
-    TextSpan {
-        text: text.into(),
-        fg_color: None,
-        size: DEFAULT_FONT_SIZE,
-        font: DEFAULT_FONT,
-        underlined: false,
+impl TextSpan {
+    pub fn new<S: Into<String>>(text: S) -> TextSpan {
+        TextSpan {
+            text: text.into(),
+            fg_color: None,
+            size: DEFAULT_FONT_SIZE,
+            font: DEFAULT_FONT,
+            underlined: false,
+        }
     }
 }
 
@@ -184,7 +184,7 @@ impl From<TextSpan> for Text {
 impl<AsStrRef: AsRef<str>> From<AsStrRef> for Text {
     fn from(line: AsStrRef) -> Text {
         let mut txt = Text::new();
-        txt.add_line(CreateTextSpan(line.as_ref()));
+        txt.add_line(TextSpan::new(line.as_ref()));
         txt
     }
 }
@@ -230,13 +230,13 @@ impl Text {
     pub fn tooltip<MK: Into<Option<MultiKey>>>(ctx: &EventCtx, hotkey: MK, action: &str) -> Text {
         if let Some(ref key) = hotkey.into() {
             Text::from_all(vec![
-                CreateTextSpan(key.describe())
+                TextSpan::new(key.describe())
                     .fg(ctx.style().text_hotkey_color)
                     .small(),
-                CreateTextSpan(format!(" - {}", action)).small(),
+                TextSpan::new(format!(" - {}", action)).small(),
             ])
         } else {
-            Text::from(CreateTextSpan(action).small())
+            Text::from(TextSpan::new(action).small())
         }
     }
 
@@ -502,23 +502,42 @@ fn render_line(spans: Vec<TextSpan>, tolerance: f32, assets: &Assets) -> GeomBat
 pub trait TextExt {
     fn text_widget(self, ctx: &EventCtx) -> Widget;
     fn batch_text(self, ctx: &EventCtx) -> Widget;
+    fn span(self) -> TextSpan;
 }
 
 impl TextExt for &str {
     fn text_widget(self, ctx: &EventCtx) -> Widget {
-        CreateTextSpan(self).into_widget(ctx)
+        TextSpan::new(self).into_widget(ctx)
     }
     fn batch_text(self, ctx: &EventCtx) -> Widget {
-        CreateTextSpan(self).batch(ctx)
+        TextSpan::new(self).batch(ctx)
+    }
+    fn span(self) -> TextSpan {
+        TextSpan::new(self)
+    }
+}
+
+impl TextExt for &String {
+    fn text_widget(self, ctx: &EventCtx) -> Widget {
+        TextSpan::new(self).into_widget(ctx)
+    }
+    fn batch_text(self, ctx: &EventCtx) -> Widget {
+        TextSpan::new(self).batch(ctx)
+    }
+    fn span(self) -> TextSpan {
+        TextSpan::new(self)
     }
 }
 
 impl TextExt for String {
     fn text_widget(self, ctx: &EventCtx) -> Widget {
-        CreateTextSpan(self).into_widget(ctx)
+        TextSpan::new(self).into_widget(ctx)
     }
     fn batch_text(self, ctx: &EventCtx) -> Widget {
-        CreateTextSpan(self).batch(ctx)
+        TextSpan::new(self).batch(ctx)
+    }
+    fn span(self) -> TextSpan {
+        TextSpan::new(self)
     }
 }
 

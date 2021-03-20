@@ -14,9 +14,9 @@ use map_model::{
 };
 use sim::{Sim, TripEndpoint};
 use widgetry::{
-    lctrl, Cached, Choice, Color, CreateTextSpan, DrawBaselayer, Drawable, EventCtx, GeomBatch,
-    GfxCtx, HorizontalAlignment, Key, Outcome, Panel, ScreenDims, State, Text, Toggle, UpdateType,
-    VerticalAlignment, Widget,
+    lctrl, Cached, Choice, Color, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx,
+    HorizontalAlignment, Key, Outcome, Panel, ScreenDims, State, Text, TextExt, TextSpan, Toggle,
+    UpdateType, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, ShowLayers, ShowObject, Transition};
@@ -52,9 +52,7 @@ impl DebugMode {
         Box::new(DebugMode {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan("Debug Mode")
-                        .small_heading()
-                        .into_widget(ctx),
+                    "Debug Mode".span().small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 Text::new().into_widget(ctx).named("current info"),
@@ -137,9 +135,9 @@ impl DebugMode {
                         .build_def(ctx),
                 ]),
                 Text::from_all(vec![
-                    CreateTextSpan("Hold "),
+                    "Hold ".span(),
                     Key::LeftControl.txt(ctx),
-                    CreateTextSpan(" to show position"),
+                    " to show position".span(),
                 ])
                 .into_widget(ctx),
             ]))

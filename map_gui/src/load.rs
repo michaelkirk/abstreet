@@ -14,9 +14,7 @@ use tokio::runtime::Runtime;
 use abstio::MapName;
 use abstutil::Timer;
 use geom::Duration;
-use widgetry::{
-    Color, CreateTextSpan, EventCtx, GfxCtx, Panel, State, Text, Transition, UpdateType,
-};
+use widgetry::{Color, EventCtx, GfxCtx, Panel, State, Text, TextSpan, Transition, UpdateType};
 
 use crate::tools::PopupMsg;
 use crate::AppLike;
@@ -184,7 +182,7 @@ mod wasm_loader {
     use web_sys::{Request, RequestInit, RequestMode, Response};
 
     use geom::Duration;
-    use widgetry::{CreateTextSpan, Panel, State, Text, UpdateType};
+    use widgetry::{Panel, State, Text, TextSpan, UpdateType};
 
     use super::*;
 
@@ -289,8 +287,8 @@ mod wasm_loader {
             }
 
             self.panel = ctx.make_loading_screen(Text::from_multiline(vec![
-                CreateTextSpan(format!("Loading {}...", self.url)),
-                CreateTextSpan(format!(
+                TextSpan::new(format!("Loading {}...", self.url)),
+                TextSpan::new(format!(
                     "Time spent: {}",
                     Duration::realtime_elapsed(self.started)
                 )),
@@ -402,8 +400,8 @@ mod wasm_loader {
             }
 
             self.panel = ctx.make_loading_screen(Text::from_multiline(vec![
-                CreateTextSpan(format!("Loading {}...", self.url)),
-                CreateTextSpan(format!(
+                TextSpan::new(format!("Loading {}...", self.url)),
+                TextSpan::new(format!(
                     "Time spent: {}",
                     Duration::realtime_elapsed(self.started)
                 )),
@@ -524,8 +522,8 @@ where
             }
             Ok(None) => {
                 self.panel = ctx.make_loading_screen(Text::from_multiline(vec![
-                    CreateTextSpan(&self.loading_title),
-                    CreateTextSpan(format!(
+                    TextSpan::new(&self.loading_title),
+                    TextSpan::new(format!(
                         "Time spent: {}",
                         Duration::realtime_elapsed(self.started)
                     )),

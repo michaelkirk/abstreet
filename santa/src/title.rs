@@ -1,8 +1,8 @@
 use geom::Percent;
 use map_gui::tools::open_browser;
 use widgetry::{
-    ButtonBuilder, Color, ControlState, CreateTextSpan, EdgeInsets, EventCtx, GeomBatch, GfxCtx,
-    Key, Panel, RewriteColor, SimpleState, State, Text, TextExt, Widget,
+    ButtonBuilder, Color, ControlState, EdgeInsets, EventCtx, GeomBatch, GfxCtx, Key, Panel,
+    RewriteColor, SimpleState, State, Text, TextExt, TextSpan, Widget,
 };
 
 use crate::levels::Level;
@@ -23,7 +23,8 @@ impl TitleScreen {
 
         SimpleState::new(
             Panel::new(Widget::col(vec![
-                CreateTextSpan("15-minute Santa")
+                "15-minute Santa"
+                    .span()
                     .display_title()
                     .into_widget(ctx)
                     .container()
@@ -31,7 +32,7 @@ impl TitleScreen {
                     .bg(app.cs.fade_map_dark)
                     .centered_horiz(),
                 Text::from(
-                    CreateTextSpan(
+                    TextSpan::new(
                         "Time for Santa to deliver presents in Seattle! But... COVID means no \
                          stopping in houses to munch on cookies (gluten-free and paleo, \
                          obviously). When your blood sugar gets low, you'll have to stop and \
@@ -98,8 +99,8 @@ impl SimpleState<App> for TitleScreen {
 
 fn level_btn(ctx: &mut EventCtx, app: &App, level: &Level, idx: usize) -> GeomBatch {
     let mut txt = Text::new();
-    txt.add_line(CreateTextSpan(format!("LEVEL {}", idx + 1)).small_heading());
-    txt.add_line(CreateTextSpan(&level.title).small_heading());
+    txt.add_line(TextSpan::new(format!("LEVEL {}", idx + 1)).small_heading());
+    txt.add_line(TextSpan::new(&level.title).small_heading());
     txt.add_line(&level.description);
     let batch = txt.wrap_to_pct(ctx, 15).render_autocropped(ctx);
 
@@ -147,7 +148,7 @@ impl Credits {
         SimpleState::new(
             Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan("15-minute Santa").big_heading_plain().into_widget(ctx),
+                    "15-minute Santa".span().big_heading_plain().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 link(
@@ -156,9 +157,9 @@ impl Credits {
                     "https://abstreet.org"
                 ),
                 Text::from_multiline(vec![
-                    CreateTextSpan("Lead: Dustin Carlino"),
-                    CreateTextSpan("Programming & game design: Michael Kirk"),
-                    CreateTextSpan("UI/UX: Yuwen Li"),
+                    "Lead: Dustin Carlino".span(),
+                    "Programming & game design: Michael Kirk".span(),
+                    "UI/UX: Yuwen Li".span(),
                 ]).into_widget(ctx),
                 link(
                     ctx,

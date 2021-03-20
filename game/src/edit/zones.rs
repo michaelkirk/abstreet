@@ -7,8 +7,8 @@ use map_gui::tools::ColorDiscrete;
 use map_model::{AccessRestrictions, PathConstraints, RoadID};
 use sim::TripMode;
 use widgetry::{
-    Color, CreateTextSpan, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel,
-    Spinner, State, Text, TextExt, VerticalAlignment, Widget,
+    Color, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, Spinner, State,
+    Text, TextExt, TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -49,7 +49,8 @@ impl ZoneEditor {
 
         Box::new(ZoneEditor {
             panel: Panel::new(Widget::col(vec![
-                CreateTextSpan("Editing restricted access zone")
+                "Editing restricted access zone"
+                    .span()
                     .small_heading()
                     .into_widget(ctx),
                 selector.make_controls(ctx).named("selector"),
@@ -226,7 +227,7 @@ fn make_instructions(ctx: &mut EventCtx, allow_through_traffic: &BTreeSet<TripMo
         .wrap_to_pct(ctx, 30)
         .into_widget(ctx)
     } else {
-        CreateTextSpan(
+        TextSpan::new(
             "Trips may start or end in this zone, but through-traffic is only allowed for:",
         )
         .into_widget(ctx)

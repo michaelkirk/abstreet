@@ -11,9 +11,8 @@ use map_gui::tools::{
 use map_gui::{SimpleApp, ID};
 use map_model::osm;
 use widgetry::{
-    lctrl, Color, CreateTextSpan, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx,
-    HorizontalAlignment, Key, Outcome, Panel, State, Text, TextExt, Toggle, Transition,
-    VerticalAlignment, Widget,
+    lctrl, Color, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key,
+    Outcome, Panel, State, Text, TextExt, TextSpan, Toggle, Transition, VerticalAlignment, Widget,
 };
 
 type App = SimpleApp<()>;
@@ -57,7 +56,8 @@ impl Viewer {
         biz_search_panel: Option<Widget>,
     ) {
         let top_panel = Panel::new(Widget::col(vec![
-            CreateTextSpan("OpenStreetMap viewer")
+            "OpenStreetMap viewer"
+                .span()
                 .small_heading()
                 .into_widget(ctx),
             ctx.style()
@@ -145,7 +145,7 @@ impl Viewer {
                             ctx,
                             format!("open https://wiki.openstreetmap.org/wiki/Key:{}", k),
                         ),
-                        CreateTextSpan(v).into_widget(ctx).align_right(),
+                        TextSpan::new(v).into_widget(ctx).align_right(),
                     ]));
                 }
             }
@@ -202,7 +202,7 @@ impl Viewer {
                                 ctx,
                                 format!("open https://wiki.openstreetmap.org/wiki/Key:{}", k),
                             ),
-                            CreateTextSpan(v).into_widget(ctx).align_right(),
+                            TextSpan::new(v).into_widget(ctx).align_right(),
                         ]));
                     }
                 }
@@ -472,7 +472,7 @@ impl BusinessSearch {
             col.push(Toggle::custom_checkbox(
                 ctx,
                 amenity,
-                vec![CreateTextSpan(format!(
+                vec![TextSpan::new(format!(
                     "{}: {}",
                     amenity,
                     prettyprint_usize(*cnt)

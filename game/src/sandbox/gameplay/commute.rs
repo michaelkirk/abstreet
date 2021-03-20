@@ -3,8 +3,8 @@ use std::collections::BTreeMap;
 use geom::{Duration, Time};
 use sim::{OrigPersonID, PersonID, TripID};
 use widgetry::{
-    Color, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Image, Outcome, Panel, State,
-    Text, TextExt, VerticalAlignment, Widget,
+    Color, EventCtx, GfxCtx, HorizontalAlignment, Image, Outcome, Panel, State, Text, TextExt,
+    TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -177,7 +177,7 @@ impl GameplayState for OptimizeCommute {
         let (before, after, done) = get_score(app, &self.trips);
         let mut txt = Text::from(format!("Total time: {} (", after));
         txt.append_all(cmp_duration_shorter(app, after, before));
-        txt.append(CreateTextSpan(")"));
+        txt.append(")".span());
 
         self.top_right = Panel::new(Widget::col(vec![
             challenge_header(ctx, "Optimize the VIP's commute"),
@@ -285,45 +285,47 @@ fn cutscene_task(mode: &GameplayMode) -> Box<dyn Fn(&mut EventCtx) -> Widget> {
         let icon_builder = Image::empty().color(Color::BLACK).dims(50.0);
         Widget::custom_col(vec![
             Text::from_multiline(vec![
-                CreateTextSpan(format!("Speed up the VIP's trips by a total of {}", goal))
+                TextSpan::new(format!("Speed up the VIP's trips by a total of {}", goal))
                     .fg(Color::BLACK),
-                CreateTextSpan("Ignore the damage done to everyone else.").fg(Color::BLACK),
+                "Ignore the damage done to everyone else."
+                    .span()
+                    .fg(Color::BLACK),
             ])
             .into_widget(ctx)
             .margin_below(30),
             Widget::row(vec![
                 Widget::col(vec![
-                    CreateTextSpan("Time").fg(Color::BLACK).into_widget(ctx),
+                    "Time".span().fg(Color::BLACK).into_widget(ctx),
                     icon_builder
                         .clone()
                         .source_path("system/assets/tools/time.svg")
                         .into_widget(ctx),
                     Text::from_multiline(vec![
-                        CreateTextSpan("Until the VIP's").fg(Color::BLACK),
-                        CreateTextSpan("last trip is done").fg(Color::BLACK),
+                        "Until the VIP's".span().fg(Color::BLACK),
+                        "last trip is done".span().fg(Color::BLACK),
                     ])
                     .into_widget(ctx),
                 ]),
                 Widget::col(vec![
-                    CreateTextSpan("Goal").fg(Color::BLACK).into_widget(ctx),
+                    "Goal".span().fg(Color::BLACK).into_widget(ctx),
                     icon_builder
                         .clone()
                         .source_path("system/assets/tools/location.svg")
                         .into_widget(ctx),
                     Text::from_multiline(vec![
-                        CreateTextSpan("Speed up the VIP's trips").fg(Color::BLACK),
-                        CreateTextSpan(format!("by at least {}", goal)).fg(Color::BLACK),
+                        "Speed up the VIP's trips".span().fg(Color::BLACK),
+                        TextSpan::new(format!("by at least {}", goal)).fg(Color::BLACK),
                     ])
                     .into_widget(ctx),
                 ]),
                 Widget::col(vec![
-                    CreateTextSpan("Score").fg(Color::BLACK).into_widget(ctx),
+                    "Score".span().fg(Color::BLACK).into_widget(ctx),
                     icon_builder
                         .source_path("system/assets/tools/star.svg")
                         .into_widget(ctx),
                     Text::from_multiline(vec![
-                        CreateTextSpan("How much time").fg(Color::BLACK),
-                        CreateTextSpan("the VIP saves").fg(Color::BLACK),
+                        "How much time".span().fg(Color::BLACK),
+                        "the VIP saves".span().fg(Color::BLACK),
                     ])
                     .into_widget(ctx),
                 ]),

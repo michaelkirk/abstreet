@@ -10,7 +10,7 @@ use geom::Duration;
 use map_model::{EditCmd, EditIntersection, MapEdits};
 use sim::{OrigPersonID, Scenario, ScenarioGenerator, ScenarioModifier};
 use widgetry::{
-    lctrl, Color, CreateTextSpan, EventCtx, GeomBatch, GfxCtx, Key, Outcome, Panel, State, TextExt,
+    lctrl, Color, EventCtx, GeomBatch, GfxCtx, Key, Outcome, Panel, State, TextExt, TextSpan,
     Widget,
 };
 
@@ -228,7 +228,7 @@ impl GameplayMode {
 
 fn challenge_header(ctx: &mut EventCtx, title: &str) -> Widget {
     Widget::row(vec![
-        CreateTextSpan(title)
+        TextSpan::new(title)
             .small_heading()
             .into_widget(ctx)
             .centered_vert(),

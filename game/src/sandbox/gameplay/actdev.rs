@@ -10,8 +10,8 @@ use map_gui::tools::{grey_out_map, nice_map_name, open_browser, PopupMsg};
 use map_model::AreaType;
 use sim::{AgentType, PersonID, TripEndpoint, TripID};
 use widgetry::{
-    lctrl, ControlState, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome,
-    Panel, SimpleState, Text, TextExt, Toggle, VerticalAlignment, Widget,
+    lctrl, ControlState, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, SimpleState,
+    Text, TextExt, TextSpan, Toggle, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -118,12 +118,11 @@ impl GameplayState for Actdev {
                 "about A/B Street" => {
                     let panel = Panel::new(Widget::col(vec![
                         Widget::row(vec![
-                            CreateTextSpan("About A/B Street")
-                                .small_heading()
-                                .into_widget(ctx),
+                            "About A/B Street".span().small_heading().into_widget(ctx),
                             ctx.style().btn_close_widget(ctx),
                         ]),
-                        CreateTextSpan("Created by Dustin Carlino, Yuwen Li, & Michael Kirk")
+                        "Created by Dustin Carlino, Yuwen Li, & Michael Kirk"
+                            .span()
                             .small()
                             .into_widget(ctx),
                         Text::from(
@@ -204,7 +203,7 @@ impl GameplayState for Actdev {
                     .image_path("system/assets/pregame/logo.svg")
                     .image_dims(50.0)
                     .build_widget(ctx, "about A/B Street"),
-                CreateTextSpan(nice_map_name(app.primary.map.get_name()))
+                TextSpan::new(nice_map_name(app.primary.map.get_name()))
                     .small_heading()
                     .into_widget(ctx),
                 ctx.style()
@@ -220,12 +219,12 @@ impl GameplayState for Actdev {
                     .label_styled_text(
                         match self.scenario_name.as_ref() {
                             "base" => Text::from_all(vec![
-                                CreateTextSpan("Baseline / "),
-                                CreateTextSpan("Go Active").secondary(),
+                                "Baseline / ".span(),
+                                "Go Active".span().secondary(),
                             ]),
                             "go_active" => Text::from_all(vec![
-                                CreateTextSpan("Baseline").secondary(),
-                                CreateTextSpan(" / Go Active"),
+                                "Baseline".span().secondary(),
+                                " / Go Active".span(),
                             ]),
                             _ => unreachable!(),
                         },

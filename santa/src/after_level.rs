@@ -2,8 +2,8 @@ use abstutil::prettyprint_usize;
 use geom::{Distance, PolyLine, Polygon, Pt2D};
 use map_gui::tools::{ColorLegend, PopupMsg};
 use widgetry::{
-    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel,
-    SimpleState, State, Text, VerticalAlignment, Widget,
+    Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel, SimpleState,
+    State, Text, TextExt, TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::buildings::{BldgState, Buildings};
@@ -38,7 +38,7 @@ impl Strategize {
         let unlock_messages = app.session.record_score(level.title.clone(), score);
 
         let mut txt = Text::new();
-        txt.add_line(CreateTextSpan(format!("Results for {}", level.title)).small_heading());
+        txt.add_line(TextSpan::new(format!("Results for {}", level.title)).small_heading());
         txt.add_line(format!(
             "You delivered {} presents",
             prettyprint_usize(score)
@@ -65,12 +65,10 @@ impl Strategize {
                     );
                     if num_housing_units > 1 {
                         batch.append(
-                            Text::from(
-                                CreateTextSpan(num_housing_units.to_string()).fg(Color::RED),
-                            )
-                            .render_autocropped(ctx)
-                            .scale(0.2)
-                            .centered_on(b.label_center),
+                            Text::from(TextSpan::new(num_housing_units.to_string()).fg(Color::RED))
+                                .render_autocropped(ctx)
+                                .scale(0.2)
+                                .centered_on(b.label_center),
                         );
                     }
                 }
@@ -169,7 +167,7 @@ impl Results {
     ) -> Box<dyn State<App>> {
         let mut txt = Text::new();
         if score < level.goal {
-            txt.add_line(CreateTextSpan("Not quite...").small_heading());
+            txt.add_line("Not quite...".span().small_heading());
             txt.add_line(format!(
                 "You only delivered {} / {} presents",
                 prettyprint_usize(score),
@@ -179,7 +177,7 @@ impl Results {
             txt.add_line("");
             txt.add_line("Hint: look for any apartments you missed!");
         } else {
-            txt.add_line(CreateTextSpan("Thank you, Santa!").small_heading());
+            txt.add_line("Thank you, Santa!".span().small_heading());
             txt.add_line(format!(
                 "You delivered {} presents, more than the goal of {}!",
                 prettyprint_usize(score),

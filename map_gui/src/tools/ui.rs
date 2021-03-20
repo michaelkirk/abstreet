@@ -1,8 +1,8 @@
 //! Generic UI tools. Some of this should perhaps be lifted to widgetry.
 
 use widgetry::{
-    hotkeys, Choice, CreateTextSpan, DrawBaselayer, Drawable, EventCtx, GfxCtx, Key, Menu, Outcome,
-    Panel, State, Text, Transition, Widget,
+    hotkeys, Choice, DrawBaselayer, Drawable, EventCtx, GfxCtx, Key, Menu, Outcome, Panel, State,
+    Text, TextSpan, Transition, Widget,
 };
 
 use crate::tools::grey_out_map;
@@ -24,7 +24,7 @@ impl<A: AppLike + 'static, T: 'static> ChooseSomething<A, T> {
         Box::new(ChooseSomething {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan(query).small_heading().into_widget(ctx),
+                    TextSpan::new(query).small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 Menu::widget(ctx, choices).named("menu"),
@@ -79,7 +79,7 @@ impl<A: AppLike + 'static> PromptInput<A> {
         Box::new(PromptInput {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan(query).small_heading().into_widget(ctx),
+                    TextSpan::new(query).small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 Widget::text_entry(ctx, String::new(), true).named("input"),
@@ -155,7 +155,7 @@ impl PopupMsg {
         zoomed: Drawable,
     ) -> Box<dyn State<A>> {
         let mut txt = Text::new();
-        txt.add_line(CreateTextSpan(title).small_heading());
+        txt.add_line(TextSpan::new(title).small_heading());
         for l in lines {
             txt.add_line(l);
         }

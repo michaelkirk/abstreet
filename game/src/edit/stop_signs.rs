@@ -8,8 +8,8 @@ use map_model::{
     ControlStopSign, ControlTrafficSignal, EditCmd, EditIntersection, IntersectionID, RoadID,
 };
 use widgetry::{
-    CreateTextSpan, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel, SimpleState,
-    State, Text, VerticalAlignment, Widget,
+    EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Panel, SimpleState, State, Text,
+    TextExt, TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -50,9 +50,7 @@ impl StopSignEditor {
             .collect();
 
         let panel = Panel::new(Widget::col(vec![
-            CreateTextSpan("Stop sign editor")
-                .small_heading()
-                .into_widget(ctx),
+            "Stop sign editor".span().small_heading().into_widget(ctx),
             ctx.style()
                 .btn_outline
                 .text("reset to default")
@@ -218,8 +216,8 @@ impl SimpleState<App> for StopSignEditor {
         if let Some(r) = self.selected_sign {
             let mut osd = Text::new();
             osd.add_appended(vec![
-                CreateTextSpan("Stop sign for "),
-                CreateTextSpan(
+                "Stop sign for ".span(),
+                TextSpan::new(
                     app.primary
                         .map
                         .get_r(r)

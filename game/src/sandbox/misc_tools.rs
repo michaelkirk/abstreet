@@ -5,8 +5,8 @@ use map_gui::ID;
 use map_model::IntersectionID;
 use sim::AgentID;
 use widgetry::{
-    Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key,
-    Outcome, Panel, State, VerticalAlignment, Widget,
+    Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, State,
+    TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -82,7 +82,8 @@ impl TrafficRecorder {
         Box::new(TrafficRecorder {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan("Select the bounding intersections for recording traffic")
+                    "Select the bounding intersections for recording traffic"
+                        .span()
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),

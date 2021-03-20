@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use abstutil::prettyprint_usize;
 use map_model::ParkingLotID;
-use widgetry::{CreateTextSpan, EventCtx, LinePlot, PlotOptions, Series, TextExt, Widget};
+use widgetry::{EventCtx, LinePlot, PlotOptions, Series, TextExt, TextSpan, Widget};
 
 use crate::app::App;
 use crate::info::{header_btns, make_tabs, Details, Tab};
@@ -43,7 +43,8 @@ pub fn info(ctx: &mut EventCtx, app: &App, details: &mut Details, id: ParkingLot
     }
 
     let section = Widget::col(vec![
-        CreateTextSpan("Parking spots available")
+        "Parking spots available"
+            .span()
             .small_heading()
             .into_widget(ctx),
         LinePlot::new(
@@ -77,7 +78,7 @@ pub fn info(ctx: &mut EventCtx, app: &App, details: &mut Details, id: ParkingLot
 fn header(ctx: &EventCtx, details: &mut Details, id: ParkingLotID, tab: Tab) -> Vec<Widget> {
     vec![
         Widget::row(vec![
-            CreateTextSpan(id.to_string())
+            TextSpan::new(id.to_string())
                 .small_heading()
                 .into_widget(ctx),
             header_btns(ctx),

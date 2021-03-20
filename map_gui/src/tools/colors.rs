@@ -4,7 +4,7 @@ use abstutil::Counter;
 use geom::{Circle, Distance, Line, Polygon, Pt2D};
 use map_model::{BuildingID, BusStopID, IntersectionID, LaneID, Map, ParkingLotID, RoadID};
 use widgetry::{
-    Color, CreateTextSpan, Drawable, EventCtx, Fill, GeomBatch, LinearGradient, Text, Widget,
+    Color, Drawable, EventCtx, Fill, GeomBatch, LinearGradient, Text, TextSpan, Widget,
 };
 
 use crate::AppLike;
@@ -150,7 +150,7 @@ impl ColorLegend {
             Widget::custom_row(
                 labels
                     .into_iter()
-                    .map(|lbl| CreateTextSpan(lbl).small().into_widget(ctx))
+                    .map(|lbl| TextSpan::new(lbl).small().into_widget(ctx))
                     .collect(),
             )
             .evenly_spaced(),
@@ -177,7 +177,7 @@ impl ColorLegend {
             Widget::custom_row(
                 pairs
                     .into_iter()
-                    .map(|(_, lbl)| CreateTextSpan(lbl).small().into_widget(ctx))
+                    .map(|(_, lbl)| TextSpan::new(lbl).small().into_widget(ctx))
                     .collect(),
             )
             .evenly_spaced(),

@@ -11,8 +11,8 @@ use map_gui::colors::ColorScheme;
 use map_gui::tools::{ChooseSomething, PopupMsg};
 use map_model::BuildingID;
 use widgetry::{
-    lctrl, Choice, Color, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx,
-    HorizontalAlignment, Key, Outcome, Panel, State, Text, TextExt, VerticalAlignment, Widget,
+    lctrl, Choice, Color, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Outcome,
+    Panel, State, Text, TextExt, TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -69,9 +69,7 @@ impl ViewKML {
                 draw: ctx.upload(batch),
                 panel: Panel::new(Widget::col(vec![
                     Widget::row(vec![
-                        CreateTextSpan("KML viewer")
-                            .small_heading()
-                            .into_widget(ctx),
+                        "KML viewer".span().small_heading().into_widget(ctx),
                         ctx.style().btn_close_widget(ctx),
                     ]),
                     format!(

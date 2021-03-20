@@ -1,8 +1,8 @@
 use geom::Pt2D;
 
 use crate::{
-    Choice, CreateTextSpan, EventCtx, GfxCtx, Key, Outcome, ScreenDims, ScreenPt, ScreenRectangle,
-    Style, Text, Widget, WidgetImpl, WidgetOutput,
+    Choice, EventCtx, GfxCtx, Key, Outcome, ScreenDims, ScreenPt, ScreenRectangle, Style, Text,
+    TextExt, TextSpan, Widget, WidgetImpl, WidgetOutput,
 };
 
 pub struct Menu<T> {
@@ -49,27 +49,27 @@ impl<T: 'static> Menu<T> {
             if choice.active {
                 if let Some(ref key) = choice.hotkey {
                     txt.add_appended(vec![
-                        CreateTextSpan(key.describe()).fg(style.text_hotkey_color),
-                        CreateTextSpan(format!(" - {}", choice.label)).fg(text_color),
+                        TextSpan::new(key.describe()).fg(style.text_hotkey_color),
+                        TextSpan::new(format!(" - {}", choice.label)).fg(text_color),
                     ]);
                 } else {
-                    txt.add_line(CreateTextSpan(&choice.label).fg(text_color))
+                    txt.add_line(TextSpan::new(&choice.label).fg(text_color))
                 }
             } else {
                 text_color = text_color.alpha(0.8);
                 if let Some(ref key) = choice.hotkey {
                     txt.add_line(
-                        CreateTextSpan(format!("{} - {}", key.describe(), choice.label))
+                        TextSpan::new(format!("{} - {}", key.describe(), choice.label))
                             .fg(text_color),
                     );
                 } else {
-                    txt.add_line(CreateTextSpan(&choice.label).fg(text_color));
+                    txt.add_line(TextSpan::new(&choice.label).fg(text_color));
                 }
             }
 
             if choice.tooltip.is_some() {
                 // TODO Ideally unicode info symbol, but the fonts don't seem to have it
-                txt.append(CreateTextSpan(" (!)"));
+                txt.append(" (!)".span());
             }
 
             // TODO BG color should be on the TextSpan, so this isn't so terrible?

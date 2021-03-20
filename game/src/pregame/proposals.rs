@@ -5,7 +5,7 @@ use map_gui::load::MapLoader;
 use map_gui::tools::{open_browser, PopupMsg};
 use map_model::PermanentMapEdits;
 use widgetry::{
-    CreateTextSpan, DrawBaselayer, EventCtx, GfxCtx, Key, Outcome, Panel, State, Text, Widget,
+    DrawBaselayer, EventCtx, GfxCtx, Key, Outcome, Panel, State, Text, TextSpan, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -31,7 +31,7 @@ impl Proposals {
         {
             if current == Some(name.clone()) {
                 let mut txt = Text::new();
-                txt.add_line(CreateTextSpan(&edits.proposal_description[0]).small_heading());
+                txt.add_line(TextSpan::new(&edits.proposal_description[0]).small_heading());
                 for l in edits.proposal_description.iter().skip(1) {
                     txt.add_line(l);
                 }
@@ -83,8 +83,8 @@ impl Proposals {
 
         let mut col = vec![
             {
-                let mut txt = Text::from(CreateTextSpan("A/B STREET").display_title());
-                txt.add_line(CreateTextSpan("PROPOSALS").big_heading_styled());
+                let mut txt = Text::from("A/B STREET".span().display_title());
+                txt.add_line("PROPOSALS".span().big_heading_styled());
                 txt.add_line("");
                 txt.add_line("These are proposed changes to Seattle made by community members.");
                 txt.add_line("Contact dabreegster@gmail.com to add your idea here!");

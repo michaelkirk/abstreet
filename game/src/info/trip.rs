@@ -7,8 +7,8 @@ use map_gui::ID;
 use map_model::{Map, Path, PathStep};
 use sim::{AgentID, PersonID, TripEndpoint, TripID, TripPhase, TripPhaseType};
 use widgetry::{
-    Color, ControlState, CreateTextSpan, DrawWithTooltips, EventCtx, GeomBatch, LinePlot,
-    PlotOptions, RewriteColor, Series, Text, TextExt, Widget,
+    Color, ControlState, DrawWithTooltips, EventCtx, GeomBatch, LinePlot, PlotOptions,
+    RewriteColor, Series, Text, TextExt, TextSpan, Widget,
 };
 
 use crate::app::App;
@@ -66,13 +66,11 @@ pub fn ongoing(
 
     {
         col.push(Widget::custom_row(vec![
-            Widget::custom_row(vec![CreateTextSpan("Trip time")
-                .secondary()
-                .into_widget(ctx)])
-            .force_width_pct(ctx, col_width),
+            Widget::custom_row(vec!["Trip time".span().secondary().into_widget(ctx)])
+                .force_width_pct(ctx, col_width),
             Text::from_all(vec![
-                CreateTextSpan(props.total_time.to_string(&app.opts.units)),
-                CreateTextSpan(format!(
+                TextSpan::new(props.total_time.to_string(&app.opts.units)),
+                TextSpan::new(format!(
                     " {} / {} this trip",
                     activity,
                     time_so_far.to_string(&app.opts.units)
@@ -84,13 +82,11 @@ pub fn ongoing(
     }
     {
         col.push(Widget::custom_row(vec![
-            Widget::custom_row(vec![CreateTextSpan("Distance")
-                .secondary()
-                .into_widget(ctx)])
-            .force_width_pct(ctx, col_width),
+            Widget::custom_row(vec!["Distance".span().secondary().into_widget(ctx)])
+                .force_width_pct(ctx, col_width),
             Text::from_all(vec![
-                CreateTextSpan(props.dist_crossed.to_string(&app.opts.units)),
-                CreateTextSpan(format!("/{}", props.total_dist.to_string(&app.opts.units)))
+                TextSpan::new(props.dist_crossed.to_string(&app.opts.units)),
+                TextSpan::new(format!("/{}", props.total_dist.to_string(&app.opts.units)))
                     .secondary(),
             ])
             .into_widget(ctx),
@@ -98,7 +94,8 @@ pub fn ongoing(
     }
     {
         col.push(Widget::custom_row(vec![
-            CreateTextSpan("Waiting")
+            "Waiting"
+                .span()
                 .secondary()
                 .into_widget(ctx)
                 .container()
@@ -107,15 +104,14 @@ pub fn ongoing(
                 format!("{} here", props.waiting_here.to_string(&app.opts.units)).text_widget(ctx),
                 Text::from_all(vec![
                     if props.total_waiting != Duration::ZERO {
-                        CreateTextSpan(format!(
+                        TextSpan::new(format!(
                             "{}%",
                             (100.0 * (props.total_waiting / time_so_far)) as usize
                         ))
                     } else {
-                        CreateTextSpan("0%")
+                        "0%".span()
                     },
-                    CreateTextSpan(format!(" total of {} time spent waiting", activity))
-                        .secondary(),
+                    TextSpan::new(format!(" total of {} time spent waiting", activity)).secondary(),
                 ])
                 .into_widget(ctx),
             ]),
@@ -123,9 +119,9 @@ pub fn ongoing(
     }
     {
         col.push(Widget::custom_row(vec![
-            Widget::custom_row(vec![CreateTextSpan("Purpose").secondary().into_widget(ctx)])
+            Widget::custom_row(vec!["Purpose".span().secondary().into_widget(ctx)])
                 .force_width_pct(ctx, col_width),
-            CreateTextSpan(trip.purpose.to_string())
+            TextSpan::new(trip.purpose.to_string())
                 .secondary()
                 .into_widget(ctx),
         ]));
@@ -271,10 +267,10 @@ pub fn finished(
                 .btn()
                 .label_styled_text(
                     Text::from_all(vec![
-                        CreateTextSpan("After / "),
-                        CreateTextSpan("Before").secondary(),
-                        CreateTextSpan(" "),
-                        CreateTextSpan(&app.primary.map.get_edits().edits_name).underlined(),
+                        "After / ".span(),
+                        "Before".span().secondary(),
+                        " ".span(),
+                        TextSpan::new(&app.primary.map.get_edits().edits_name).underlined(),
                     ]),
                     ControlState::Default,
                 )
@@ -293,10 +289,10 @@ pub fn finished(
                 .btn()
                 .label_styled_text(
                     Text::from_all(vec![
-                        CreateTextSpan("After / ").secondary(),
-                        CreateTextSpan("Before"),
-                        CreateTextSpan(" "),
-                        CreateTextSpan(&app.primary.map.get_edits().edits_name).underlined(),
+                        "After / ".span().secondary(),
+                        "Before".span(),
+                        " ".span(),
+                        TextSpan::new(&app.primary.map.get_edits().edits_name).underlined(),
                     ]),
                     ControlState::Default,
                 )
@@ -309,20 +305,16 @@ pub fn finished(
 
         if let Some(end_time) = phases.last().as_ref().and_then(|p| p.end_time) {
             col.push(Widget::custom_row(vec![
-                Widget::custom_row(vec![CreateTextSpan("Trip time")
-                    .secondary()
-                    .into_widget(ctx)])
-                .force_width_pct(ctx, col_width),
+                Widget::custom_row(vec!["Trip time".span().secondary().into_widget(ctx)])
+                    .force_width_pct(ctx, col_width),
                 (end_time - trip.departure)
                     .to_string(&app.opts.units)
                     .text_widget(ctx),
             ]));
         } else {
             col.push(Widget::custom_row(vec![
-                Widget::custom_row(vec![CreateTextSpan("Trip time")
-                    .secondary()
-                    .into_widget(ctx)])
-                .force_width_pct(ctx, col_width),
+                Widget::custom_row(vec!["Trip time".span().secondary().into_widget(ctx)])
+                    .force_width_pct(ctx, col_width),
                 "Trip didn't complete before map changes".text_widget(ctx),
             ]));
         }
@@ -331,7 +323,8 @@ pub fn finished(
         // look at the prebaked results! Misleading -- change the text.
         let (_, waiting, _) = app.primary.sim.finished_trip_details(id).unwrap();
         col.push(Widget::custom_row(vec![
-            Widget::custom_row(vec![CreateTextSpan("Total waiting time")
+            Widget::custom_row(vec!["Total waiting time"
+                .span()
                 .secondary()
                 .into_widget(ctx)])
             .force_width_pct(ctx, col_width),
@@ -339,9 +332,9 @@ pub fn finished(
         ]));
 
         col.push(Widget::custom_row(vec![
-            Widget::custom_row(vec![CreateTextSpan("Purpose").secondary().into_widget(ctx)])
+            Widget::custom_row(vec!["Purpose".span().secondary().into_widget(ctx)])
                 .force_width_pct(ctx, col_width),
-            CreateTextSpan(trip.purpose.to_string())
+            TextSpan::new(trip.purpose.to_string())
                 .secondary()
                 .into_widget(ctx),
         ]));
@@ -418,13 +411,13 @@ fn highlight_slow_intersections(ctx: &EventCtx, app: &App, details: &mut Details
 
             let duration = Duration::seconds(*time as f64);
             details.unzoomed.append(
-                Text::from(CreateTextSpan(format!("{}", duration)).fg(fg_color))
+                Text::from(TextSpan::new(format!("{}", duration)).fg(fg_color))
                     .bg(bg_color)
                     .render(ctx)
                     .centered_on(intersection.polygon.center()),
             );
             details.zoomed.append(
-                Text::from(CreateTextSpan(format!("{}", duration)).fg(fg_color))
+                Text::from(TextSpan::new(format!("{}", duration)).fg(fg_color))
                     .bg(bg_color)
                     .render(ctx)
                     .scale(0.4)
@@ -468,13 +461,13 @@ fn highlight_slow_lanes(ctx: &EventCtx, app: &App, details: &mut Details, id: Tr
                 .lane_center_pts
                 .must_dist_along(lane.lane_center_pts.length() / 2.0);
             details.unzoomed.append(
-                Text::from(CreateTextSpan(format!("{}s", speed_percent)).fg(fg_color))
+                Text::from(TextSpan::new(format!("{}s", speed_percent)).fg(fg_color))
                     .bg(bg_color)
                     .render(ctx)
                     .centered_on(pt),
             );
             details.zoomed.append(
-                Text::from(CreateTextSpan(format!("{}s", speed_percent)).fg(fg_color))
+                Text::from(TextSpan::new(format!("{}s", speed_percent)).fg(fg_color))
                     .bg(bg_color)
                     .render(ctx)
                     .scale(0.4)
@@ -552,7 +545,7 @@ fn make_timeline(
 
         tooltips.push((
             rectangle.clone(),
-            Text::from_multiline(tooltip.into_iter().map(CreateTextSpan).collect()),
+            Text::from_multiline(tooltip.into_iter().map(TextSpan::new).collect()),
         ));
 
         batch.push(
@@ -830,8 +823,7 @@ fn make_trip_details(
                     .tooltip({
                         let mut txt = Text::from("This will jump to ");
                         txt.append(
-                            CreateTextSpan(trip.departure.ampm_tostring())
-                                .fg(Color::hex("#F9EC51")),
+                            TextSpan::new(trip.departure.ampm_tostring()).fg(Color::hex("#F9EC51")),
                         );
                         txt.add_line("The simulation will continue, and your score");
                         txt.add_line("will be calculated at this new time.");
@@ -851,7 +843,7 @@ fn make_trip_details(
                         .icon("system/assets/speed/jump_to_time.svg")
                         .tooltip({
                             let mut txt = Text::from("This will jump to ");
-                            txt.append(CreateTextSpan(t.ampm_tostring()).fg(Color::hex("#F9EC51")));
+                            txt.append(TextSpan::new(t.ampm_tostring()).fg(Color::hex("#F9EC51")));
                             txt.add_line("The simulation will continue, and your score");
                             txt.add_line("will be calculated at this new time.");
                             txt

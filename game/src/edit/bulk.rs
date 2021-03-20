@@ -6,8 +6,8 @@ use geom::Speed;
 use map_gui::tools::PopupMsg;
 use map_model::{LaneType, RoadID};
 use widgetry::{
-    hotkeys, Choice, Color, ControlState, CreateTextSpan, Drawable, EventCtx, GfxCtx,
-    HorizontalAlignment, Key, Outcome, Panel, State, TextExt, VerticalAlignment, Widget,
+    hotkeys, Choice, Color, ControlState, Drawable, EventCtx, GfxCtx, HorizontalAlignment, Key,
+    Outcome, Panel, State, TextExt, TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -29,9 +29,7 @@ impl BulkSelect {
 
 fn make_select_panel(ctx: &mut EventCtx, selector: &RoadSelector) -> Panel {
     Panel::new(Widget::col(vec![
-        CreateTextSpan("Edit many roads")
-            .small_heading()
-            .into_widget(ctx),
+        "Edit many roads".span().small_heading().into_widget(ctx),
         selector.make_controls(ctx),
         Widget::row(vec![
             ctx.style()
@@ -158,7 +156,7 @@ impl BulkEdit {
     ) -> Box<dyn State<App>> {
         Box::new(BulkEdit {
             panel: Panel::new(Widget::col(vec![
-                CreateTextSpan(format!("Editing {} roads", roads.len()))
+                TextSpan::new(format!("Editing {} roads", roads.len()))
                     .small_heading()
                     .into_widget(ctx),
                 "Lane types".text_widget(ctx),

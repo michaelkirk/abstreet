@@ -2,7 +2,7 @@
 
 use abstio::MapName;
 use geom::Polygon;
-use widgetry::{CreateTextSpan, GfxCtx, Text};
+use widgetry::{GfxCtx, Text, TextExt, TextSpan};
 
 pub use self::camera::CameraState;
 pub use self::city_picker::CityPicker;
@@ -37,12 +37,12 @@ mod url;
 // TODO This is A/B Street specific
 pub fn loading_tips() -> Text {
     Text::from_multiline(vec![
-        CreateTextSpan("Have you tried..."),
-        CreateTextSpan(""),
-        CreateTextSpan("- simulating cities in Britain, Taiwan, Poland, and more?"),
-        CreateTextSpan("- the 15-minute neighborhood tool?"),
-        CreateTextSpan("- exploring all of the map layers?"),
-        CreateTextSpan("- playing 15-minute Santa, our arcade game spin-off?"),
+        "Have you tried...".span(),
+        "".span(),
+        "- simulating cities in Britain, Taiwan, Poland, and more?".span(),
+        "- the 15-minute neighborhood tool?".span(),
+        "- exploring all of the map layers?".span(),
+        "- playing 15-minute Santa, our arcade game spin-off?".span(),
     ])
 }
 

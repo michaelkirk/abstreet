@@ -10,8 +10,8 @@ use map_gui::ID;
 use map_model::{BuildingID, IntersectionID, Position, NORMAL_LANE_THICKNESS};
 use sim::{IndividTrip, PersonSpec, Scenario, TripEndpoint, TripMode, TripPurpose};
 use widgetry::{
-    lctrl, Choice, Color, CreateTextSpan, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome,
-    Panel, SimpleState, Spinner, State, Text, TextExt, VerticalAlignment, Widget,
+    lctrl, Choice, Color, EventCtx, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, SimpleState,
+    Spinner, State, Text, TextExt, TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::{App, Transition};
@@ -120,7 +120,8 @@ impl GameplayState for Freeform {
     fn recreate_panels(&mut self, ctx: &mut EventCtx, app: &App) {
         let rows = vec![
             Widget::custom_row(vec![
-                CreateTextSpan("Sandbox")
+                "Sandbox"
+                    .span()
                     .small_heading()
                     .into_widget(ctx)
                     .margin_right(18),
@@ -157,9 +158,9 @@ impl GameplayState for Freeform {
             ])
             .centered(),
             Text::from_all(vec![
-                CreateTextSpan("Select an intersection and press "),
+                "Select an intersection and press ".span(),
                 Key::Z.txt(ctx),
-                CreateTextSpan(" to start traffic nearby"),
+                " to start traffic nearby".span(),
             ])
             .into_widget(ctx),
         ];
@@ -228,12 +229,11 @@ impl ChangeScenario {
 
         let mut col = vec![
             Widget::row(vec![
-                CreateTextSpan("Pick your scenario")
-                    .small_heading()
-                    .into_widget(ctx),
+                "Pick your scenario".span().small_heading().into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
             ]),
-            CreateTextSpan("Each scenario determines what people live and travel around this map")
+            "Each scenario determines what people live and travel around this map"
+                .span()
                 .into_widget(ctx),
         ];
         for (name, label, description) in choices {
@@ -245,7 +245,7 @@ impl ChangeScenario {
             col.push(
                 Widget::row(vec![
                     btn.build_widget(ctx, name),
-                    Text::from(CreateTextSpan(description).secondary())
+                    Text::from(TextSpan::new(description).secondary())
                         .wrap_to_pct(ctx, 40)
                         .into_widget(ctx)
                         .align_right(),
@@ -316,7 +316,7 @@ impl AgentSpawner {
             confirmed: false,
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan("New trip").small_heading().into_widget(ctx),
+                    "New trip".span().small_heading().into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
                 ]),
                 "Click a building or border to specify start"

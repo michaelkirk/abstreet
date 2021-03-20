@@ -1,5 +1,5 @@
 use map_model::AreaID;
-use widgetry::{CreateTextSpan, EventCtx, Widget};
+use widgetry::{EventCtx, TextSpan, Widget};
 
 use crate::app::App;
 use crate::info::{header_btns, make_table, Details};
@@ -8,7 +8,7 @@ pub fn area(ctx: &EventCtx, app: &App, _: &mut Details, id: AreaID) -> Vec<Widge
     let mut rows = vec![];
 
     rows.push(Widget::row(vec![
-        CreateTextSpan(id.to_string())
+        TextSpan::new(id.to_string())
             .small_heading()
             .into_widget(ctx),
         header_btns(ctx),

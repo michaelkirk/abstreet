@@ -5,10 +5,10 @@ use rand_xorshift::XorShiftRng;
 
 use geom::{Angle, Duration, Percent, Polygon, Pt2D, Time};
 use widgetry::{
-    lctrl, Choice, Color, ContentMode, CreateTextSpan, Drawable, EventCtx, Fill, GeomBatch, GfxCtx,
+    lctrl, Choice, Color, ContentMode, Drawable, EventCtx, Fill, GeomBatch, GfxCtx,
     HorizontalAlignment, Image, Key, LinePlot, Outcome, Panel, PersistentSplit, PlotOptions,
-    ScreenDims, Series, SharedAppState, State, TabController, Text, TextExt, Texture, Toggle,
-    Transition, UpdateType, VerticalAlignment, Widget,
+    ScreenDims, Series, SharedAppState, State, TabController, Text, TextExt, TextSpan, Texture,
+    Toggle, Transition, UpdateType, VerticalAlignment, Widget,
 };
 
 pub fn main() {
@@ -61,18 +61,18 @@ impl Demo {
 
     fn make_timeseries_panel(&self, ctx: &mut EventCtx) -> Panel {
         // Make a table with 3 columns.
-        let mut col1 = vec![CreateTextSpan("Time").into_widget(ctx)];
-        let mut col = vec![CreateTextSpan("Linear").into_widget(ctx)];
-        let mut col3 = vec![CreateTextSpan("Quadratic").into_widget(ctx)];
+        let mut col1 = vec!["Time".span().into_widget(ctx)];
+        let mut col = vec!["Linear".span().into_widget(ctx)];
+        let mut col3 = vec!["Quadratic".span().into_widget(ctx)];
         for s in 0..(self.elapsed.inner_seconds() as usize) {
             col1.push(
-                CreateTextSpan(format!("{}", Duration::seconds(s as f64)))
+                TextSpan::new(format!("{}", Duration::seconds(s as f64)))
                     .secondary()
                     .into_widget(ctx),
             );
-            col.push(CreateTextSpan(s.to_string()).secondary().into_widget(ctx));
+            col.push(TextSpan::new(s.to_string()).secondary().into_widget(ctx));
             col3.push(
-                CreateTextSpan(s.pow(2).to_string())
+                TextSpan::new(s.pow(2).to_string())
                     .secondary()
                     .into_widget(ctx),
             );
@@ -80,8 +80,10 @@ impl Demo {
 
         let mut c = Panel::new(Widget::col(vec![
             Text::from_multiline(vec![
-                CreateTextSpan("Here's a bunch of text to force some scrolling.").small_heading(),
-                CreateTextSpan(
+                "Here's a bunch of text to force some scrolling."
+                    .span()
+                    .small_heading(),
+                TextSpan::new(
                     "Bug: scrolling by clicking and dragging doesn't work while the stopwatch is \
                      running.",
                 )
@@ -291,7 +293,9 @@ fn setup_scrollable_canvas(ctx: &mut EventCtx) -> Drawable {
     // Text rendering also goes through lyon and usvg.
     batch.append(
         Text::from(
-            CreateTextSpan("Awesome vector text thanks to usvg and lyon").fg(Color::hex("#DF8C3D")),
+            "Awesome vector text thanks to usvg and lyon"
+                .span()
+                .fg(Color::hex("#DF8C3D")),
         )
         .render_autocropped(ctx)
         .scale(2.0)
@@ -327,17 +331,17 @@ fn make_tabs(ctx: &mut EventCtx) -> TabController {
 
     let gallery_bar_item = style.btn_tab.text("Component Gallery");
     let gallery_content = Widget::col(vec![
-        Text::from(CreateTextSpan("Text").big_heading_styled().size(18)).into_widget(ctx),
+        Text::from("Text".span().big_heading_styled().size(18)).into_widget(ctx),
         Text::from_all(vec![
-            CreateTextSpan("You can "),
-            CreateTextSpan("change fonts ").big_heading_plain(),
-            CreateTextSpan("on the same ").small().fg(Color::BLUE),
-            CreateTextSpan("line!").small_heading(),
+            "You can ".span(),
+            "change fonts ".span().big_heading_plain(),
+            "on the same ".span().small().fg(Color::BLUE),
+            "line!".span().small_heading(),
         ])
         .bg(Color::GREEN)
         .into_widget(ctx),
         // Button Style Gallery
-        Text::from(CreateTextSpan("Buttons").big_heading_styled().size(18)).into_widget(ctx),
+        Text::from("Buttons".span().big_heading_styled().size(18)).into_widget(ctx),
         Widget::row(vec![
             style
                 .btn_solid_primary
@@ -382,8 +386,8 @@ fn make_tabs(ctx: &mut EventCtx) -> TabController {
             .btn_popup_icon_text("system/assets/tools/map.svg", "Popup")
             .build_widget(ctx, "btn_popup_icon_text")]),
         Text::from_multiline(vec![
-            CreateTextSpan("Images").big_heading_styled().size(18),
-            CreateTextSpan(
+            "Images".span().big_heading_styled().size(18),
+            TextSpan::new(
                 "Images can be colored, scaled, and stretched. They can have a background and \
                  padding.",
             ),
@@ -424,7 +428,7 @@ fn make_tabs(ctx: &mut EventCtx) -> TabController {
                 .tooltip("With ScaleAspectFill content can exceed its visible bounds")
                 .into_widget(ctx),
         ]),
-        Text::from(CreateTextSpan("Spinner").big_heading_styled().size(18)).into_widget(ctx),
+        Text::from("Spinner".span().big_heading_styled().size(18)).into_widget(ctx),
         widgetry::Spinner::widget(ctx, (0, 11), 1),
     ]);
     tabs.push_tab(gallery_bar_item, gallery_content);
@@ -432,7 +436,8 @@ fn make_tabs(ctx: &mut EventCtx) -> TabController {
     let qa_bar_item = style.btn_tab.text("Conformance Checks");
     let qa_content = Widget::col(vec![
         Text::from(
-            CreateTextSpan("Controls should be same height")
+            "Controls should be same height"
+                .span()
                 .big_heading_styled()
                 .size(18),
         )
@@ -510,7 +515,7 @@ fn make_tabs(ctx: &mut EventCtx) -> TabController {
 
 fn make_controls(ctx: &mut EventCtx, tabs: &mut TabController) -> Panel {
     Panel::new(Widget::col(vec![
-        Text::from(CreateTextSpan("widgetry demo").big_heading_styled()).into_widget(ctx),
+        Text::from("widgetry demo".span().big_heading_styled()).into_widget(ctx),
         Widget::col(vec![
             Text::from(
                 "Click and drag the background to pan, use touchpad or scroll wheel to zoom",

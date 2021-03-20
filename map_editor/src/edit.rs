@@ -1,9 +1,9 @@
 use geom::{ArrowCap, Distance};
 use map_model::raw::OriginalRoad;
 use widgetry::{
-    Choice, Color, CreateTextSpan, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx,
-    HorizontalAlignment, Key, Panel, SimpleState, Spinner, State, Text, TextExt, Transition,
-    VerticalAlignment, Widget,
+    Choice, Color, DrawBaselayer, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key,
+    Panel, SimpleState, Spinner, State, Text, TextExt, TextSpan, Transition, VerticalAlignment,
+    Widget,
 };
 
 use crate::App;
@@ -27,7 +27,7 @@ impl EditRoad {
 
         let mut txt = Text::new();
         for (k, v) in road.osm_tags.inner() {
-            txt.add_line(CreateTextSpan(format!("{} = {}", k, v)).secondary());
+            txt.add_line(TextSpan::new(format!("{} = {}", k, v)).secondary());
         }
         let info = txt.into_widget(ctx);
 
@@ -104,9 +104,7 @@ impl EditRoad {
 
         let col = vec![
             Widget::row(vec![
-                CreateTextSpan("Editing road")
-                    .small_heading()
-                    .into_widget(ctx),
+                "Editing road".span().small_heading().into_widget(ctx),
                 ctx.style().btn_close_widget(ctx),
             ]),
             Widget::row(vec![info, controls]),

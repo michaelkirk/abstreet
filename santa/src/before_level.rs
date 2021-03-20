@@ -11,9 +11,9 @@ use map_gui::tools::PopupMsg;
 use map_gui::ID;
 use map_model::BuildingID;
 use widgetry::{
-    ButtonBuilder, Color, ControlState, CreateTextSpan, Drawable, EventCtx, GeomBatch, GfxCtx,
-    HorizontalAlignment, Image, Key, Outcome, Panel, RewriteColor, State, Text, TextExt,
-    VerticalAlignment, Widget,
+    ButtonBuilder, Color, ControlState, Drawable, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment,
+    Image, Key, Outcome, Panel, RewriteColor, State, Text, TextExt, TextSpan, VerticalAlignment,
+    Widget,
 };
 
 use crate::buildings::{BldgState, Buildings};
@@ -55,21 +55,21 @@ impl Picker {
                 let bldgs = Buildings::new(ctx, app, HashSet::new());
 
                 let mut txt = Text::new();
-                txt.add_line(CreateTextSpan(format!("Ready for {}?", level.title)).small_heading());
+                txt.add_line(TextSpan::new(format!("Ready for {}?", level.title)).small_heading());
                 txt.add_line(format!(
                     "Goal: deliver {} presents",
                     prettyprint_usize(level.goal)
                 ));
                 txt.add_line(format!("Time limit: {}", level.time_limit));
                 txt.add_appended(vec![
-                    CreateTextSpan("Deliver presents to "),
-                    CreateTextSpan("single-family homes").fg(app.cs.residential_building),
-                    CreateTextSpan(" and "),
-                    CreateTextSpan("apartments").fg(app.session.colors.apartment),
+                    "Deliver presents to ".span(),
+                    "single-family homes".span().fg(app.cs.residential_building),
+                    " and ".span(),
+                    "apartments".span().fg(app.session.colors.apartment),
                 ]);
                 txt.add_appended(vec![
-                    CreateTextSpan("Raise your blood sugar by visiting "),
-                    CreateTextSpan("stores").fg(app.session.colors.store),
+                    "Raise your blood sugar by visiting ".span(),
+                    "stores".span().fg(app.session.colors.store),
                 ]);
 
                 let instructions_panel = Panel::new(Widget::col(vec![
@@ -81,25 +81,26 @@ impl Picker {
                         )
                         .into_widget(ctx),
                         Text::from_all(vec![
-                            CreateTextSpan("arrow keys").fg(ctx.style().text_hotkey_color),
-                            CreateTextSpan(" to move (or "),
-                            CreateTextSpan("WASD").fg(ctx.style().text_hotkey_color),
-                            CreateTextSpan(")"),
+                            "arrow keys".span().fg(ctx.style().text_hotkey_color),
+                            " to move (or ".span(),
+                            "WASD".span().fg(ctx.style().text_hotkey_color),
+                            ")".span(),
                         ])
                         .into_widget(ctx),
                     ]),
                     Widget::row(vec![
                         Image::from_path("system/assets/tools/mouse.svg").into_widget(ctx),
                         Text::from_all(vec![
-                            CreateTextSpan("mouse scroll wheel or touchpad")
+                            "mouse scroll wheel or touchpad"
+                                .span()
                                 .fg(ctx.style().text_hotkey_color),
-                            CreateTextSpan(" to zoom in or out"),
+                            " to zoom in or out".span(),
                         ])
                         .into_widget(ctx),
                     ]),
                     Text::from_all(vec![
-                        CreateTextSpan("Escape key").fg(ctx.style().text_hotkey_color),
-                        CreateTextSpan(" to pause"),
+                        "Escape key".span().fg(ctx.style().text_hotkey_color),
+                        " to pause".span(),
                     ])
                     .into_widget(ctx),
                 ]))
@@ -273,11 +274,12 @@ fn make_vehicle_panel(ctx: &mut EventCtx, app: &App) -> Panel {
     let (max_speed, max_energy) = Vehicle::max_stats();
 
     Panel::new(Widget::col(vec![
-        CreateTextSpan("Pick Santa's vehicle")
+        "Pick Santa's vehicle"
+            .span()
             .small_heading()
             .into_widget(ctx),
         Widget::row(buttons),
-        CreateTextSpan(&vehicle.name)
+        TextSpan::new(&vehicle.name)
             .small_heading()
             .into_widget(ctx),
         Widget::row(vec![
@@ -325,7 +327,7 @@ fn make_upzone_panel(ctx: &mut EventCtx, app: &App, num_picked: usize) -> Panel 
 
     Panel::new(Widget::col(vec![
         Widget::row(vec![
-            CreateTextSpan("Upzoning").small_heading().into_widget(ctx),
+            "Upzoning".span().small_heading().into_widget(ctx),
             ctx.style()
                 .btn_plain
                 .icon("system/assets/tools/info.svg")
@@ -334,7 +336,8 @@ fn make_upzone_panel(ctx: &mut EventCtx, app: &App, num_picked: usize) -> Panel 
         ]),
         Widget::row(vec![
             Image::from_path("system/assets/tools/mouse.svg").into_widget(ctx),
-            CreateTextSpan("Select the houses you want to turn into stores")
+            "Select the houses you want to turn into stores"
+                .span()
                 .fg(ctx.style().text_hotkey_color)
                 .into_widget(ctx),
         ]),

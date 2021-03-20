@@ -3,8 +3,7 @@ use std::collections::BTreeMap;
 use geom::{Duration, Percent};
 use sim::OrigPersonID;
 use widgetry::{
-    CreateTextSpan, DrawBaselayer, EventCtx, GfxCtx, Key, Outcome, Panel, State, Text, TextExt,
-    Widget,
+    DrawBaselayer, EventCtx, GfxCtx, Key, Outcome, Panel, State, Text, TextExt, TextSpan, Widget,
 };
 
 use crate::app::App;
@@ -138,8 +137,8 @@ impl ChallengesPicker {
                 .build_widget(ctx, "back")
                 .align_left(),
             Text::from_multiline(vec![
-                CreateTextSpan("A/B STREET").display_title(),
-                CreateTextSpan("CHALLENGES").big_heading_styled(),
+                "A/B STREET".span().display_title(),
+                "CHALLENGES".span().big_heading_styled(),
             ])
             .into_widget(ctx)
             .centered_horiz(),

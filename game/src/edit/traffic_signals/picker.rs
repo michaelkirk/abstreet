@@ -3,8 +3,8 @@ use std::collections::BTreeSet;
 use map_gui::ID;
 use map_model::IntersectionID;
 use widgetry::{
-    hotkeys, Color, CreateTextSpan, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Outcome,
-    Panel, State, VerticalAlignment, Widget,
+    hotkeys, Color, EventCtx, GeomBatch, GfxCtx, HorizontalAlignment, Key, Outcome, Panel, State,
+    TextSpan, VerticalAlignment, Widget,
 };
 
 use crate::app::App;
@@ -28,7 +28,8 @@ impl SignalPicker {
         Box::new(SignalPicker {
             panel: Panel::new(Widget::col(vec![
                 Widget::row(vec![
-                    CreateTextSpan("Select multiple traffic signals")
+                    "Select multiple traffic signals"
+                        .span()
                         .small_heading()
                         .into_widget(ctx),
                     ctx.style().btn_close_widget(ctx),
