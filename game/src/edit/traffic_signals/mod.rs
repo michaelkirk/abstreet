@@ -893,7 +893,7 @@ fn squish_polygons_together(mut polygons: Vec<Polygon>) -> Vec<(f64, f64)> {
         if polygons
             .iter()
             .enumerate()
-            .any(|(i, p)| i != idx && !translated.intersection(p).is_empty())
+            .any(|(i, p)| i != idx && translated.intersects(p))
         {
             // Stop moving this polygon
         } else {

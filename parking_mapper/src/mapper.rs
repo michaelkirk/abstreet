@@ -650,11 +650,7 @@ fn find_overlapping_stuff(app: &App, timer: &mut Timer) -> Vec<Polygon> {
     for b in map.all_buildings() {
         timer.next();
         for (r, _, _) in closest.all_close_pts(b.label_center, Distance::meters(500.0)) {
-            if !b
-                .polygon
-                .intersection(&map.get_r(r).get_thick_polygon(map))
-                .is_empty()
-            {
+            if b.polygon.intersects(&map.get_r(r).get_thick_polygon(map)) {
                 polygons.push(b.polygon.clone());
             }
         }
@@ -664,11 +660,7 @@ fn find_overlapping_stuff(app: &App, timer: &mut Timer) -> Vec<Polygon> {
     for pl in map.all_parking_lots() {
         timer.next();
         for (r, _, _) in closest.all_close_pts(pl.polygon.center(), Distance::meters(500.0)) {
-            if !pl
-                .polygon
-                .intersection(&map.get_r(r).get_thick_polygon(map))
-                .is_empty()
-            {
+            if pl.polygon.intersects(&map.get_r(r).get_thick_polygon(map)) {
                 polygons.push(pl.polygon.clone());
             }
         }
