@@ -64,7 +64,7 @@ pub struct Analytics {
     record_anything: bool,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Problem {
     /// A vehicle waited >30s, or a pedestrian waited >15s.
     IntersectionDelay(IntersectionID, Duration),

@@ -245,6 +245,7 @@ impl Car {
 
         DrawCarInput {
             id: self.vehicle.id,
+            trip: self.trip_and_person.map(|t| t.0),
             waiting_for_turn: match self.state {
                 // TODO Maybe also when Crossing?
                 CarState::WaitingToAdvance { .. } | CarState::Queued { .. } => {

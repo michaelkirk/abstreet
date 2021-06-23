@@ -4,7 +4,7 @@ use geom::{Angle, Circle, Distance, Speed, Time};
 use map_gui::render::DrawPedestrian;
 use map_model::{BuildingID, LaneID, OffstreetParking, Traversable, SIDEWALK_THICKNESS};
 use sim::{DrawPedestrianInput, PedestrianID, PersonID, TripMode, TripResult, VehicleType};
-use widgetry::{Color, EventCtx, Line, Text, TextExt, Widget};
+use widgetry::{Color, EventCtx, Line, Prerender, Text, TextExt, Widget};
 
 use crate::app::App;
 use crate::info::{header_btns, make_table, make_tabs, Details, Tab};
@@ -250,13 +250,19 @@ fn header(ctx: &EventCtx, app: &App, details: &mut Details, id: BuildingID, tab:
         ),
     ];
 
-    draw_occupants(details, app, id, None);
+    draw_occupants(details, app, ctx.prerender, id, None);
     // TODO Draw cars parked inside?
 
     Widget::custom_col(rows)
 }
 
-pub fn draw_occupants(details: &mut Details, app: &App, id: BuildingID, focus: Option<PersonID>) {
+pub fn draw_occupants(
+    details: &mut Details,
+    app: &App,
+    prerender: &Prerender,
+    id: BuildingID,
+    focus: Option<PersonID>,
+) {
     // TODO Lots of fun ideas here. Have a deterministic simulation based on building ID and time
     // to have people "realistically" move around. Draw little floor plans.
 
@@ -298,10 +304,12 @@ pub fn draw_occupants(details: &mut Details, app: &App, id: BuildingID, focus: O
             DrawPedestrian::geometry(
                 &mut details.zoomed,
                 &app.primary.sim,
+                prerender,
                 &app.cs,
                 &DrawPedestrianInput {
                     // Lies
                     id: PedestrianID(person.0),
+                    trip: None,
                     person,
                     pos,
                     facing: Angle::degrees(90.0),
@@ -312,6 +320,7 @@ pub fn draw_occupants(details: &mut Details, app: &App, id: BuildingID, focus: O
                     on: Traversable::Lane(LaneID(0)),
                 },
                 0,
+                false,
             );
         }
     }

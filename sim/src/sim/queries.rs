@@ -15,8 +15,8 @@ use crate::analytics::SlidingWindow;
 use crate::{
     AgentID, AgentType, Analytics, CarID, CommutersVehiclesCounts, DrawCarInput, DrawPedCrowdInput,
     DrawPedestrianInput, OrigPersonID, PandemicModel, ParkedCar, ParkingSim, PedestrianID, Person,
-    PersonID, PersonState, Scenario, Sim, TripEndpoint, TripID, TripInfo, TripMode, TripResult,
-    UnzoomedAgent, VehicleType,
+    PersonID, PersonState, Problem, Scenario, Sim, TripEndpoint, TripID, TripInfo, TripMode,
+    TripResult, UnzoomedAgent, VehicleType,
 };
 
 // TODO Many of these just delegate to an inner piece. This is unorganized and hard to maintain.
@@ -452,6 +452,20 @@ impl Sim {
 
     pub fn get_highlighted_people(&self) -> &Option<BTreeSet<PersonID>> {
         &self.highlighted_people
+    }
+
+    pub fn recent_problem_for_trip(&self, trip: TripID) -> Option<Problem> {
+        if let Some((time, problem)) = self
+            .get_analytics()
+            .problems_per_trip
+            .get(&trip)
+            .and_then(|problems| problems.last())
+        {
+            if *time + Duration::seconds(15.0) > self.time() {
+                return Some(*problem);
+            }
+        }
+        None
     }
 }
 

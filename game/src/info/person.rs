@@ -617,7 +617,7 @@ fn header(
         PersonState::Inside(b) => {
             ctx.canvas
                 .center_on_map_pt(app.primary.map.get_b(b).label_center);
-            building::draw_occupants(details, app, b, Some(id));
+            building::draw_occupants(details, app, ctx.prerender, b, Some(id));
             (None, ("indoors", Some("system/assets/tools/home.svg")))
         }
         PersonState::Trip(t) => (

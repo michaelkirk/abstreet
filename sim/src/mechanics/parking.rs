@@ -349,6 +349,7 @@ impl ParkingSim for NormalParkingSimState {
                     self.onstreet_lanes[&lane].dist_along_for_car(idx, &p.vehicle, map);
                 Some(DrawCarInput {
                     id: p.vehicle.id,
+                    trip: None,
                     waiting_for_turn: None,
                     status: CarStatus::Parked,
                     show_parking_intent: false,
@@ -371,6 +372,7 @@ impl ParkingSim for NormalParkingSimState {
                 let buffer = Distance::meters(0.5);
                 Some(DrawCarInput {
                     id: p.vehicle.id,
+                    trip: None,
                     waiting_for_turn: None,
                     status: CarStatus::Parked,
                     show_parking_intent: false,

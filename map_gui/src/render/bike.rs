@@ -99,6 +99,31 @@ impl DrawBike {
             );
         }
 
+        let has_recent_problem = input
+            .trip
+            .and_then(|trip| sim.recent_problem_for_trip(trip))
+            .is_some();
+        if has_recent_problem {
+            // draw intent bubble
+            let bubble_z = -0.0001;
+            let mut bubble_batch =
+                GeomBatch::load_svg(prerender, "system/assets/map/thought_bubble.svg")
+                    .scale(0.05)
+                    .centered_on(body_pos)
+                    .translate(3.0, -3.0)
+                    .set_z_offset(bubble_z);
+
+            let intent_batch = GeomBatch::load_svg(prerender, "system/assets/tools/alert.svg")
+                .scale(0.09)
+                .centered_on(body_pos)
+                .translate(3.5, -3.5)
+                .set_z_offset(bubble_z);
+
+            bubble_batch.append(intent_batch);
+
+            draw_default.append(bubble_batch);
+        }
+
         let zorder = input
             .partly_on
             .into_iter()

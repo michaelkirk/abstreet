@@ -25,7 +25,20 @@ impl DrawPedestrian {
         cs: &ColorScheme,
     ) -> DrawPedestrian {
         let mut draw_default = GeomBatch::new();
-        DrawPedestrian::geometry(&mut draw_default, sim, cs, &input, step_count);
+
+        let has_recent_problem = input
+            .trip
+            .and_then(|trip| sim.recent_problem_for_trip(trip))
+            .is_some();
+        DrawPedestrian::geometry(
+            &mut draw_default,
+            sim,
+            prerender,
+            cs,
+            &input,
+            step_count,
+            has_recent_problem,
+        );
 
         let radius = SIDEWALK_THICKNESS / 4.0; // TODO make const after const fn is better
         let body_circle = Circle::new(input.pos, radius);
@@ -54,9 +67,11 @@ impl DrawPedestrian {
     pub fn geometry(
         batch: &mut GeomBatch,
         sim: &Sim,
+        prerender: &Prerender,
         cs: &ColorScheme,
         input: &DrawPedestrianInput,
         step_count: usize,
+        has_recent_problem: bool,
     ) {
         // TODO Slight issues with rendering small pedestrians:
         // - route visualization is thick
@@ -170,6 +185,27 @@ impl DrawPedestrian {
             body_circle.to_polygon(),
         );
         batch.push(cs.ped_head, head_circle.to_polygon());
+
+        if has_recent_problem {
+            // draw intent bubble
+            let bubble_z = -0.0001;
+            let mut bubble_batch =
+                GeomBatch::load_svg(prerender, "system/assets/map/thought_bubble.svg")
+                    .scale(0.05)
+                    .centered_on(input.pos)
+                    .translate(3.0, -3.0)
+                    .set_z_offset(bubble_z);
+
+            let intent_batch = GeomBatch::load_svg(prerender, "system/assets/tools/alert.svg")
+                .scale(0.09)
+                .centered_on(input.pos)
+                .translate(3.5, -3.5)
+                .set_z_offset(bubble_z);
+
+            bubble_batch.append(intent_batch);
+
+            batch.append(bubble_batch);
+        }
     }
 }
 

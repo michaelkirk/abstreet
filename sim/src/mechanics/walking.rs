@@ -752,6 +752,7 @@ impl Pedestrian {
 
         DrawPedestrianInput {
             id: self.id,
+            trip: Some(self.trip),
             pos,
             facing,
             waiting_for_turn: match self.state {

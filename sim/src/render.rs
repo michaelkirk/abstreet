@@ -3,11 +3,12 @@
 use geom::{Angle, Distance, PolyLine, Pt2D};
 use map_model::{BuildingID, ParkingLotID, Traversable, TurnID};
 
-use crate::{AgentID, CarID, PedestrianID, PersonID};
+use crate::{AgentID, CarID, PedestrianID, PersonID, TripID};
 
 #[derive(Clone)]
 pub struct DrawPedestrianInput {
     pub id: PedestrianID,
+    pub trip: Option<TripID>,
     pub pos: Pt2D,
     pub facing: Angle,
     pub waiting_for_turn: Option<TurnID>,
@@ -35,6 +36,7 @@ pub enum PedCrowdLocation {
 #[derive(Clone)]
 pub struct DrawCarInput {
     pub id: CarID,
+    pub trip: Option<TripID>,
     pub waiting_for_turn: Option<TurnID>,
     pub status: CarStatus,
     pub show_parking_intent: bool,
