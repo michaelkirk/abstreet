@@ -143,7 +143,11 @@ pub fn ongoing(
         details,
         phases,
         &app.primary.map,
-        Some(props.dist_crossed / props.total_dist),
+        if props.total_dist > Distance::ZERO {
+            Some(props.dist_crossed / props.total_dist)
+        } else {
+            None
+        },
     ));
     Widget::col(col)
 }
