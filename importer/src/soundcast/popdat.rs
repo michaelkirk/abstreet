@@ -128,15 +128,17 @@ fn import_parcels(
         closest_bldg.add(b.orig_id, b.polygon.points());
     }
 
-    let mut x_coords: Vec<f64> = Vec::new();
-    let mut y_coords: Vec<f64> = Vec::new();
-    // Dummy values
-    let mut z_coords: Vec<f64> = Vec::new();
+    //let mut x_coords: Vec<f64> = Vec::new();
+    //let mut y_coords: Vec<f64> = Vec::new();
+    //// Dummy values
+    //let mut z_coords: Vec<f64> = Vec::new();
     // (parcel ID, number of households, number of parking spots)
     let mut parcel_metadata = Vec::new();
 
     let (reader, done) =
         FileWithProgress::new(&CityName::seattle().input_path("parcels_urbansim.txt")).unwrap();
+
+    let mut coords = vec![];
     for rec in csv::ReaderBuilder::new()
         .delimiter(b' ')
         .from_reader(reader)
@@ -145,27 +147,36 @@ fn import_parcels(
         let rec: RawParcel = rec.unwrap();
         // Note parkdy_p and parkhr_p might overlap, so this could be double-counting. >_<
         parcel_metadata.push((rec.parcelid, rec.hh_p, rec.parkdy_p + rec.parkhr_p));
-        x_coords.push(rec.xcoord_p);
-        y_coords.push(rec.ycoord_p);
-        z_coords.push(0.0);
+        coords.push(Coord(rec.xcoord_p, rec.ycoord_p));
+        //x_coords.push(rec.xcoord_p);
+        //y_coords.push(rec.ycoord_p);
+        //z_coords.push(0.0);
     }
     done(timer);
 
     timer.start(format!("transform {} points", parcel_metadata.len()));
 
     // From https://epsg.io/102748 to https://epsg.io/4326
-    let transform = gdal::spatial_ref::CoordTransform::new(
-        &gdal::spatial_ref::SpatialRef::from_proj4(
-            "+proj=lcc +lat_1=47.5 +lat_2=48.73333333333333 +lat_0=47 +lon_0=-120.8333333333333 \
-             +x_0=500000.0000000002 +y_0=0 +datum=NAD83 +units=us-ft +no_defs",
-        )
-        .expect("washington state plane"),
-        &gdal::spatial_ref::SpatialRef::from_epsg(4326).unwrap(),
-    )
-    .expect("regular GPS");
-    transform
-        .transform_coords(&mut x_coords, &mut y_coords, &mut z_coords)
-        .expect("transform coords");
+    // let transform = gdal::spatial_ref::CoordTransform::new(
+    //     &gdal::spatial_ref::SpatialRef::from_proj4(
+    //         "+proj=lcc +lat_1=47.5 +lat_2=48.73333333333333 +lat_0=47 +lon_0=-120.8333333333333 \
+    //          +x_0=500000.0000000002 +y_0=0 +datum=NAD83 +units=us-ft +no_defs",
+    //     )
+    //     .expect("washington state plane"),
+    //     &gdal::spatial_ref::SpatialRef::from_epsg(4326).unwrap(),
+    // )
+    // .expect("regular GPS");
+    // transform
+    //     .transform_coords(&mut x_coords, &mut y_coords, &mut z_coords)
+    //     .expect("transform coords");
+    //let proj = proj::Proj::new_known_crs("EPSG:102748", "EPSG:4326", None).expect("unknown CRS");
+
+    let proj = proj::Proj::new_known_crs(
+        "+proj=lcc +lat_1=47.5 +lat_2=48.73333333333333 +lat_0=47 +lon_0=-120.8333333333333 +x_0=500000.0000000002 +y_0=0 +datum=NAD83 +units=us-ft +no_defs",
+        "EPSG:4326",
+        None
+    ).expect("unknown CRS");
+    proj.convert_array(&mut coords).expect("projection failed");
 
     timer.stop(format!("transform {} points", parcel_metadata.len()));
 
@@ -174,10 +185,8 @@ fn import_parcels(
     let mut result = HashMap::new();
     let mut shapes = BTreeMap::new();
     timer.start_iter("finalize parcel output", parcel_metadata.len());
-    for ((x, y), (id, num_households, offstreet_parking_spaces)) in x_coords
-        .into_iter()
-        .zip(y_coords.into_iter())
-        .zip(parcel_metadata.into_iter())
+    for (Coord(x, y), (id, num_households, offstreet_parking_spaces)) in
+        coords.into_iter().zip(parcel_metadata.into_iter())
     {
         timer.next();
         // This maybe got inverted with some new version of GDAL?!
@@ -307,6 +316,21 @@ struct RawParcel {
     parkhr_p: usize,
     xcoord_p: f64,
     ycoord_p: f64,
+}
+
+struct Coord(f64, f64);
+impl proj::Coord<f64> for Coord {
+    fn x(&self) -> f64 {
+        self.0
+    }
+
+    fn y(&self) -> f64 {
+        self.1
+    }
+
+    fn from_xy(x: f64, y: f64) -> Self {
+        Self(x, y)
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
