@@ -41,3 +41,6 @@ geo-booleanop = { git = "https://github.com/michaelkirk/rust-geo-booleanop", bra
 
 # Waiting for a new crates.io release, but git uses latest geo versions
 polylabel = { git = "https://github.com/urschrei/polylabel-rs" }
+
+# Waiting for the >=0.22.1 release to fix proj on aarch64
+proj = { git = "https://github.com/georust/proj" }
