@@ -165,11 +165,7 @@ fn import_parcels(
     timer.start(format!("transform {} points", parcel_metadata.len()));
 
     // From https://epsg.io/102748 to https://epsg.io/4326
-    let proj = proj::Proj::new_known_crs(
-        "+proj=lcc +lat_1=47.5 +lat_2=48.73333333333333 +lat_0=47 +lon_0=-120.8333333333333 +x_0=500000.0000000002 +y_0=0 +datum=NAD83 +units=us-ft +no_defs",
-        "EPSG:4326",
-        None
-    ).expect("unknown CRS");
+    let proj = proj::Proj::new_known_crs("ESRI:102748", "EPSG:4326", None).expect("unknown CRS");
     proj.convert_array(&mut coords).expect("projection failed");
 
     timer.stop(format!("transform {} points", parcel_metadata.len()));
