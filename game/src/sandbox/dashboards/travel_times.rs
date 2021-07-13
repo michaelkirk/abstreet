@@ -391,12 +391,17 @@ fn contingency_table(ctx: &mut EventCtx, app: &App, filter: &Filter) -> Widget {
             std::cmp::Ordering::Equal => {}
         }
     }
-    let max_y = losses_per_bucket
+    let max_change = losses_per_bucket
         .iter()
         .chain(savings_per_bucket.iter())
-        .map(|c| c.accumulated_duration)
-        .max()
+        .max_by_key(|c| c.accumulated_duration.inner_seconds().abs())
         .unwrap();
+
+    let intervals = max_change.accumulated_duration.make_intervals_for_max(2);
+    dbg!(&intervals);
+
+    // TODO: make tick-marks for this axis
+    max_y = max_change.accumulated_duration;
 
     // Draw the bars!
     let bar_width = total_width / (num_buckets as f64);
